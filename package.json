@@ -17,12 +17,15 @@
     "@aws-sdk/client-s3": "^3.1103.0",
     "@google/genai": "^2.15.0",
     "@libsql/client": "^0.17.4",
+    "@remotion/cli": "^4.0.506",
+    "@remotion/renderer": "^4.0.506",
     "@tailwindcss/postcss": "^4.3.3",
     "drizzle-orm": "^0.45.2",
     "next": "^16.3.0",
     "postcss": "^8.5.25",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "remotion": "^4.0.506",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
