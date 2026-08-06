@@ -2,9 +2,10 @@
 import { useCurrentFrame, spring, useVideoConfig } from 'remotion'
 import { colors } from '../design/colors'
 import { fonts, fontSize, type AspectMode } from '../design/fonts'
-import { springs } from '../design/animations'
+import { springs, transform3dEntry } from '../design/animations'
 import { safeZoneStyle, truncate } from '../design/safe-zones'
 import { gradientBg } from '../design/backgrounds'
+import { goldGlow } from '../design/effects'
 
 export interface CallToActionProps {
   headline?: string

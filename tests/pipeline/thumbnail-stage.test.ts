@@ -9,9 +9,9 @@ describe('buildStillArgs', () => {
     expect(args[1]).toBe('still')
   })
 
-  it('always renders landscape for thumbnails', () => {
+  it('uses dedicated thumbnail composition', () => {
     const args = buildStillArgs('/tmp/thumb.png', '/tmp/props.json')
-    expect(args).toContain('CapitalCode-Landscape')
+    expect(args).toContain('CapitalCode-Thumbnail')
   })
 
   it('includes output path', () => {

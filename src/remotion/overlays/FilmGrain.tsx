@@ -3,10 +3,13 @@
 import { useCurrentFrame } from 'remotion'
 
 export interface FilmGrainProps {
-  opacity?: number // # 0–1, default 0.04 for subtle grain
+  opacity?: number     // # 0–1, default 0.04 for subtle grain
+  hasFootage?: boolean // # Lower grain on footage backgrounds to avoid over-processing
 }
 
-export const FilmGrain: React.FC<FilmGrainProps> = ({ opacity = 0.04 }) => {
+export const FilmGrain: React.FC<FilmGrainProps> = ({ opacity = 0.04, hasFootage = false }) => {
+  // # Reduce grain when footage is present — footage already has texture
+  const effectiveOpacity = hasFootage ? opacity * 0.5 : opacity
   const frame = useCurrentFrame()
   // # Shift background position each frame for grain movement
   const offset = (frame * 7) % 200
@@ -14,7 +17,7 @@ export const FilmGrain: React.FC<FilmGrainProps> = ({ opacity = 0.04 }) => {
   return (
     <div style={{
       position: 'absolute', inset: 0, zIndex: 200, pointerEvents: 'none',
-      opacity,
+      opacity: effectiveOpacity,
       // # SVG noise filter embedded as data URI
       backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
       backgroundPosition: `${offset}px ${offset}px`,

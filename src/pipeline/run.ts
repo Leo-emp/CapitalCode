@@ -14,21 +14,29 @@ import { subtitleGeneratorStage } from './subtitle-generator'
 import { renderStage } from './render-stage'
 import { thumbnailStage } from './thumbnail-stage'
 import { safetyNetStage } from './safety-net'
+import { illustrationGeneratorStage } from './illustration-generator'
+import { footageFetcherStage } from './footage-fetcher'
+import { musicMixerStage } from './music-mixer'
+import { sfxMixerStage } from './sfx-mixer'
 import { sendAlert } from '@/lib/alert'
 
 const stages = [
-  topicDiscoveryStage,       // # 1. Pick topic from Gemini
-  scriptGeneratorStage,      // # 2. Generate rigid-template script
-  voiceGeneratorStage,       // # 3. ElevenLabs TTS + timestamps
-  audioProcessorStage,       // # 4. ffmpeg broadcast chain
-  pacingEngineStage,         // # 5. Word timestamps → frame-level timing
-  aiDirectorStage,           // # 6. Gemini picks scenes (constrained by segment-scene map)
-  dataFetcherStage,          // # 7. Fetch real chart data from FRED/Yahoo/etc
-  svgSlotFillerStage,        // # 8. Fill SVG template labels via Gemini
-  subtitleGeneratorStage,    // # 9. Generate SRT subtitles
-  renderStage,               // # 10. Remotion render → MP4
-  thumbnailStage,            // # 11. Remotion still → PNG
-  safetyNetStage,            // # 12. Gemini Vision quality check
+  topicDiscoveryStage,           // # 1. Pick topic from Gemini
+  scriptGeneratorStage,          // # 2. Generate rigid-template script
+  voiceGeneratorStage,           // # 3. ElevenLabs TTS + timestamps
+  audioProcessorStage,           // # 4. ffmpeg broadcast chain
+  pacingEngineStage,             // # 5. Word timestamps → frame-level timing
+  aiDirectorStage,               // # 6. Scene plan + footage queries + mood
+  illustrationGeneratorStage,    // # 7. AI illustrations (Gemini Imagen)
+  footageFetcherStage,           // # 8. Stock footage (Storyblocks/Pexels/Pixabay)
+  dataFetcherStage,              // # 9. Fetch real chart data from FRED/Yahoo/etc
+  svgSlotFillerStage,            // # 10. Fill SVG template labels via Gemini
+  subtitleGeneratorStage,        // # 11. Generate SRT subtitles
+  musicMixerStage,               // # 12. Background music (Storyblocks/Pixabay)
+  sfxMixerStage,                 // # 13. Sound effects at timestamps
+  renderStage,                   // # 14. Remotion render → MP4
+  thumbnailStage,                // # 15. Remotion thumbnail → PNG
+  safetyNetStage,                // # 16. Gemini Vision quality check
 ]
 
 const videoTypes = ['long_form', 'short_explainer', 'short_data_reveal'] as const

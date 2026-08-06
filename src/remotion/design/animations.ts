@@ -27,3 +27,14 @@ export function secondsToFrames(s: number): number {
 export function msToFrames(ms: number): number {
   return Math.round((ms / 1000) * FPS)
 }
+
+// # 3D perspective entry transform — tilted/scaled → flat/full-size
+// # progress: 0→1 (spring output), tiltDeg: initial tilt angle
+// # Returns a CSS transform string for perspective depth effect
+export function transform3dEntry(progress: number, tiltDeg = -5): string {
+  // # Tilt decreases to 0 as progress → 1
+  const tilt = tiltDeg * (1 - progress)
+  // # Scale from 85% to 100% as progress → 1
+  const scale = 0.85 + 0.15 * progress
+  return `perspective(1000px) rotateX(${tilt}deg) scale(${scale})`
+}

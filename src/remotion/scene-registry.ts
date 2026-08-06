@@ -22,6 +22,7 @@ import { CandlestickChart } from './scenes/CandlestickChart'
 import { BeforeAfter } from './scenes/BeforeAfter'
 import { CallToAction } from './scenes/CallToAction'
 import { HormoziCaption } from './scenes/HormoziCaption'
+import { WorldMap } from './scenes/WorldMap'
 
 // # String key → component mapping for dynamic rendering
 // # Keys must match SceneComponent type from segment-scene-map.ts
@@ -47,4 +48,5 @@ export const SCENE_REGISTRY: Record<string, React.FC<any>> = {
   BeforeAfter,
   CallToAction,
   HormoziCaption,
+  WorldMap,
 }

@@ -4,6 +4,7 @@ import { colors } from '../design/colors'
 import { fonts, fontSize, type AspectMode } from '../design/fonts'
 import { safeZoneStyle, truncate } from '../design/safe-zones'
 import { gradientBg } from '../design/backgrounds'
+import { goldGlow } from '../design/effects'
 
 export interface CounterAnimationProps {
   label: string
@@ -26,7 +27,7 @@ export const CounterAnimation: React.FC<CounterAnimationProps> = ({
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div style={gradientBg()} />
       <div style={safeZoneStyle}>
-        <div style={{ fontFamily: fonts.data.family, fontSize: fontSize('data', 'large', aspect) * 1.5, fontWeight: 700, color: colors.accent.gold, fontVariantNumeric: 'tabular-nums' }}>{display}</div>
+        <div style={{ fontFamily: fonts.data.family, fontSize: fontSize('data', 'large', aspect) * 1.5, fontWeight: 700, color: colors.accent.gold, fontVariantNumeric: 'tabular-nums', ...goldGlow(0.5) }}>{display}</div>
         <div style={{ fontFamily: fonts.body.family, fontSize: fontSize('body', 'large', aspect), color: colors.text.secondary, marginTop: 24 }}>{truncate(label, 60)}</div>
       </div>
     </div>

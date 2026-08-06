@@ -4,9 +4,10 @@
 import { useCurrentFrame, interpolate, spring, useVideoConfig } from 'remotion'
 import { colors } from '../design/colors'
 import { fonts, fontSize, type AspectMode } from '../design/fonts'
-import { springs } from '../design/animations'
+import { springs, transform3dEntry } from '../design/animations'
 import { safeZoneStyle, truncate } from '../design/safe-zones'
 import { gradientBg } from '../design/backgrounds'
+import { goldGlow } from '../design/effects'
 
 export interface BigStatRevealProps {
   stat: string            // # e.g. "$1.8T"
@@ -47,10 +48,13 @@ export const BigStatReveal: React.FC<BigStatRevealProps> = ({
           fontSize: fontSize('data', 'large', aspect) * 2,
           fontWeight: 700,
           color: accentColor,
-          transform: `scale(${scale})`,
+          // # 3D entry + scale spring for cinematic depth
+          transform: `${transform3dEntry(scale)} scale(${scale})`,
           opacity,
           textAlign: 'center',
           letterSpacing: '2px',
+          // # Gold glow effect on stat text
+          ...goldGlow(color === 'gold' ? 0.5 : 0.3),
         }}>
           {truncate(stat, 20)}
         </div>

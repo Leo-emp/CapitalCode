@@ -24,6 +24,10 @@ Rate pass or fail ONLY. Fail if:
 - Empty unused space dominates the frame
 - Charts are missing data or labels
 - Any visual element overlaps incorrectly
+- Video lacks background imagery (footage or illustration) behind data overlays — flat solid color backgrounds are unacceptable
+- Transitions between scenes are hard cuts instead of smooth dissolves/zooms/wipes
+- Text is unreadable over background imagery (insufficient contrast)
+- Visual styles look inconsistent across frames (brand identity mismatch)
 
 Return JSON: { "pass": true/false, "reason": "brief explanation" }`
 }

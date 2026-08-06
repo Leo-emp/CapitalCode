@@ -161,6 +161,74 @@ export function analyzePacing(
   return { segments: pacedSegments, totalFrames }
 }
 
+// # Align scene cuts to natural voice pauses
+// # Shifts each scene boundary ±15 frames to land on a speech gap (>300ms)
+// # Prevents jarring cuts mid-word — makes edits feel "invisible"
+import type { SceneDirective } from '@/quality/scene-validator'
+
+const MAX_SHIFT_FRAMES = 15 // # 0.5s at 30fps — max allowed shift
+
+export function alignCutsToVoice(
+  scenes: SceneDirective[],
+  pacing: PacingData
+): SceneDirective[] {
+  if (scenes.length <= 1 || pacing.segments.length === 0) return scenes
+
+  // # Collect all pause frames from pacing data
+  const pauseFrames: number[] = []
+  for (const seg of pacing.segments) {
+    for (const pause of seg.pauses) {
+      pauseFrames.push(pause.frameStart)
+    }
+  }
+
+  // # Sort for searching
+  pauseFrames.sort((a, b) => a - b)
+
+  const aligned = scenes.map((s) => ({ ...s }))
+
+  // # For each scene boundary (except first), find nearest pause
+  let runningFrame = 0
+  for (let i = 0; i < aligned.length; i++) {
+    aligned[i].startFrame = runningFrame
+
+    if (i < aligned.length - 1) {
+      const cutFrame = runningFrame + aligned[i].durationFrames
+      const nearest = findNearestPause(cutFrame, pauseFrames)
+
+      if (nearest !== null) {
+        const shift = nearest - cutFrame
+        // # Only shift if within tolerance
+        if (Math.abs(shift) <= MAX_SHIFT_FRAMES) {
+          aligned[i].durationFrames += shift
+        }
+      }
+    }
+
+    runningFrame = aligned[i].startFrame + aligned[i].durationFrames
+  }
+
+  return aligned
+}
+
+// # Binary-ish search for closest pause to a target frame
+function findNearestPause(target: number, pauses: number[]): number | null {
+  if (pauses.length === 0) return null
+
+  let closest = pauses[0]
+  let minDist = Math.abs(target - closest)
+
+  for (const p of pauses) {
+    const dist = Math.abs(target - p)
+    if (dist < minDist) {
+      minDist = dist
+      closest = p
+    }
+  }
+
+  return closest
+}
+
 // # Pipeline stage — analyzes pacing from voice timestamps + script segments
 export async function pacingEngineStage(ctx: PipelineContext): Promise<PipelineContext> {
   const { voice, primaryScript } = ctx

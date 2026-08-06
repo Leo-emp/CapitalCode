@@ -3,6 +3,7 @@
 import { useCurrentFrame, interpolate } from 'remotion'
 import { colors } from '../design/colors'
 import { fonts, fontSize, type AspectMode } from '../design/fonts'
+import { goldGlow } from '../design/effects'
 
 export interface HormoziCaptionProps {
   words: Array<{ text: string; startFrame: number; endFrame: number }>
@@ -36,7 +37,8 @@ export const HormoziCaption: React.FC<HormoziCaptionProps> = ({ words = [], aspe
             fontSize: fontSize('headline', 'subheading', aspect),
             color: isActive ? colors.accent.gold : colors.text.primary,
             textTransform: 'uppercase',
-            textShadow: '0 2px 8px rgba(0,0,0,0.8)',
+            // # Gold glow on active word for emphasis
+            ...(isActive ? goldGlow(0.3) : { textShadow: '0 2px 8px rgba(0,0,0,0.8)' }),
             opacity,
             transform: isActive ? 'scale(1.15)' : 'scale(1)',
             transition: 'transform 0.1s',

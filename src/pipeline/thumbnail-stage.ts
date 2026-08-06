@@ -11,7 +11,7 @@ export function buildStillArgs(outputPath: string, propsPath: string): string[] 
   return [
     'remotion', 'still',
     'src/remotion/Root.tsx',
-    'CapitalCode-Landscape', // # Thumbnails always landscape
+    'CapitalCode-Thumbnail', // # Dedicated thumbnail composition
     outputPath,
     `--props=${propsPath}`,
     '--log=error',
@@ -30,15 +30,15 @@ export async function thumbnailStage(ctx: PipelineContext): Promise<PipelineCont
   const outputPath = join(workDir, 'thumbnail.png')
   const propsPath = join(workDir, 'thumb-props.json')
 
-  // # Use the first scene from the plan as thumbnail content
-  // # AI Director can optionally set ctx.scenePlan.thumbnailProps
-  const thumbnailProps = ctx.scenePlan.thumbnailProps ?? {
-    scenes: ctx.scenePlan.scenes.slice(0, 1),
-    audioSrc: '',
-    subtitleSrc: '',
-    aspect: 'landscape',
-    showGrain: false,
-    showWatermark: true,
+  // # Build thumbnail props from AI Director's thumbnailProps
+  // # Uses dedicated ThumbnailComposition for maximum YouTube feed impact
+  const thumbData = ctx.scenePlan.thumbnailProps ?? {}
+  const thumbnailProps = {
+    stat: thumbData.stat ?? '',
+    line1: thumbData.line1 ?? ctx.primaryScript?.title ?? '',
+    line2: thumbData.line2 ?? '',
+    backgroundSrc: ctx.scenePlan.scenes[0]?.props?.footagePath ?? '',
+    trendDirection: 'neutral',
   }
 
   writeFileSync(propsPath, JSON.stringify(thumbnailProps))

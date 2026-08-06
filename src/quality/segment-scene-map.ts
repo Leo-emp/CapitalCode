@@ -23,6 +23,7 @@ export type SceneComponent =
   | 'TimelineSequence'
   | 'IconGrid'
   | 'CallToAction'
+  | 'WorldMap'
 
 // # All segment types the script generator can produce
 export type SegmentType = keyof typeof SEGMENT_SCENE_MAP
@@ -39,14 +40,14 @@ export type SegmentType = keyof typeof SEGMENT_SCENE_MAP
 // # CTA → always the call-to-action component
 export const SEGMENT_SCENE_MAP = {
   hook:        ['BigStatReveal', 'KineticTitle'],
-  context:     ['TextOverlay', 'FlowDiagram', 'ProcessSteps'],
+  context:     ['TextOverlay', 'FlowDiagram', 'ProcessSteps', 'WorldMap'],
   data:        ['LineChartDraw', 'BarChartGrow', 'AreaChartFill', 'CandlestickChart',
-                'CounterAnimation', 'BarChartRace', 'StackedBar', 'WaterfallChart'],
+                'CounterAnimation', 'BarChartRace', 'StackedBar', 'WaterfallChart', 'WorldMap'],
   insight:     ['TextOverlay', 'QuoteCard', 'KineticTitle'],
-  comparison:  ['ComparisonSplit', 'BarChartRace', 'BeforeAfter', 'StackedBar'],
+  comparison:  ['ComparisonSplit', 'BarChartRace', 'BeforeAfter', 'StackedBar', 'WorldMap'],
   counter:     ['TextOverlay', 'BigStatReveal', 'QuoteCard'],
   prediction:  ['LineChartDraw', 'GaugeChart', 'TimelineSequence', 'AreaChartFill'],
-  implication: ['IconGrid', 'ProcessSteps', 'FlowDiagram'],
+  implication: ['IconGrid', 'ProcessSteps', 'FlowDiagram', 'WorldMap'],
   cta:         ['CallToAction'],
 } as const satisfies Record<string, readonly SceneComponent[]>
 

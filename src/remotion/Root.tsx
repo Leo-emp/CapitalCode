@@ -3,10 +3,12 @@
 import React from 'react'
 import { Composition } from 'remotion'
 import { MasterComposition, type MasterCompositionProps } from './MasterComposition'
+import { ThumbnailComposition, type ThumbnailProps } from './ThumbnailComposition'
 import { FPS } from './design/animations'
 
 // # Cast to satisfy Remotion's generic Composition typing without Zod schema
 const MC = MasterComposition as unknown as React.FC<Record<string, unknown>>
+const TC = ThumbnailComposition as unknown as React.FC<Record<string, unknown>>
 
 // # Two compositions: landscape (YouTube) and portrait (Shorts/TikTok/Reels)
 export const RemotionRoot: React.FC = () => {
@@ -43,6 +45,20 @@ export const RemotionRoot: React.FC = () => {
           showGrain: true,
           showWatermark: true,
         } satisfies MasterCompositionProps as Record<string, unknown>}
+      />
+      {/* # Thumbnail composition — 1 frame still image */}
+      <Composition
+        id="CapitalCode-Thumbnail"
+        component={TC}
+        durationInFrames={1}
+        fps={FPS}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          stat: '$0',
+          line1: 'Title',
+          line2: 'Subtitle',
+        } satisfies ThumbnailProps as Record<string, unknown>}
       />
     </>
   )

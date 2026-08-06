@@ -18,8 +18,8 @@ describe('SEGMENT_SCENE_MAP', () => {
     expect(SEGMENT_SCENE_MAP.hook).toEqual(['BigStatReveal', 'KineticTitle'])
   })
 
-  it('data has 8 chart/counter components', () => {
-    expect(SEGMENT_SCENE_MAP.data).toHaveLength(8)
+  it('data has 9 chart/counter/map components', () => {
+    expect(SEGMENT_SCENE_MAP.data).toHaveLength(9)
     // # Every data scene should be a chart or counter type
     expect(SEGMENT_SCENE_MAP.data).toContain('LineChartDraw')
     expect(SEGMENT_SCENE_MAP.data).toContain('CandlestickChart')

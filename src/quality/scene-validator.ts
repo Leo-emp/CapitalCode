@@ -16,6 +16,11 @@ export interface SceneDirective {
   props: Record<string, any>   // # Component-specific props (chart data, text, etc.)
   sfxCues: Array<{ frame: number; type: string }>  // # Sound effects within this scene
   sourceCitation?: string       // # Data source attribution
+  footageQuery?: string         // # Search query for stock footage (Storyblocks/Pexels/Pixabay)
+  illustrationPrompt?: string   // # Prompt for AI-generated illustration (Gemini Imagen)
+  backgroundType?: 'footage' | 'illustration' | 'gradient'  // # Which background layer to use
+  cinematic?: boolean           // # Whether to show letterbox bars on this scene
+  morphFrom?: string            // # Scene type to morph from (chart-to-chart transitions)
 }
 
 // # Result of validation — includes the fixed plan and a log of what changed

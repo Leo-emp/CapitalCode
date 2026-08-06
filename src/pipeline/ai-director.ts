@@ -17,6 +17,7 @@ import type { PipelineContext } from './orchestrator'
 interface DirectorResult {
   scenes: SceneDirective[]
   thumbnailProps: { stat: string; line1: string; line2: string }
+  mood: string  // # Overall video mood for music search
 }
 
 // # Build the heavily-constrained Gemini prompt
@@ -52,6 +53,13 @@ ${SCENE_DESCRIPTIONS}
 
 ${FEW_SHOT_SCENES}
 
+VISUAL BACKGROUND INSTRUCTIONS:
+- For each scene, provide a "footage_query" — descriptive stock footage search terms (e.g. "wall street trading floor green screens", "city skyline sunset aerial")
+- For context, insight, implication segments: also provide "illustration_prompt" — description for AI-generated illustration (e.g. "abstract visualization of money flowing between global banks")
+- Set "cinematic": true on dramatic reveal scenes (hook, key data reveals) to trigger letterbox bars
+- Set "morph_from" to the previous scene's scene_type when chart data should visually transform
+- Choose a "mood" for the whole video: "tense" | "upbeat" | "neutral" | "dramatic" | "contemplative"
+
 SCRIPT SEGMENTS:
 ${segments.map((s, i) => `  ${i + 1}. [${s.type}] "${s.text.substring(0, 100)}${s.text.length > 100 ? '...' : ''}" (hint: ${s.visualHint}, citation: ${s.sourceCitation ?? 'none'})`).join('\n')}
 
@@ -65,14 +73,19 @@ Return JSON (no markdown fences):
       "transition": "fade|wipe|zoom|morph|parallax",
       "props": { ... scene-specific props ... },
       "sfx_cues": [{ "frame": <number>, "type": "tick|bass_hit|whoosh" }],
-      "source_citation": "optional source"
+      "source_citation": "optional source",
+      "footage_query": "descriptive search terms for B-roll",
+      "illustration_prompt": "optional, for AI-generated backgrounds",
+      "cinematic": false,
+      "morph_from": null
     }
   ],
   "thumbnail": {
     "stat": "$1.8T",
     "line1": "How Banks Profit",
     "line2": "From Your Deposits"
-  }
+  },
+  "mood": "tense|upbeat|neutral|dramatic|contemplative"
 }`
 }
 
@@ -99,6 +112,11 @@ export function parseDirectorResponse(
         ? (s.sfx_cues ?? s.sfxCues).map((c: any) => ({ frame: Number(c.frame), type: String(c.type) }))
         : [],
       sourceCitation: s.source_citation ?? s.sourceCitation ?? matchedSeg?.sourceCitation,
+      // # New fields for quality upgrade layers
+      footageQuery: s.footage_query ?? s.footageQuery ?? '',
+      illustrationPrompt: s.illustration_prompt ?? s.illustrationPrompt ?? '',
+      cinematic: Boolean(s.cinematic),
+      morphFrom: s.morph_from ?? s.morphFrom ?? undefined,
     }
   })
 
@@ -109,6 +127,7 @@ export function parseDirectorResponse(
       line1: String(raw.thumbnail?.line1 ?? raw.thumbnail?.line_1 ?? ''),
       line2: String(raw.thumbnail?.line2 ?? raw.thumbnail?.line_2 ?? ''),
     },
+    mood: String(raw.mood ?? 'neutral'),
   }
 }
 
@@ -177,6 +196,7 @@ export async function aiDirectorStage(ctx: PipelineContext): Promise<PipelineCon
       totalFrames: pacing.totalFrames,
       fps: 30,
       thumbnailProps: parsed.thumbnailProps,
+      mood: parsed.mood,
     },
   }
 }

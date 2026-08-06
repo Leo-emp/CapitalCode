@@ -4,9 +4,10 @@
 import { useCurrentFrame, spring, useVideoConfig } from 'remotion'
 import { colors } from '../design/colors'
 import { fonts, fontSize, type AspectMode } from '../design/fonts'
-import { springs, durations } from '../design/animations'
+import { springs, durations, transform3dEntry } from '../design/animations'
 import { safeZoneStyle, truncate } from '../design/safe-zones'
 import { gradientBg } from '../design/backgrounds'
+import { goldGlow } from '../design/effects'
 
 export interface KineticTitleProps {
   title: string
@@ -40,7 +41,10 @@ export const KineticTitle: React.FC<KineticTitleProps> = ({
                 color: colors.text.primary,
                 textTransform: 'uppercase',
                 opacity: progress,
-                transform: `translateY(${(1 - progress) * 30}px)`,
+                // # 3D depth entry + vertical slide
+                transform: `${transform3dEntry(progress, -3)} translateY(${(1 - progress) * 30}px)`,
+                // # Subtle gold glow on each word
+                ...goldGlow(0.2),
               }}>
                 {word}
               </span>
