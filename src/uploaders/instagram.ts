@@ -5,10 +5,18 @@ import { buildShortMetadata } from './metadata'
 const API_BASE = 'https://graph.facebook.com/v21.0'
 
 // # Refresh Instagram token (uses Facebook long-lived token exchange)
+// # Sends credentials in POST body, not query string, to avoid logging secrets
 export async function refreshInstagramToken(currentToken: string) {
-  const res = await fetch(
-    `${API_BASE}/oauth/access_token?grant_type=fb_exchange_token&client_id=${process.env.FB_APP_ID}&client_secret=${process.env.FB_APP_SECRET}&fb_exchange_token=${currentToken}`
-  )
+  const res = await fetch(`${API_BASE}/oauth/access_token`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'fb_exchange_token',
+      client_id: process.env.FB_APP_ID!,
+      client_secret: process.env.FB_APP_SECRET!,
+      fb_exchange_token: currentToken,
+    }),
+  })
 
   if (!res.ok) throw new Error(`Instagram token refresh failed: ${res.status}`)
   return res.json() as Promise<{ access_token: string; expires_in: number }>
@@ -22,15 +30,17 @@ export async function uploadToInstagram(
   videoUrl: string,
   caption: string
 ): Promise<string> {
-  // # Step 1: Create media container
+  // # Step 1: Create media container (token in header, not body)
   const containerRes = await fetch(`${API_BASE}/${igUserId}/media`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
     body: JSON.stringify({
       media_type: 'REELS',
       video_url: videoUrl,
       caption,
-      access_token: accessToken,
     }),
   })
 
@@ -44,13 +54,15 @@ export async function uploadToInstagram(
   // # Step 2: Wait for processing (poll status)
   await waitForProcessing(accessToken, containerId)
 
-  // # Step 3: Publish the container
+  // # Step 3: Publish the container (token in header, not body)
   const publishRes = await fetch(`${API_BASE}/${igUserId}/media_publish`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
     body: JSON.stringify({
       creation_id: containerId,
-      access_token: accessToken,
     }),
   })
 
@@ -67,8 +79,10 @@ export async function uploadToInstagram(
 async function waitForProcessing(accessToken: string, containerId: string, maxWait = 120_000) {
   const start = Date.now()
   while (Date.now() - start < maxWait) {
+    // # Send token as Bearer header instead of query string
     const res = await fetch(
-      `${API_BASE}/${containerId}?fields=status_code&access_token=${accessToken}`
+      `${API_BASE}/${containerId}?fields=status_code`,
+      { headers: { Authorization: `Bearer ${accessToken}` } }
     )
     const data = await res.json() as { status_code: string }
 
