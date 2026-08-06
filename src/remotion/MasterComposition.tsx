@@ -6,6 +6,7 @@ import { type AspectMode } from './design/fonts'
 import { FilmGrain } from './overlays/FilmGrain'
 import { Watermark } from './overlays/Watermark'
 import { SCENE_REGISTRY } from './scene-registry'
+import { getFontFaces } from './design/load-fonts'
 
 // # Scene directive shape matching AI Director output
 export interface SceneDirective {
@@ -31,6 +32,8 @@ export const MasterComposition: React.FC<MasterCompositionProps> = ({
 }) => {
   return (
     <AbsoluteFill style={{ backgroundColor: '#0A1628' }}>
+      {/* # Load fonts via CSS @font-face */}
+      <style dangerouslySetInnerHTML={{ __html: getFontFaces() }} />
       {/* # Audio track */}
       {audioSrc && <Audio src={audioSrc} />}
 

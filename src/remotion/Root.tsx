@@ -5,14 +5,17 @@ import { Composition } from 'remotion'
 import { MasterComposition, type MasterCompositionProps } from './MasterComposition'
 import { FPS } from './design/animations'
 
+// # Cast to satisfy Remotion's generic Composition typing without Zod schema
+const MC = MasterComposition as unknown as React.FC<Record<string, unknown>>
+
 // # Two compositions: landscape (YouTube) and portrait (Shorts/TikTok/Reels)
 export const RemotionRoot: React.FC = () => {
   return (
     <>
       <Composition
         id="CapitalCode-Landscape"
-        component={MasterComposition}
-        durationInFrames={300} // # Overridden at render time via --props
+        component={MC}
+        durationInFrames={300}
         fps={FPS}
         width={1920}
         height={1080}
@@ -20,14 +23,14 @@ export const RemotionRoot: React.FC = () => {
           scenes: [],
           audioSrc: '',
           subtitleSrc: '',
-          aspect: 'landscape' as const,
+          aspect: 'landscape',
           showGrain: true,
           showWatermark: true,
-        } satisfies MasterCompositionProps}
+        } satisfies MasterCompositionProps as Record<string, unknown>}
       />
       <Composition
         id="CapitalCode-Portrait"
-        component={MasterComposition}
+        component={MC}
         durationInFrames={300}
         fps={FPS}
         width={1080}
@@ -36,10 +39,10 @@ export const RemotionRoot: React.FC = () => {
           scenes: [],
           audioSrc: '',
           subtitleSrc: '',
-          aspect: 'portrait' as const,
+          aspect: 'portrait',
           showGrain: true,
           showWatermark: true,
-        } satisfies MasterCompositionProps}
+        } satisfies MasterCompositionProps as Record<string, unknown>}
       />
     </>
   )

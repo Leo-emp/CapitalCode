@@ -27,7 +27,7 @@ export function buildDirectorPrompt(
 ): string {
   // # Per-segment constraint block showing ALLOWED scene types
   const segmentConstraints = segments.map((seg, i) => {
-    const allowed = SEGMENT_SCENE_MAP[seg.type] ?? ['TextOverlay']
+    const allowed = (SEGMENT_SCENE_MAP as Record<string, readonly string[]>)[seg.type] ?? ['TextOverlay']
     return `  Segment ${i + 1} (${seg.type}, id: ${seg.id}): ALLOWED scene types: [${allowed.join(', ')}]`
   }).join('\n')
 
@@ -117,7 +117,7 @@ export function constrainSceneTypes(scenes: SceneDirective[]): SceneDirective[] 
   const recentScenes: string[] = []
 
   return scenes.map((scene) => {
-    const allowed = SEGMENT_SCENE_MAP[scene.segmentType] ?? ['TextOverlay']
+    const allowed = (SEGMENT_SCENE_MAP as Record<string, readonly string[]>)[scene.segmentType] ?? ['TextOverlay']
 
     let sceneType = scene.sceneType
     if (!allowed.includes(sceneType)) {

@@ -43,8 +43,8 @@ export function clampDuration(
   segmentType?: string
 ): number {
   // # Start with the global min/max
-  let min = TIMING_RULES.minSceneDuration
-  let max = TIMING_RULES.maxSceneDuration
+  let min: number = TIMING_RULES.minSceneDuration
+  let max: number = TIMING_RULES.maxSceneDuration
 
   // # Hooks have a tighter max — they need to grab attention fast
   if (segmentType === 'hook') {

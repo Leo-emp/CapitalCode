@@ -20,7 +20,13 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
       - run: npm ci
+
+      - name: Generate SFX placeholders if missing
+        run: bash scripts/generate-silent-sfx.sh
 
       - name: Run pipeline
         env:
@@ -37,4 +43,4 @@ jobs:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
           ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
-        run: npx tsx src/pipeline/run.ts
+        run: npm run pipeline
