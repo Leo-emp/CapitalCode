@@ -23,9 +23,10 @@ describe('database schema', () => {
     expect(videos.status.default).toBe('generating')
   })
 
-  it('exports 5 topic categories', () => {
+  it('exports 6 topic categories', () => {
     expect(topicCategories).toContain('finance')
     expect(topicCategories).toContain('ai_tech')
-    expect(topicCategories.length).toBe(5)
+    expect(topicCategories).toContain('personal_finance')
+    expect(topicCategories.length).toBe(6)
   })
 })

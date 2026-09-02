@@ -20,6 +20,7 @@ export interface SceneDirective {
   illustrationPrompt?: string   // # Prompt for AI-generated illustration (Gemini Imagen)
   backgroundType?: 'footage' | 'illustration' | 'gradient'  // # Which background layer to use
   cinematic?: boolean           // # Whether to show letterbox bars on this scene
+  impact?: boolean              // # Whether this scene triggers screen shake on render
   morphFrom?: string            // # Scene type to morph from (chart-to-chart transitions)
 }
 
@@ -32,7 +33,7 @@ export interface SceneValidationResult {
 
 // # Ordered transition cycle for variety enforcement
 // # When we detect 3+ consecutive same transition, we rotate to the next one
-const TRANSITION_CYCLE = ['fade', 'wipe', 'zoom', 'morph', 'parallax'] as const
+const TRANSITION_CYCLE = ['fade', 'wipe', 'slide', 'zoom', 'morph', 'film_burn', 'whip_pan', 'glitch'] as const
 
 // # Maximum SFX density: 1 cue per this many frames (60 = 2 seconds)
 const SFX_MIN_GAP = 60

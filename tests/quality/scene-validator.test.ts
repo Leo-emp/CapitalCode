@@ -116,8 +116,8 @@ describe('validateScenePlan', () => {
       ]
       const result = validateScenePlan(scenes)
 
-      // # wipe → zoom in cycle: fade, wipe, zoom, morph, parallax
-      expect(result.scenes[2].transition).toBe('zoom')
+      // # wipe → slide in cycle: fade, wipe, slide, zoom, morph, film_burn, whip_pan, glitch
+      expect(result.scenes[2].transition).toBe('slide')
     })
 
     it('wraps around transition cycle', () => {
@@ -129,7 +129,7 @@ describe('validateScenePlan', () => {
       ]
       const result = validateScenePlan(scenes)
 
-      // # parallax is last in cycle → wraps to fade
+      // # parallax is not in the 8-type cycle → defaults to index 0 = fade
       expect(result.scenes[2].transition).toBe('fade')
     })
 

@@ -11,12 +11,14 @@ export interface DiscoveredTopic {
 }
 
 // # Content pillars with weighted rotation — controls topic mix
+// # Personal finance gets highest weight because "how this affects YOU" drives shares
 const PILLARS = [
-  { name: 'AI disruption stories', weight: 25 },
-  { name: 'Business model breakdowns', weight: 25 },
-  { name: 'Market/economic analysis', weight: 20 },
-  { name: 'Fintech/app reviews', weight: 15 },
-  { name: 'Wealth psychology', weight: 15 },
+  { name: 'Personal finance & investing — how macro trends hit YOUR wallet, salary, rent, savings, retirement, debt. Include: budgeting, ETFs vs stocks, index funds, real estate investing, side income, compound interest, tax strategies, portfolio building', weight: 25 },
+  { name: 'AI disruption stories — jobs, industries, and careers being reshaped', weight: 20 },
+  { name: 'Business model breakdowns — how companies actually make money', weight: 20 },
+  { name: 'Market/economic analysis — rates, inflation, housing, recession signals', weight: 10 },
+  { name: 'Fintech/app reviews — new tools that save or cost you money', weight: 5 },
+  { name: 'Wealth psychology — why smart people make dumb money decisions, spending traps, lifestyle inflation, cognitive biases around money', weight: 20 },
 ]
 
 interface GeminiTopicResponse {
@@ -54,7 +56,7 @@ Pick the most engaging topics for today:
 
 Return as JSON (no markdown fences):
 {
-  "long_form": { "topic": "...", "category": "finance|fintech|ai_tech|crypto|economics" },
+  "long_form": { "topic": "...", "category": "finance|fintech|ai_tech|crypto|economics|personal_finance" },
   "shorts": [
     { "topic": "...", "category": "..." },
     { "topic": "...", "category": "..." }
@@ -64,7 +66,7 @@ Return as JSON (no markdown fences):
   const data = await geminiJson<GeminiTopicResponse>(prompt)
 
   // # Validate category values — fall back to "finance" if Gemini returns garbage
-  const validCategories = ['finance', 'fintech', 'ai_tech', 'crypto', 'economics']
+  const validCategories = ['finance', 'fintech', 'ai_tech', 'crypto', 'economics', 'personal_finance']
   const safeCategory = (c: string): TopicCategory =>
     validCategories.includes(c) ? (c as TopicCategory) : 'finance'
 

@@ -1,7 +1,7 @@
 import { sqliteTable, text, integer, index, uniqueIndex } from 'drizzle-orm/sqlite-core'
 
 export const topicCategories = [
-  'finance', 'fintech', 'ai_tech', 'crypto', 'economics',
+  'finance', 'fintech', 'ai_tech', 'crypto', 'economics', 'personal_finance',
 ] as const
 export type TopicCategory = (typeof topicCategories)[number]
 

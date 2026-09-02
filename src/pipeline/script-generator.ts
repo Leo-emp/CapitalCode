@@ -67,6 +67,7 @@ function buildPrompt(topic: string, platform: Platform): string {
 
   return `You are a scriptwriter for "CapitalCode", a faceless finance/tech YouTube channel.
 Tone: analytical authority — confident, data-driven, slightly cynical. "Here's what they don't tell you."
+Framing rule: ALWAYS connect the topic to the viewer's personal money and investments — their salary, rent, mortgage, savings, retirement, portfolio, grocery bill, or job security. Even macro topics like Fed rates or AI disruption must land on "here's what this costs YOU" or "here's how to position your money." For investing topics, give specific actionable context (which asset classes benefit, what to watch for, historical returns) without being financial advice — use "historically" and "data shows" framing. Viewers share content that feels personal.
 
 Write a ${duration} (${wordRange}) script about: "${topic}"
 

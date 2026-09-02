@@ -41,9 +41,18 @@ CONSTRAINTS — YOU MUST FOLLOW THESE:
 - Maximum scene duration: ${TIMING_RULES.maxSceneDuration} frames (${(TIMING_RULES.maxSceneDuration / 30).toFixed(1)}s)
 - Hook max: ${TIMING_RULES.hookMaxDuration} frames | CTA max: ${TIMING_RULES.ctaMaxDuration} frames
 - No 3 consecutive scenes with the same scene type
-- No 3 consecutive scenes with the same transition
-- Transitions: fade, wipe, zoom, morph, parallax (each 15 frames)
+- No 2 consecutive scenes with the same transition
+- Transitions (8 types, each 15 frames, use the RIGHT one for context):
+    fade — calm continuation within same topic
+    wipe — sequential data progression, timeline steps
+    slide — context→data or data→data within same topic
+    zoom — dramatic stat reveals, key topic changes
+    morph — chart-to-chart data transforms (set morph_from)
+    glitch — ONLY for ai_tech category or tech disruption moments
+    film_burn — major topic pivots, dramatic emotional shifts
+    whip_pan — counter-arguments ("but here's the catch"), pivots
 - SFX: max 1 per 60 frames. Types: tick, bass_hit, whoosh
+- "impact": set to true on hook segments and any segment with a dramatic stat reveal — triggers screen shake on render
 - Aspect ratio: ${aspectRatio} (${aspectRatio === 'landscape' ? '1920×1080' : '1080×1920'})
 
 ALLOWED SCENE TYPES PER SEGMENT:
@@ -70,13 +79,14 @@ Return JSON (no markdown fences):
       "scene_type": "SceneComponentName",
       "segment_id": "seg_N",
       "duration_frames": <number>,
-      "transition": "fade|wipe|zoom|morph|parallax",
+      "transition": "fade|wipe|slide|zoom|morph|glitch|film_burn|whip_pan",
       "props": { ... scene-specific props ... },
       "sfx_cues": [{ "frame": <number>, "type": "tick|bass_hit|whoosh" }],
       "source_citation": "optional source",
       "footage_query": "descriptive search terms for B-roll",
       "illustration_prompt": "optional, for AI-generated backgrounds",
       "cinematic": false,
+      "impact": false,
       "morph_from": null
     }
   ],
@@ -116,6 +126,7 @@ export function parseDirectorResponse(
       footageQuery: s.footage_query ?? s.footageQuery ?? '',
       illustrationPrompt: s.illustration_prompt ?? s.illustrationPrompt ?? '',
       cinematic: Boolean(s.cinematic),
+      impact: Boolean(s.impact),
       morphFrom: s.morph_from ?? s.morphFrom ?? undefined,
     }
   })
