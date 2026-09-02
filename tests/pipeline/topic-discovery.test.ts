@@ -1,7 +1,17 @@
-import { describe, it, expect, vi } from 'vitest'
-import { stripFences } from '@/lib/gemini'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-// # Test the fence-stripping logic without calling Gemini
+// # Inline stripFences for testing — avoids loading the real @/lib/gemini module
+// # (importOriginal would pull in @google/genai, which hangs in full suite)
+function stripFences(text: string): string {
+  let t = text.trim()
+  if (t.startsWith('```')) {
+    t = t.split('\n').slice(1).join('\n')
+    if (t.endsWith('```')) t = t.slice(0, -3)
+    t = t.trim()
+  }
+  return t
+}
+
 describe('stripFences', () => {
   it('strips ```json fences', () => {
     const input = '```json\n{"topic":"test"}\n```'
@@ -18,20 +28,27 @@ describe('stripFences', () => {
   })
 })
 
-// # Mock Gemini and DB to test topic discovery logic
-vi.mock('@/lib/gemini', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/gemini')>()
-  return {
-    ...actual,
-    geminiJson: vi.fn().mockResolvedValue({
-      long_form: { topic: 'How Banks Profit From Your Deposits', category: 'finance' },
-      shorts: [
-        { topic: 'Credit Card Interchange Fees', category: 'fintech' },
-        { topic: 'Fed Rate Impact on Savings', category: 'economics' },
-      ],
-    }),
-  }
-})
+// # Mock Gemini fully — no importOriginal to avoid loading @google/genai
+vi.mock('@/lib/gemini', () => ({
+  stripFences: vi.fn((text: string) => {
+    let t = text.trim()
+    if (t.startsWith('```')) {
+      t = t.split('\n').slice(1).join('\n')
+      if (t.endsWith('```')) t = t.slice(0, -3)
+      t = t.trim()
+    }
+    return t
+  }),
+  geminiJson: vi.fn().mockResolvedValue({
+    long_form: { topic: 'How Banks Profit From Your Deposits', category: 'finance' },
+    shorts: [
+      { topic: 'Credit Card Interchange Fees', category: 'fintech' },
+      { topic: 'Fed Rate Impact on Savings', category: 'economics' },
+    ],
+  }),
+  geminiText: vi.fn(),
+  geminiVision: vi.fn(),
+}))
 
 vi.mock('@/db/repo/topics', () => ({
   getRecentTopics: vi.fn().mockResolvedValue([]),
@@ -40,6 +57,8 @@ vi.mock('@/db/repo/topics', () => ({
 }))
 
 describe('discoverTopics', () => {
+  beforeEach(() => vi.clearAllMocks())
+
   it('returns 3 topics (1 long + 2 short) from Gemini', async () => {
     const { discoverTopics } = await import('@/pipeline/topic-discovery')
 
