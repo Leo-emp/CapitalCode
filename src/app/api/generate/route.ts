@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        ref: 'main',
+        ref: 'master',
         inputs: {
           topic: body.topic ?? '',
           video_type: body.videoType ?? 'long_form',
