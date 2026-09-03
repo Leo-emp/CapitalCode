@@ -10,6 +10,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           CapitalCode
         </Link>
         <NavLink href="/dashboard" label="Queue" />
+        <NavLink href="/dashboard/generate" label="Generate" />
         <NavLink href="/dashboard/stats" label="Stats" />
       </nav>
       {/* # Main content */}

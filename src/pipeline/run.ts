@@ -39,15 +39,31 @@ const stages = [
   safetyNetStage,                // # 16. Gemini Vision quality check
 ]
 
-const videoTypes = ['long_form', 'short_explainer', 'short_data_reveal'] as const
+const ALL_VIDEO_TYPES = ['long_form', 'short_explainer', 'short_data_reveal'] as const
 
 async function main() {
-  console.log(`[CapitalCode] Starting daily pipeline — ${new Date().toISOString()}`)
+  console.log(`[CapitalCode] Starting pipeline — ${new Date().toISOString()}`)
+
+  // # Read optional inputs from workflow_dispatch (dashboard or manual trigger)
+  const inputTopic = process.env.PIPELINE_TOPIC ?? ''
+  const inputType = process.env.PIPELINE_VIDEO_TYPE ?? 'all'
+
+  // # If a specific type was requested, run only that; otherwise run all 3
+  const typesToRun = inputType === 'all'
+    ? ALL_VIDEO_TYPES
+    : ALL_VIDEO_TYPES.filter((t) => t === inputType)
+
+  if (typesToRun.length === 0) {
+    console.error(`[CapitalCode] Invalid video type: ${inputType}`)
+    process.exit(1)
+  }
+
+  console.log(`[CapitalCode] Types: ${typesToRun.join(', ')}${inputTopic ? ` | Topic: ${inputTopic}` : ' | Topic: AI-selected'}`)
 
   const results = []
-  for (const videoType of videoTypes) {
+  for (const videoType of typesToRun) {
     console.log(`[CapitalCode] Running ${videoType} pipeline...`)
-    const result = await runPipeline({ topic: '', videoType, stages })
+    const result = await runPipeline({ topic: inputTopic, videoType, stages })
 
     if (result.error) {
       console.error(`[CapitalCode] ${videoType} FAILED at stage ${result.failedStage}: ${result.error}`)

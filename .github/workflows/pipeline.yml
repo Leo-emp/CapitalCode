@@ -5,7 +5,22 @@ on:
     # Mon-Fri 06:00 UTC
     - cron: '0 6 * * 1-5'
   workflow_dispatch:
-    # Manual trigger from GitHub UI
+    # Manual trigger from GitHub UI or dashboard API
+    inputs:
+      topic:
+        description: 'Optional topic — leave empty for AI to pick'
+        required: false
+        default: ''
+      video_type:
+        description: 'Video format to generate'
+        required: false
+        default: 'long_form'
+        type: choice
+        options:
+          - long_form
+          - short_explainer
+          - short_data_reveal
+          - all
 
 jobs:
   generate:
@@ -43,4 +58,6 @@ jobs:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
           ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+          PIPELINE_TOPIC: ${{ github.event.inputs.topic }}
+          PIPELINE_VIDEO_TYPE: ${{ github.event.inputs.video_type }}
         run: npm run pipeline
