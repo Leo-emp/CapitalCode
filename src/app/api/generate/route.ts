@@ -132,6 +132,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ runs })
   }
 
+  if (!/^\d+$/.test(runId)) {
+    return NextResponse.json({ error: 'Invalid run ID' }, { status: 400 })
+  }
+
   // # Fetch a specific run + its jobs for step-level progress
   const [runRes, jobsRes] = await Promise.all([
     fetch(`${GITHUB_API}/repos/${repo}/actions/runs/${runId}`, {
