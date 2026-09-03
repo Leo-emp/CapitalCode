@@ -3,6 +3,7 @@
 // # Generate page — trigger CapitalCode pipeline from dashboard
 // # Dispatches GitHub Actions workflow, polls run status with live progress
 import { useState, useEffect, useCallback } from 'react'
+import { useAuth } from '@/lib/auth-context'
 
 // # Video type options with labels and descriptions
 const VIDEO_TYPES = [
@@ -46,6 +47,7 @@ interface RecentRun {
 }
 
 export default function GeneratePage() {
+  const { authFetch } = useAuth()
   const [topic, setTopic] = useState('')
   const [videoType, setVideoType] = useState('long_form')
   const [generating, setGenerating] = useState(false)
@@ -65,7 +67,7 @@ export default function GeneratePage() {
 
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/generate?run_id=${currentRun.id}`)
+        const res = await authFetch(`/api/generate?run_id=${currentRun.id}`)
         if (res.ok) {
           const data: RunStatus = await res.json()
           setCurrentRun(data)
@@ -86,7 +88,7 @@ export default function GeneratePage() {
 
   async function fetchRecentRuns() {
     try {
-      const res = await fetch('/api/generate')
+      const res = await authFetch('/api/generate')
       if (res.ok) {
         const data = await res.json()
         setRecentRuns(data.runs ?? [])
@@ -101,7 +103,7 @@ export default function GeneratePage() {
     setGenerating(true)
 
     try {
-      const res = await fetch('/api/generate', {
+      const res = await authFetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
