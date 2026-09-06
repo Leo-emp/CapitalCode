@@ -33,7 +33,7 @@ export function buildRenderArgs(
 ): string[] {
   const args = [
     'remotion', 'render',
-    'src/remotion/index.ts',
+    'src/remotion/index.tsx',
     compositionId,
     outputPath,
     `--frames=0-${durationFrames - 1}`,
