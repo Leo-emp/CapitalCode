@@ -189,7 +189,7 @@ export async function aiDirectorStage(ctx: PipelineContext): Promise<PipelineCon
   await createScenePlan({
     id: scenePlanId,
     videoId,
-    scriptId: ctx.scripts?.[0]?.id ?? videoId,
+    scriptId: ctx.primaryScript.id,
     sequence: JSON.stringify(validated.scenes),
     aspectRatio,
     totalFrames: pacing.totalFrames,

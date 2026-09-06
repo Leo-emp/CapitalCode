@@ -46,6 +46,7 @@ function makeScript(overrides: Partial<GeneratedScript> = {}, segmentCount = 12)
   )
 
   return {
+    id: 'test-script-id',
     title: 'Why the Fed Just Broke the Market',
     hook: 'The Fed just triggered a $2 trillion sell-off.',
     segments,

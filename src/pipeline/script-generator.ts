@@ -14,6 +14,7 @@ export interface Segment {
 }
 
 export interface GeneratedScript {
+  id: string                 // # DB row ID — assigned after persistence, used by scene_plans FK
   title: string
   hook: string
   segments: Segment[]
@@ -125,7 +126,7 @@ function countWords(segments: Segment[]): number {
   return segments.reduce((sum, s) => sum + s.text.split(/\s+/).filter(Boolean).length, 0)
 }
 
-export async function generateScript(topic: string, platform: Platform): Promise<GeneratedScript> {
+export async function generateScript(topic: string, platform: Platform): Promise<Omit<GeneratedScript, 'id'>> {
   const prompt = buildPrompt(topic, platform)
   const raw = await geminiJson<Record<string, any>>(prompt)
 
@@ -166,11 +167,11 @@ export async function scriptGeneratorStage(ctx: PipelineContext): Promise<Pipeli
 
   for (const platform of platforms) {
     const script = await generateScript(topic, platform)
-    generatedScripts.push(script)
+    const scriptId = crypto.randomUUID()
 
     // # Persist to DB
     await createScript({
-      id: crypto.randomUUID(),
+      id: scriptId,
       videoId,
       platform,
       title: script.title,
@@ -181,6 +182,9 @@ export async function scriptGeneratorStage(ctx: PipelineContext): Promise<Pipeli
       estimatedDuration: script.estimatedDuration,
       createdAt: now,
     })
+
+    // # Attach DB ID so downstream stages can reference it (e.g. scene_plans FK)
+    generatedScripts.push({ ...script, id: scriptId })
   }
 
   // # Pass the primary script (first variant) to next stages
