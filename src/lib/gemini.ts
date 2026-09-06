@@ -17,10 +17,10 @@ async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
     try {
       return await fn()
     } catch (err: any) {
-      const is429 = err?.status === 429 || err?.message?.includes('429') || err?.message?.includes('RESOURCE_EXHAUSTED')
-      if (is429 && attempt <= MAX_RETRIES) {
-        const delay = 15 * attempt // # 15s, 30s, 45s — matches Gemini's ~50s retry window
-        console.log(`[GEMINI] Rate limited, retrying in ${delay}s (attempt ${attempt}/${MAX_RETRIES + 1})`)
+      const isRetryable = err?.status === 429 || err?.status === 503 || err?.message?.includes('429') || err?.message?.includes('RESOURCE_EXHAUSTED') || err?.message?.includes('UNAVAILABLE')
+      if (isRetryable && attempt <= MAX_RETRIES) {
+        const delay = 15 * attempt
+        console.log(`[GEMINI] ${err?.status ?? 'error'}, retrying in ${delay}s (attempt ${attempt}/${MAX_RETRIES + 1})`)
         await new Promise(r => setTimeout(r, delay * 1000))
         continue
       }
