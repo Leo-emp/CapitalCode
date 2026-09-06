@@ -90,13 +90,36 @@ export function findLongPauses(
   return pauses
 }
 
-// # Call ElevenLabs TTS API with timestamps
-export async function generateVoice(scriptText: string): Promise<VoiceResult> {
-  const apiKey = env('ELEVENLABS_API_KEY')
-  const voiceId = envOr('ELEVENLABS_VOICE_ID', 'pNInz6obpgDQGcFmaJgB') // # Adam voice default
+// # ElevenLabs free tier caps at 10K chars per request.
+// # We chunk at 9000 to leave margin.
+const CHUNK_CHAR_LIMIT = 9000
 
-  const cleaned = cleanScriptText(scriptText)
+// # Split text into chunks under the limit, breaking at sentence boundaries.
+// # Each chunk is a complete group of sentences so speech doesn't cut mid-word.
+function splitIntoChunks(text: string): string[] {
+  const sentences = text.split(/(?<=[.!?])\s+/)
+  const chunks: string[] = []
+  let current = ''
 
+  for (const sentence of sentences) {
+    const candidate = current ? `${current} ${sentence}` : sentence
+    if (candidate.length <= CHUNK_CHAR_LIMIT) {
+      current = candidate
+    } else {
+      if (current) chunks.push(current)
+      current = sentence
+    }
+  }
+  if (current) chunks.push(current)
+  return chunks
+}
+
+// # Generate audio + timestamps for a single chunk (must be under 10K chars)
+async function generateSingleChunk(
+  text: string,
+  apiKey: string,
+  voiceId: string
+): Promise<{ audioBuffer: Buffer; wordTimestamps: WordTimestamp[] }> {
   const response = await fetch(
     `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/with-timestamps`,
     {
@@ -106,7 +129,7 @@ export async function generateVoice(scriptText: string): Promise<VoiceResult> {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        text: cleaned,
+        text,
         model_id: 'eleven_multilingual_v2',
         voice_settings: {
           stability: 0.5,
@@ -125,22 +148,75 @@ export async function generateVoice(scriptText: string): Promise<VoiceResult> {
 
   const data = await response.json()
 
-  // # Decode base64 audio
   const audioBuffer = Buffer.from(data.audio_base64, 'base64')
-
-  // # Upload to Cloudflare R2
-  const filename = `audio/${crypto.randomUUID()}.mp3`
-  const audioUrl = await uploadToR2(filename, audioBuffer, 'audio/mpeg')
-
-  // # Extract word timestamps from character-level alignment
   const wordTimestamps = extractWordTimestamps(data.alignment)
 
-  // # Calculate total duration from last word's end time
-  const durationMs = wordTimestamps.length > 0
-    ? wordTimestamps[wordTimestamps.length - 1].endMs
-    : 0
+  return { audioBuffer, wordTimestamps }
+}
 
-  return { audioUrl, wordTimestamps, durationMs }
+// # Call ElevenLabs TTS API with timestamps.
+// # Auto-chunks scripts over 9000 chars at sentence boundaries so long scripts
+// # don't hit the 10K per-request limit.
+export async function generateVoice(scriptText: string): Promise<VoiceResult> {
+  const apiKey = env('ELEVENLABS_API_KEY')
+  const voiceId = envOr('ELEVENLABS_VOICE_ID', 'pNInz6obpgDQGcFmaJgB') // # Adam voice default
+
+  const cleaned = cleanScriptText(scriptText)
+
+  // # Short scripts: single request (most common case)
+  if (cleaned.length <= CHUNK_CHAR_LIMIT) {
+    console.log(`[VOICE] Generating narration (${cleaned.length} chars, single request)`)
+    const { audioBuffer, wordTimestamps } = await generateSingleChunk(cleaned, apiKey, voiceId)
+
+    const filename = `audio/${crypto.randomUUID()}.mp3`
+    const audioUrl = await uploadToR2(filename, audioBuffer, 'audio/mpeg')
+
+    const durationMs = wordTimestamps.length > 0
+      ? wordTimestamps[wordTimestamps.length - 1].endMs
+      : 0
+
+    return { audioUrl, wordTimestamps, durationMs }
+  }
+
+  // # Long scripts: chunk at sentence boundaries, generate each, concatenate
+  const chunks = splitIntoChunks(cleaned)
+  console.log(`[VOICE] Script is ${cleaned.length} chars — splitting into ${chunks.length} chunks`)
+
+  const allBuffers: Buffer[] = []
+  const allTimestamps: WordTimestamp[] = []
+  let timeOffsetMs = 0
+
+  for (let i = 0; i < chunks.length; i++) {
+    console.log(`[VOICE] Generating chunk ${i + 1}/${chunks.length} (${chunks[i].length} chars)`)
+    const { audioBuffer, wordTimestamps } = await generateSingleChunk(chunks[i], apiKey, voiceId)
+
+    allBuffers.push(audioBuffer)
+
+    // # Offset timestamps by cumulative duration of previous chunks
+    for (const wt of wordTimestamps) {
+      allTimestamps.push({
+        word: wt.word,
+        startMs: wt.startMs + timeOffsetMs,
+        endMs: wt.endMs + timeOffsetMs,
+      })
+    }
+
+    // # Calculate this chunk's duration from its last timestamp
+    const chunkDurationMs = wordTimestamps.length > 0
+      ? wordTimestamps[wordTimestamps.length - 1].endMs
+      : 0
+    timeOffsetMs += chunkDurationMs
+    console.log(`[VOICE] Chunk ${i + 1} duration: ${(chunkDurationMs / 1000).toFixed(1)}s (cumulative: ${(timeOffsetMs / 1000).toFixed(1)}s)`)
+  }
+
+  // # Concatenate all audio chunks
+  const combinedBuffer = Buffer.concat(allBuffers)
+  const filename = `audio/${crypto.randomUUID()}.mp3`
+  const audioUrl = await uploadToR2(filename, combinedBuffer, 'audio/mpeg')
+
+  console.log(`[VOICE] Total: ${allTimestamps.length} words, ${(timeOffsetMs / 1000).toFixed(1)}s`)
+
+  return { audioUrl, wordTimestamps: allTimestamps, durationMs: timeOffsetMs }
 }
 
 // # Pipeline stage — generates voice for the primary script
