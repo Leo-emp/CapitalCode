@@ -9,6 +9,27 @@ function getClient(): GoogleGenAI {
   return _client
 }
 
+// # Retry with exponential backoff for Gemini rate limits (429)
+// # Free tier: 5 req/min, 20 req/day — hitting per-minute limit is common
+const MAX_RETRIES = 3
+async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
+  for (let attempt = 1; attempt <= MAX_RETRIES + 1; attempt++) {
+    try {
+      return await fn()
+    } catch (err: any) {
+      const is429 = err?.status === 429 || err?.message?.includes('429') || err?.message?.includes('RESOURCE_EXHAUSTED')
+      if (is429 && attempt <= MAX_RETRIES) {
+        const delay = 15 * attempt // # 15s, 30s, 45s — matches Gemini's ~50s retry window
+        console.log(`[GEMINI] Rate limited, retrying in ${delay}s (attempt ${attempt}/${MAX_RETRIES + 1})`)
+        await new Promise(r => setTimeout(r, delay * 1000))
+        continue
+      }
+      throw err
+    }
+  }
+  throw new Error('Gemini retry loop exited unexpectedly')
+}
+
 // # Strip markdown code fences that Gemini wraps around JSON responses
 export function stripFences(text: string): string {
   let t = text.trim()
@@ -26,10 +47,10 @@ export function stripFences(text: string): string {
 // # Strips markdown fences automatically — Gemini often wraps JSON in ```json blocks
 export async function geminiJson<T>(prompt: string, model = 'gemini-2.5-flash'): Promise<T> {
   const client = getClient()
-  const response = await client.models.generateContent({
+  const response = await withRetry(() => client.models.generateContent({
     model,
     contents: prompt,
-  })
+  }))
 
   const raw = response.text ?? ''
   const cleaned = stripFences(raw)
@@ -44,10 +65,10 @@ export async function geminiJson<T>(prompt: string, model = 'gemini-2.5-flash'):
 // # Call Gemini and return plain text (for scripts, SVGs, etc.)
 export async function geminiText(prompt: string, model = 'gemini-2.5-flash'): Promise<string> {
   const client = getClient()
-  const response = await client.models.generateContent({
+  const response = await withRetry(() => client.models.generateContent({
     model,
     contents: prompt,
-  })
+  }))
   return response.text?.trim() ?? ''
 }
 
@@ -66,10 +87,10 @@ export async function geminiVision<T>(
     })),
   ]
 
-  const response = await client.models.generateContent({
+  const response = await withRetry(() => client.models.generateContent({
     model,
     contents: [{ role: 'user', parts }],
-  })
+  }))
 
   const raw = response.text ?? ''
   const cleaned = stripFences(raw)
