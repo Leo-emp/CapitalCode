@@ -45,7 +45,7 @@ export function stripFences(text: string): string {
 
 // # Call Gemini and parse the response as JSON
 // # Strips markdown fences automatically — Gemini often wraps JSON in ```json blocks
-export async function geminiJson<T>(prompt: string, model = 'gemini-2.5-flash'): Promise<T> {
+export async function geminiJson<T>(prompt: string, model = 'gemini-3.6-flash'): Promise<T> {
   const client = getClient()
   const response = await withRetry(() => client.models.generateContent({
     model,
@@ -63,7 +63,7 @@ export async function geminiJson<T>(prompt: string, model = 'gemini-2.5-flash'):
 }
 
 // # Call Gemini and return plain text (for scripts, SVGs, etc.)
-export async function geminiText(prompt: string, model = 'gemini-2.5-flash'): Promise<string> {
+export async function geminiText(prompt: string, model = 'gemini-3.6-flash'): Promise<string> {
   const client = getClient()
   const response = await withRetry(() => client.models.generateContent({
     model,
@@ -77,7 +77,7 @@ export async function geminiText(prompt: string, model = 'gemini-2.5-flash'): Pr
 export async function geminiVision<T>(
   prompt: string,
   images: Array<{ base64: string; mimeType: string }>,
-  model = 'gemini-2.5-flash'
+  model = 'gemini-3.6-flash'
 ): Promise<T> {
   const client = getClient()
   const parts: Array<{ text: string } | { inlineData: { data: string; mimeType: string } }> = [
