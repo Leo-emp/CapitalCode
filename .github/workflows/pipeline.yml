@@ -43,6 +43,12 @@ jobs:
       - name: Generate SFX placeholders if missing
         run: bash scripts/generate-silent-sfx.sh
 
+      - name: Run database migrations
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: npx drizzle-kit push --force
+
       - name: Run pipeline
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
