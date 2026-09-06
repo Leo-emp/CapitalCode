@@ -10,7 +10,7 @@ import type { PipelineContext } from './orchestrator'
 export function buildStillArgs(outputPath: string, propsPath: string): string[] {
   return [
     'remotion', 'still',
-    'src/remotion/Root.tsx',
+    'src/remotion/index.ts',
     'CapitalCode-Thumbnail', // # Dedicated thumbnail composition
     outputPath,
     `--props=${propsPath}`,
