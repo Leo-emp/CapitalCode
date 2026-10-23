@@ -10,6 +10,7 @@ import { Character, type FaceSlot } from '../rig/Character'
 import type { Look } from '../rig/looks'
 import { HERO, LOOKS } from '../rig/looks'
 import { EXPRESSIONS } from '../rig/faces'
+import { CharacterHD, LOOKS_HD } from '../rig/hd/CharacterHD'
 import { PROPS } from '../props/registry'
 import { SCENES } from '../scenes/registry'
 import { BarChart, Equation, LineChart, NumberBuild, StackedBar } from '../infographics/charts'
@@ -170,5 +171,39 @@ export const ThumbSheet: React.FC = () => (
       </React.Fragment>
     ))}
     <div style={{ position: 'absolute', left: 60, top: 790, color: '#9AA6B4', font: '24px Inter' }}>Phone size (168 × 94) — words must still read:</div>
+  </AbsoluteFill>
+)
+
+// # HD cast in the owner's reference poses + HD expression strip
+export const CastHD: React.FC = () => {
+  const cast: [string, keyof typeof POSES, string][] = [['hero', 'pockets', 'smiling'], ['buyer', 'think', 'thinking'], ['investor', 'holdChest', 'smiling'], ['owner', 'present', 'smiling'], ['worker', 'armsCrossed', 'smiling']]
+  return (
+    <AbsoluteFill style={{ background: '#05070C' }}>
+      <style>{fontFaces()}</style>
+      <svg width={1920} height={1080} viewBox="0 0 1920 1080">
+        {cast.map(([id, pose, ex], i) => (
+          <g key={id}>
+            <g transform={`translate(${200 + i * 380} 1010) scale(0.98)`}><CharacterHD pose={{ ...POSES[pose], expression: ex as never }} look={LOOKS_HD[id]} breathe={false} /></g>
+            <text x={200 + i * 380} y={1062} textAnchor="middle" fill="#9AA6B4" style={{ font: '28px Inter' }}>{id}</text>
+          </g>
+        ))}
+      </svg>
+    </AbsoluteFill>
+  )
+}
+export const ExpressionsHD: React.FC = () => (
+  <AbsoluteFill style={{ background: '#05070C' }}>
+    <style>{fontFaces()}</style>
+    <svg width={1920} height={1080} viewBox="0 0 1920 1080">
+      {EXPRESSIONS.map((e, i) => {
+        const cx = (1920 / 7) * i + 1920 / 14
+        return (
+          <g key={e}>
+            <text x={cx} y={250} textAnchor="middle" fill="#9AA6B4" style={{ font: '30px Inter' }}>{e}</text>
+            <g transform={`translate(${cx} 1560) scale(1.5)`}><CharacterHD pose={{ ...POSES[e === 'thinking' ? 'think' : 'pockets'], expression: e }} breathe={false} /></g>
+          </g>
+        )
+      })}
+    </svg>
   </AbsoluteFill>
 )

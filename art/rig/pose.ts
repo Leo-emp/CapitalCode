@@ -9,13 +9,14 @@
 
 import { spring } from 'remotion'
 
-export type HandShape = 'rest' | 'chin' | 'point' | 'fist' | 'open' | 'hold'
+export type HandShape = 'rest' | 'chin' | 'point' | 'fist' | 'open' | 'hold' | 'pocket'
 export type ExpressionId = 'neutral' | 'thinking' | 'shocked' | 'worried' | 'smiling' | 'smug' | 'angry'
 export type ArmPose = { sh: number; el: number; up: number; fo: number; hand: HandShape }
 export type LegPose = { hip: number; knee: number; up: number; lo: number }
 export type Pose = { r: ArmPose; l: ArmPose; rl: LegPose; ll: LegPose; head: number; lean: number; bob: number; expression: ExpressionId }
 
 // # Skeleton (neck-origin coordinates, same as the approved spike drawing)
+export type Skeleton = typeof SKELETON
 export const SKELETON = {
   shoulderR: { x: 90, y: 52 }, shoulderL: { x: -90, y: 52 },
   hipR: { x: 38, y: 262 }, hipL: { x: -38, y: 262 }, hipCentre: { x: 0, y: 262 },
@@ -29,10 +30,11 @@ const STAND = { rl: leg(-3, 1), ll: leg(3, -1) }
 
 export const POSES = {
   idle: { head: 0, lean: 0, bob: 0, expression: 'neutral', r: arm(-6, 4, 'rest'), l: arm(6, -4, 'rest'), ...STAND },
-  think: { head: -4, lean: 0, bob: 0, expression: 'thinking', r: arm(22.8, 147, 'chin', 0.87, 1.22), l: arm(0, -93, 'fist', 0.88, 1.08), ...STAND },
+  think: { head: -4, lean: 0, bob: 0, expression: 'thinking', r: arm(22.8, 147, 'chin', 0.87, 1.08), l: arm(0, -93, 'fist', 0.88, 1.08), ...STAND },
   point: { head: 4, lean: 2, bob: 0, expression: 'neutral', r: arm(-86, -4, 'point'), l: arm(6, -4, 'rest'), ...STAND },
   shrug: { head: -8, lean: 0, bob: -4, expression: 'worried', r: arm(-30, -118, 'open', 0.95, 0.9), l: arm(30, 118, 'open', 0.95, 0.9), ...STAND },
-  present: { head: 6, lean: 1, bob: 0, expression: 'smiling', r: arm(-58, -38, 'open'), l: arm(6, -4, 'rest'), ...STAND },
+  present: { head: 6, lean: 1, bob: 0, expression: 'smiling', r: arm(-25, -134, 'open', 1, 0.79), l: arm(6, -4, 'rest'), ...STAND },
+  holdChest: { head: 3, lean: 0, bob: 0, expression: 'smiling', r: arm(-3.5, 113.5, 'hold', 1, 0.57), l: arm(8, -34.6, 'pocket', 1, 0.55), ...STAND },
   type: { head: 6, lean: 0, bob: 0, expression: 'neutral', r: arm(10, 62, 'rest', 0.9, 0.55), l: arm(-10, -62, 'rest', 0.9, 0.55), ...STAND },
   walkA: { head: 0, lean: 0, bob: -3, expression: 'neutral', r: arm(-10, -6, 'rest'), l: arm(-8, 6, 'rest'), rl: leg(-7, 16, 0.96, 0.92), ll: leg(5, -2) },
   walkB: { head: 0, lean: 0, bob: -3, expression: 'neutral', r: arm(8, -6, 'rest'), l: arm(10, 6, 'rest'), rl: leg(-5, 2), ll: leg(7, -16, 0.96, 0.92) },
@@ -40,6 +42,7 @@ export const POSES = {
   facepalm: { head: 8, lean: 0, bob: 0, expression: 'worried', r: arm(30, 152, 'open', 0.85, 1.28), l: arm(6, -4, 'rest'), ...STAND },
   armsCrossed: { head: -3, lean: 0, bob: 0, expression: 'smug', r: arm(16, 104, 'fist', 0.85, 0.8), l: arm(-16, -104, 'fist', 0.85, 0.8), ...STAND },
   hold: { head: 4, lean: 0, bob: 0, expression: 'neutral', r: arm(-18, -72, 'hold', 0.92, 0.8), l: arm(6, -4, 'rest'), ...STAND },
+  pockets: { head: 3, lean: 0, bob: 0, expression: 'smiling', r: arm(-8, 34.6, 'pocket', 1, 0.55), l: arm(8, -34.6, 'pocket', 1, 0.55), rl: leg(-4, 1), ll: leg(5, -1) },
   sit: { head: 2, lean: 0, bob: 0, expression: 'neutral', r: arm(4, -40, 'rest', 0.9, 0.75), l: arm(-4, 40, 'rest', 0.9, 0.75), rl: leg(-14, 14, 0.38, 1), ll: leg(14, -14, 0.38, 1) },
 } satisfies Record<string, Pose>
 
@@ -98,19 +101,17 @@ const rotateAbout = (p: { x: number; y: number }, c: { x: number; y: number }, d
 }
 
 // # Lowest foot below the neck → how far to shift so the feet stand on y = 0
-export const footDrop = (p: Pose): number => {
-  const S = SKELETON
+export const footDrop = (p: Pose, S: Skeleton = SKELETON): number => {
   const end = (g: LegPose, hy: number) => hy + vec(g.hip, S.thigh * g.up).y + vec(g.hip + g.knee, S.shin * g.lo).y + S.foot
   return Math.max(end(p.rl, S.hipR.y), end(p.ll, S.hipL.y))
 }
 
 // # Centre of a hand, relative to the character origin (between the feet, y up = negative)
-export const handPosition = (p: Pose, side: 'r' | 'l'): { x: number; y: number } => {
-  const S = SKELETON
+export const handPosition = (p: Pose, side: 'r' | 'l', S: Skeleton = SKELETON): { x: number; y: number } => {
   const a = side === 'r' ? p.r : p.l
   const sh = rotateAbout(side === 'r' ? S.shoulderR : S.shoulderL, S.hipCentre, p.lean)
   const ang = a.sh + p.lean
   const elbow = vec(ang, S.upperArm * a.up)
   const fore = vec(ang + a.el, S.foreArm * a.fo + S.handOffset)
-  return { x: sh.x + elbow.x + fore.x, y: sh.y + elbow.y + fore.y - footDrop(p) + p.bob }
+  return { x: sh.x + elbow.x + fore.x, y: sh.y + elbow.y + fore.y - footDrop(p, S) + p.bob }
 }
