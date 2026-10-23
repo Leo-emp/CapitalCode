@@ -108,7 +108,23 @@ reason (same contract as Luminous `long_cli.py`).
 12. **Hand-off** — upload pack in the output folder (§12) + a short review note
     (what's new, any warnings). Owner reviews, picks thumbnail, uploads.
 
-## 5. Topic guardrails
+## 5. Topic mix and formats (owner, 2026-10-23)
+
+| Topic | Share of videos |
+|---|---|
+| Investing (stocks, ETFs, dividends) | 30% |
+| Personal finance (saving, debt, tax, side income) | 25% |
+| AI & tech, framed around money | 20% |
+| Business & entrepreneurship | 20% |
+| Crypto | 5% |
+
+The agent keeps a rolling count over the last 20 videos and picks the topic
+area furthest below its share (outlier research then chooses the story inside
+that area). Formats: about **70% evergreen** (explainers, lists, step-by-step
+guides, comparisons, breakdowns/case studies) and **30% trending** (news
+reactions, market moves, new AI tools); news reactions kept to a minimum.
+
+## 5b. Topic guardrails
 
 - No personal investment advice; no "buy/sell X"; no price predictions stated as
   fact. Every description includes "Educational content, not financial advice."
