@@ -7,3 +7,6 @@ drizzle/meta/
 
 .vercel
 .env*
+output/
+
+.superpowers/
