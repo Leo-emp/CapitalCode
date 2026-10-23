@@ -11,6 +11,7 @@ import type { Look } from '../rig/looks'
 import { HERO, LOOKS } from '../rig/looks'
 import { EXPRESSIONS } from '../rig/faces'
 import { PROPS } from '../props/registry'
+import { SCENES } from '../scenes/registry'
 import { type Pose, POSE_IDS, POSES } from '../rig/pose'
 import { COLORS, fontFaces } from '../tokens'
 
@@ -91,3 +92,29 @@ export const PropSheet: React.FC<{ page?: number }> = ({ page = 0 }) => {
   )
 }
 export const PropSheet2: React.FC = () => <PropSheet page={1} />
+
+// # Scenes in a 4×3 grid at quarter size, hero at each scene's stand anchor
+export const SceneSheet: React.FC<{ page?: number }> = ({ page = 0 }) => {
+  const list = SCENES.slice(page * 12, page * 12 + 12)
+  return (
+    <AbsoluteFill style={{ background: '#000' }}>
+      <style>{fontFaces()}</style>
+      {list.map((sc, i) => {
+        const C = sc.Component, a = sc.anchors.stand
+        return (
+          <div key={sc.id} style={{ position: 'absolute', left: (i % 4) * 480, top: Math.floor(i / 4) * 360, width: 480, height: 360, overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', width: 1920, height: 1080, transform: 'scale(0.25)', transformOrigin: '0 0' }}>
+              <C frame={20} t={0.5} lightsOn={1} />
+              <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>
+                <g transform={`translate(${a.x} ${a.y}) scale(${a.scale})`}><Character pose={POSES.idle} breathe={false} /></g>
+              </svg>
+            </div>
+            <div style={{ position: 'absolute', top: 274, left: 0, width: 480, textAlign: 'center', color: '#9AA6B4', font: '20px Inter' }}>{sc.id}</div>
+          </div>
+        )
+      })}
+    </AbsoluteFill>
+  )
+}
+export const SceneSheet2: React.FC = () => <SceneSheet page={1} />
+export const SceneSheet3: React.FC = () => <SceneSheet page={2} />
