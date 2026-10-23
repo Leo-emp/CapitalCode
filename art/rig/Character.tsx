@@ -94,14 +94,31 @@ export const Character: React.FC<{ pose: Pose; frame?: number; look?: Look; Face
           <path d="M-100 40 Q-108 160 -92 280 L-70 280 Q-82 160 -74 52 Z" fill={look.jacketShade} opacity={0.6} />
           <path d="M-22 18 L0 96 L22 18 L12 14 L0 60 L-12 14 Z" fill={look.collar} />
           <path d="M-6 30 L0 92 L6 30 Z" fill={look.tie} />
+          {look.accessory === 'apron' && (
+            <g data-accessory="apron">
+              <path d="M-62 104 L62 104 L70 292 Q0 304 -70 292 Z" fill="#F2E9DA" />
+              <path d="M-62 104 L-34 30 M62 104 L34 30" stroke="#F2E9DA" strokeWidth={8} />
+              <rect x={-30} y={170} width={60} height={42} rx={6} fill="none" stroke="#D8CBB4" strokeWidth={4} />
+            </g>
+          )}
         </g>
         {/* # Neck + head */}
         <rect x={-17} y={-30} width={34} height={44} fill="#0E1B2C" />
         <g transform={`rotate(${Math.sin(f / 40) * 2 + p.head} 0 -80)`}>
           <ellipse cx={0} cy={-88} rx={50} ry={60} fill={`url(#${head})`} />
           <path d="M44 -110 Q56 -80 42 -46" stroke={look.rim} strokeWidth={3} fill="none" opacity={0.8} />
-          {look.hair !== 'bald' && (
-            <path d="M-52 -96 Q-48 -156 4 -152 Q52 -150 52 -100 Q36 -128 0 -128 Q-30 -126 -52 -96 Z" fill={look.hairColor} />
+          <g data-hair={look.hair}>
+            {look.hair === 'short' && <path d="M-52 -96 Q-48 -156 4 -152 Q52 -150 52 -100 Q36 -128 0 -128 Q-30 -126 -52 -96 Z" fill={look.hairColor} />}
+            {look.hair === 'long' && <path d="M-54 -60 Q-62 -150 2 -154 Q58 -152 54 -84 Q48 -126 4 -132 Q-36 -130 -44 -96 Q-46 -76 -54 -60 Z" fill={look.hairColor} />}
+            {look.hair === 'cap' && <path d="M-54 -104 Q-50 -158 4 -156 Q54 -154 54 -108 L96 -104 Q98 -96 50 -98 L-54 -96 Z" fill={look.jacket[1]} />}
+            {look.hair === 'bald' && <path d="M-30 -138 Q0 -150 30 -138" stroke={look.rim} strokeWidth={3} fill="none" opacity={0.35} />}
+          </g>
+          {look.accessory === 'hardhat' && (
+            <g data-accessory="hardhat">
+              <path d="M-58 -112 Q-56 -170 2 -172 Q60 -170 60 -112 Z" fill="#F7C531" />
+              <rect x={-70} y={-116} width={140} height={14} rx={7} fill="#E0A912" />
+              <path d="M-30 -160 Q2 -170 34 -160" stroke="#FFE38A" strokeWidth={5} fill="none" strokeLinecap="round" />
+            </g>
           )}
           <ellipse cx={-50} cy={-84} rx={8} ry={14} fill="#0E1B2C" />
           {look.glasses && (

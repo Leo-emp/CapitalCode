@@ -8,7 +8,7 @@ import React from 'react'
 import { AbsoluteFill } from 'remotion'
 import { Character, type FaceSlot } from '../rig/Character'
 import type { Look } from '../rig/looks'
-import { HERO } from '../rig/looks'
+import { HERO, LOOKS } from '../rig/looks'
 import { EXPRESSIONS } from '../rig/faces'
 import { type Pose, POSE_IDS, POSES } from '../rig/pose'
 import { COLORS, fontFaces } from '../tokens'
@@ -60,4 +60,10 @@ export const ExpressionStrip: React.FC = () => (
       })}
     </svg>
   </AbsoluteFill>
+)
+
+// # The cast side by side
+export const CastLineup: React.FC = () => (
+  <CharacterGrid cells={Object.entries(LOOKS).map(([id, look], i) => [id, POSES[(['idle', 'armsCrossed', 'present', 'hold', 'point'] as const)[i % 5]], look] as [string, Pose, Look])}
+    cols={5} scale={1.15} cellH={1080} />
 )
