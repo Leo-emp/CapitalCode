@@ -133,7 +133,41 @@ reactions, market moves, new AI tools); news reactions kept to a minimum.
   unless confirmed by a court or regulator.
 - Every on-screen number has a source in `facts.json` and the description.
 
-## 6. Visual system
+## 5c. Staying monetised (YouTube "inauthentic content" policy) — owner, 2026-10-23
+
+Mass-produced, repetitive videos get demonetised. Built-in safeguards:
+
+1. **Real point of view.** Every script states a thesis the video argues
+   (e.g. "buyers pay for future earnings, not past ones"), includes original
+   analysis (our own calculation, comparison or chart from real data), and a
+   clear takeaway. A script that only restates facts fails the script gate.
+   No reworded Wikipedia/news: the Researcher collects facts; the Scriptwriter
+   never copies source sentences (gate checks n-gram overlap with sources).
+2. **Variety engine.** Rotating script structures (explainer, list, case study,
+   comparison, myth-buster, timeline story), rotating hook types, scene and
+   chart-type memory over the last 10 videos, varied pacing (calm vs punchy
+   sections), varied thumbnail layouts. The planner refuses a plan too similar
+   to recent videos (same structure + same opening scene + same chart types).
+3. **Independent Critic.** A separate fresh-context Claude reviewer (it did not
+   write the video) scores each video against a rubric before the owner sees
+   it: point of view, originality vs sources, accuracy vs facts.json, variety
+   vs last 10 videos, hook strength, visual sync/quality (frame sheets), audio.
+   Below the bar → specific fixes are sent back (max 2 rounds), then flagged.
+
+## 5d. Roles (one Claude Code run; Critic is a separate reviewer)
+
+| Role | Does | Implemented as |
+|---|---|---|
+| Topic Scout | outlier research + topic-mix quota → topic + angle | Claude + CLI `research` |
+| Researcher | real numbers and sources → facts.json | CLI data clients + Claude reading sources |
+| Scriptwriter | thesis-driven script with cue + stress tags | Claude |
+| Fact-Checker | every number/claim vs facts.json; guardrails | CLI script gate + Claude check |
+| Visual Director | visual plan: scenes, poses, props, charts on cue words | Claude + art library |
+| Narrator | Azure Andrew HD, timings, stress, −14 LUFS | CLI `voice` |
+| Editor | Remotion render, SFX, transitions, Shorts | CLI `render`/`shorts` |
+| Critic | independent rubric review, sends fixes back | **separate subagent** (fresh context) |
+| Publisher | titles, thumbnails, description, captions, upload pack (auto-upload later) | Claude + CLI `package` |
+
 
 ### 6.1 Look
 Dark Alux style measured from the reference: very dark frames (mean brightness
