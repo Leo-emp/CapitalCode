@@ -311,6 +311,32 @@ From the study of 65 thumbnails across 13 big channels (2026-10-23):
 | Reference | shot length, brightness, illustration/infographic ratio within the reference profile band |
 | Thumbnails | phone-size readability, 3 distinct concepts |
 
+## 11b. Reliability — build it bulletproof once (owner, 2026-10-24)
+
+The pipeline is built and hardened once; every later video follows it without
+mid-run bugs, crashes or visual glitches.
+
+- **Pre-flight before any long step:** the whole plan is validated first —
+  every cue word exists in the voice timings, every scene/prop/pose/look id
+  exists (getScene/getProp/getPose/getLook), every number has a fact, fonts and
+  assets present — and one still frame per shot is rendered (seconds) to catch
+  drawing errors before the long render starts.
+- **Chunked, resumable rendering:** the video renders in ~30-second chunks
+  cached by content hash; an interruption (crash, power cut, reboot) resumes
+  from the last finished chunk, never from zero. Paid steps (voice) are cached
+  and never repeated.
+- **Known failure causes removed at the source:** no per-frame SVG filters
+  (they tore text); fonts loaded as small static WOFF2 files and awaited before
+  any frame; delayRender timeout 120 s; deterministic drawing (no randomness).
+- **Automatic glitch check:** after rendering, a frame-difference scan flags
+  flicker/jumps (text or shapes changing between consecutive frames without a
+  planned animation); the Critic reviews frame sheets around every flag.
+- **Soak test before launch:** the full pipeline must produce the calibration
+  videos end to end repeatedly with zero manual intervention before it is
+  declared ready.
+- **Speed:** measured 68–87 s per 17 s of demo (~150 ms/frame) → a 10-minute
+  video ≈ 45–60 min on this PC; chunks can render in parallel.
+
 ## 12. Output & hand-off
 
 All output lives in CapitalCode's own folder (owner rule: separate output folder

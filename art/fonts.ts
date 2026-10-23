@@ -8,16 +8,18 @@
 import { loadFont } from '@remotion/fonts'
 import { staticFile } from 'remotion'
 
-const FILES: { family: string; file: string; weight?: string }[] = [
-  { family: 'Inter', file: 'fonts/Inter-Variable.ttf', weight: '100 900' },
-  { family: 'Bebas Neue', file: 'fonts/BebasNeue-Regular.ttf' },
-  { family: 'JetBrains Mono', file: 'fonts/JetBrainsMono-Bold.ttf', weight: '700' },
-  { family: 'JetBrains Mono', file: 'fonts/JetBrainsMono-Regular.ttf', weight: '400' },
+// # Small static WOFF2 files (Inter's 877 KB variable TTF stalled loading in
+// # parallel render tabs). Weights = the ones the art library uses.
+export const FONT_FILES: { family: string; file: string; weight?: string }[] = [
+  ...[400, 500, 600, 700, 800].map((w) => ({ family: 'Inter', file: `fonts/Inter-${w}.woff2`, weight: String(w) })),
+  { family: 'Bebas Neue', file: 'fonts/BebasNeue-Regular.woff2' },
+  { family: 'JetBrains Mono', file: 'fonts/JetBrainsMono-Bold.woff2', weight: '700' },
+  { family: 'JetBrains Mono', file: 'fonts/JetBrainsMono-Regular.woff2', weight: '400' },
 ]
 
 let started = false
 export const loadBrandFonts = (): void => {
   if (started || typeof document === 'undefined') return
   started = true
-  for (const f of FILES) void loadFont({ family: f.family, url: staticFile(f.file), weight: f.weight, format: 'truetype' })
+  for (const f of FONT_FILES) void loadFont({ family: f.family, url: staticFile(f.file), weight: f.weight, format: 'woff2' })
 }

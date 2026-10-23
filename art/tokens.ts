@@ -40,11 +40,13 @@ export const FONTS = {
 } as const
 
 // # @font-face block every composition injects once
-export const fontFaces = (): string => `
-@font-face{font-family:'Inter';src:url('${staticFile('fonts/Inter-Variable.ttf')}');font-weight:100 900;}
-@font-face{font-family:'Bebas Neue';src:url('${staticFile('fonts/BebasNeue-Regular.ttf')}');}
-@font-face{font-family:'JetBrains Mono';src:url('${staticFile('fonts/JetBrainsMono-Bold.ttf')}');font-weight:700;}
-`
+// # (same static WOFF2 files as art/fonts.ts, which makes renders wait for them)
+export const fontFaces = (): string => [
+  ...[400, 500, 600, 700, 800].map((w) => `@font-face{font-family:'Inter';src:url('${staticFile(`fonts/Inter-${w}.woff2`)}') format('woff2');font-weight:${w};}`),
+  `@font-face{font-family:'Bebas Neue';src:url('${staticFile('fonts/BebasNeue-Regular.woff2')}') format('woff2');}`,
+  `@font-face{font-family:'JetBrains Mono';src:url('${staticFile('fonts/JetBrainsMono-Bold.woff2')}') format('woff2');font-weight:700;}`,
+  `@font-face{font-family:'JetBrains Mono';src:url('${staticFile('fonts/JetBrainsMono-Regular.woff2')}') format('woff2');font-weight:400;}`,
+].join('\n')
 
 // # Motion: springs with a little overshoot, fast transitions
 export const MOTION = {
