@@ -38,7 +38,7 @@ export const STREET_SCENES = [
   // ---------------------------------------------------------------- the approved shop
   makeScene('shop-street', 'Corner shop at night', ['money', 'small-business', 'street', 'retail'],
     { stand: A(420, 1011), door: A(1470, 960, 0.45), prop1: A(1130, 150, 1), prop2: A(1000, 770, 0.8), sign: A(1190, 494, 1) },
-    ({ u, frame, lightsOn, variant }) => ({
+    ({ u, frame, lightsOn }) => ({
       back: <g><NightSky u={u} /><Skyline frame={frame} x0={-20} x1={640} ground={960} seed={3} /><Skyline frame={frame} x0={1770} x1={1990} ground={960} seed={8} /></g>,
       mid: (
         <g>
@@ -58,7 +58,7 @@ export const STREET_SCENES = [
             <text x={1210} y={703} textAnchor="middle" fill="#FF8AB0" style={{ font: '800 26px Inter' }}>OPEN</text></g>
           <rect x={1360} y={630} width={220} height={330} fill="#0B1220" stroke={L.cream} strokeWidth={10} />
           <rect x={1384} y={652} width={172} height={170} fill="#FFD58A" opacity={0.25 + 0.65 * lightsOn} />
-          {variant !== 'empty' && <g><ellipse cx={1470} cy={712} rx={26} ry={30} fill="#13243A" /><path d="M1428 822 Q1430 752 1470 744 Q1510 752 1512 822 Z" fill="#2E7D5B" /><path d="M1452 760 L1488 760 L1492 822 L1448 822 Z" fill={L.cream} /></g>}
+          {/* # people are never baked into scenes: the engine places cast Actors (e.g. owner at the 'door' anchor) */}
           <circle cx={1540} cy={840} r={7} fill={COLORS.champagne} />
           <Plant x={1320} y={930} frame={frame} s={0.85} /><Plant x={1620} y={930} frame={frame} s={0.85} />
         </g>

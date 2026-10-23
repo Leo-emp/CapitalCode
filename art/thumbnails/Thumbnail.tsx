@@ -10,8 +10,7 @@ import React from 'react'
 import { AbsoluteFill } from 'remotion'
 import { Emblem } from '../logo/Emblem'
 import { getProp } from '../props/registry'
-import { Character } from '../rig/Character'
-import { LOOKS } from '../rig/looks'
+import { Actor } from '../rig/Actor'
 import { type ExpressionId, type PoseId, POSES } from '../rig/pose'
 import { getScene } from '../scenes/registry'
 import { COLORS, fontFaces } from '../tokens'
@@ -64,7 +63,6 @@ export const Thumbnail: React.FC<ThumbProps> = ({ layout, words, accent = [], to
   const Scene = scene ? getScene(scene).Component : null
   const Prop = prop ? getProp(prop).Component : null
   const pose = character ? { ...POSES[character.pose], expression: character.expression } : null
-  const look = character?.look ? LOOKS[character.look] : undefined
   const glow = bright ? 'rgba(255,255,255,0.55)' : 'rgba(42,168,242,0.45)'
   return (
     <AbsoluteFill style={{ background: '#000', overflow: 'hidden' }}>
@@ -77,7 +75,7 @@ export const Thumbnail: React.FC<ThumbProps> = ({ layout, words, accent = [], to
           <>
             <Glow x={560} y={520} r={520} color={glow} />
             <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>
-              <g transform="translate(560 1520) scale(1.75)"><Character pose={pose} look={look} breathe={false} /></g>
+              <Actor who={character!.look ?? 'hero'} pose={pose!} x={560} y={1520} scale={2.25} breathe={false} />
             </svg>
             {Prop && <div style={{ position: 'absolute', left: 60, top: 660 }}><svg width={340} height={340}><Prop size={340} /></svg></div>}
             <Words text={words} accent={accent} tone={tone} box={{ x: 1010, y: 90, w: 840, h: 900 }} />
@@ -96,7 +94,7 @@ export const Thumbnail: React.FC<ThumbProps> = ({ layout, words, accent = [], to
           <>
             <div style={{ position: 'absolute', left: 960, top: 0, width: 960, height: 1080, background: bright ? 'rgba(5,7,12,0.18)' : 'rgba(240,69,75,0.10)' }} />
             {pose && <><Glow x={480} y={560} r={460} color={glow} />
-              <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}><g transform="translate(480 1480) scale(1.6)"><Character pose={pose} look={look} breathe={false} /></g></svg></>}
+              <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}><Actor who={character!.look ?? 'hero'} pose={pose} x={480} y={1480} scale={2.05} breathe={false} /></svg></>}
             {Prop && <><Glow x={1440} y={640} r={420} color={bright ? glow : 'rgba(240,69,75,0.4)'} />
               <div style={{ position: 'absolute', left: 1440 - 280, top: 380 }}><svg width={560} height={560}><Prop size={560} /></svg></div></>}
             <div style={{ position: 'absolute', left: 952, top: 0, width: 16, height: 1080, background: '#05070C' }} />

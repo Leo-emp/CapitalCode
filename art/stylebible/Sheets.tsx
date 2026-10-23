@@ -6,11 +6,8 @@
 
 import React from 'react'
 import { AbsoluteFill } from 'remotion'
-import { Character, type FaceSlot } from '../rig/Character'
-import type { Look } from '../rig/looks'
-import { HERO, LOOKS } from '../rig/looks'
 import { EXPRESSIONS } from '../rig/faces'
-import { CharacterHD, LOOKS_HD } from '../rig/hd/CharacterHD'
+import { Actor, CAST } from '../rig/Actor'
 import { PROPS } from '../props/registry'
 import { SCENES } from '../scenes/registry'
 import { BarChart, Equation, LineChart, NumberBuild, StackedBar } from '../infographics/charts'
@@ -25,8 +22,8 @@ const Label: React.FC<{ x: number; y: number; text: string }> = ({ x, y, text })
 )
 
 // # Grid of characters: cells of [label, pose, look]
-export const CharacterGrid: React.FC<{ cells: [string, Pose, Look][]; cols: number; scale: number; Face?: FaceSlot; cellH: number }> = ({
-  cells, cols, scale, Face, cellH,
+export const CharacterGrid: React.FC<{ cells: [string, Pose, string][]; cols: number; scale: number; cellH: number }> = ({
+  cells, cols, scale, cellH,
 }) => {
   const cw = 1920 / cols
   return (
@@ -37,7 +34,7 @@ export const CharacterGrid: React.FC<{ cells: [string, Pose, Look][]; cols: numb
           const cx = cw * (i % cols) + cw / 2, cy = cellH * Math.floor(i / cols) + cellH - 46
           return (
             <g key={i}>
-              <g transform={`translate(${cx} ${cy}) scale(${scale})`}><Character pose={pose} look={look} Face={Face} breathe={false} /></g>
+              <Actor who={look} pose={pose} x={cx} y={cy} scale={scale} breathe={false} />
               <Label x={cx} y={cy + 36} text={label} />
             </g>
           )
@@ -47,8 +44,8 @@ export const CharacterGrid: React.FC<{ cells: [string, Pose, Look][]; cols: numb
   )
 }
 
-export const PoseStrip: React.FC<{ Face?: FaceSlot }> = ({ Face }) => (
-  <CharacterGrid cells={POSE_IDS.map((id) => [id, POSES[id], HERO] as [string, Pose, Look])} cols={7} scale={0.55} Face={Face} cellH={540} />
+export const PoseStrip: React.FC = () => (
+  <CharacterGrid cells={POSE_IDS.map((id) => [id, POSES[id], 'hero'] as [string, Pose, string])} cols={8} scale={0.7} cellH={540} />
 )
 
 // # Head-and-shoulders close-ups, one per expression
@@ -60,7 +57,7 @@ export const ExpressionStrip: React.FC = () => (
         const cx = (1920 / 7) * i + 1920 / 14
         return (
           <g key={e}>
-            <g transform={`translate(${cx} 1450) scale(1.25)`}><Character pose={{ ...POSES.idle, expression: e }} breathe={false} /></g>
+            <Actor who="hero" pose={e === 'thinking' ? 'think' : 'pockets'} expression={e} x={cx} y={1700} scale={2.2} breathe={false} />
             <text x={cx} y={90} textAnchor="middle" fill={COLORS.dim} style={{ fontFamily: "Inter", fontSize: 30 }}>{e}</text>
           </g>
         )
@@ -71,8 +68,8 @@ export const ExpressionStrip: React.FC = () => (
 
 // # The cast side by side
 export const CastLineup: React.FC = () => (
-  <CharacterGrid cells={Object.entries(LOOKS).map(([id, look], i) => [id, POSES[(['idle', 'armsCrossed', 'present', 'hold', 'point'] as const)[i % 5]], look] as [string, Pose, Look])}
-    cols={5} scale={1.15} cellH={1080} />
+  <CharacterGrid cells={CAST.map((id, i) => [id, POSES[(['pockets', 'think', 'holdChest', 'present', 'armsCrossed'] as const)[i % 5]], id] as [string, Pose, string])}
+    cols={5} scale={1.45} cellH={1080} />
 )
 
 // # Every prop on one sheet (grid), each with its id
@@ -111,7 +108,7 @@ export const SceneSheet: React.FC<{ page?: number }> = ({ page = 0 }) => {
             <div style={{ position: 'absolute', width: 1920, height: 1080, transform: 'scale(0.25)', transformOrigin: '0 0' }}>
               <C frame={20} t={0.5} lightsOn={1} />
               <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>
-                <g transform={`translate(${a.x} ${a.y}) scale(${a.scale})`}><Character pose={POSES.idle} breathe={false} /></g>
+                <Actor who="hero" pose="idle" x={a.x} y={a.y} scale={a.scale} breathe={false} />
               </svg>
             </div>
             <div style={{ position: 'absolute', top: 274, left: 0, width: 480, textAlign: 'center', color: '#9AA6B4', font: '20px Inter' }}>{sc.id}</div>
@@ -183,7 +180,7 @@ export const CastHD: React.FC = () => {
       <svg width={1920} height={1080} viewBox="0 0 1920 1080">
         {cast.map(([id, pose, ex], i) => (
           <g key={id}>
-            <g transform={`translate(${200 + i * 380} 1010) scale(0.98)`}><CharacterHD pose={{ ...POSES[pose], expression: ex as never }} look={LOOKS_HD[id]} breathe={false} /></g>
+            <Actor who={id} pose={pose} expression={ex as never} x={200 + i * 380} y={1010} scale={1.45} breathe={false} />
             <text x={200 + i * 380} y={1062} textAnchor="middle" fill="#9AA6B4" style={{ font: '28px Inter' }}>{id}</text>
           </g>
         ))}
@@ -200,7 +197,7 @@ export const ExpressionsHD: React.FC = () => (
         return (
           <g key={e}>
             <text x={cx} y={250} textAnchor="middle" fill="#9AA6B4" style={{ font: '30px Inter' }}>{e}</text>
-            <g transform={`translate(${cx} 1560) scale(1.5)`}><CharacterHD pose={{ ...POSES[e === 'thinking' ? 'think' : 'pockets'], expression: e }} breathe={false} /></g>
+            <Actor who="hero" pose={e === 'thinking' ? 'think' : 'pockets'} expression={e} x={cx} y={1700} scale={2.2} breathe={false} />
           </g>
         )
       })}

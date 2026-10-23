@@ -11,7 +11,7 @@ import { Equation } from '../infographics/charts'
 import { KeywordSlam } from '../infographics/cards'
 import { clamp, SlideFrame } from '../infographics/SlideFrame'
 import { getProp } from '../props/registry'
-import { Character } from '../rig/Character'
+import { Actor } from '../rig/Actor'
 import { type PoseId, poseAt } from '../rig/pose'
 import { getScene } from '../scenes/registry'
 import { cueFrame } from '../timing'
@@ -43,9 +43,10 @@ const Street: React.FC<{ f: number }> = ({ f }) => {
   return (
     <AbsoluteFill style={{ opacity: out }}>
       <AbsoluteFill style={{ transform: `scale(${cam})`, filter: `blur(${dim * 10}px)` }}>
-        <Shop.Component frame={f} t={f / C.picture} lightsOn={lights} />
+        <Shop.Component frame={f} t={f / C.picture} lightsOn={lights}
+          actors={{ mid: <Actor who="owner" pose="idle" x={a.door.x} y={a.door.y} scale={a.door.scale} frame={f} /> }} />
         <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>
-          <g transform={`translate(${a.stand.x - (1 - enter) * 80} ${a.stand.y})`} opacity={enter}><Character pose={poseAt(f, FPS, track)} frame={f} /></g>
+          <g opacity={enter}><Actor who="hero" pose={poseAt(f, FPS, track)} x={a.stand.x - (1 - enter) * 80} y={a.stand.y} scale={a.stand.scale} frame={f} /></g>
           {[0, 1, 2].map((i) => <Coin key={i} size={90} x={a.prop1.x - 160 + i * 110} y={a.prop1.y - 45 - i * 8} frame={f} enter={C.earns + i * 3} />)}
         </svg>
       </AbsoluteFill>
@@ -75,8 +76,9 @@ const Burn: React.FC<{ f: number }> = ({ f }) => {
   return (
     <AbsoluteFill style={{ opacity: enter }}>
       <AbsoluteFill style={{ transformOrigin: '1470px 760px', transform: `scale(${zoom}) translate(${shake * 14 * Math.sin(f * 2.7)}px, ${shake * 10 * Math.cos(f * 3.3)}px)` }}>
-        {gone < 1 && <AbsoluteFill style={{ opacity: 1 - gone }}><Shop.Component frame={f} t={0.4} lightsOn={1} /></AbsoluteFill>}
-        {gone > 0 && <AbsoluteFill style={{ opacity: gone }}><Shop.Component frame={f} t={0.4} lightsOn={1} variant="empty" /></AbsoluteFill>}
+        <Shop.Component frame={f} t={0.4} lightsOn={1} actors={{ mid: gone < 1
+          ? <g opacity={1 - gone} transform={`translate(0 ${-gone * 20})`}><Actor who="owner" pose="idle" x={Shop.anchors.door.x} y={Shop.anchors.door.y} scale={Shop.anchors.door.scale} frame={f} /></g>
+          : null }} />
         <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>
           <g opacity={1 - burn}><Contract size={300} x={1020} y={250} frame={f} enter={C.deal} /></g>
           {[0, 1, 2, 3, 4].map((i) => <Fire key={i} size={420} x={600 + i * 230} y={600} frame={f + i * 5} enter={C.flames - 2 + i} />)}
