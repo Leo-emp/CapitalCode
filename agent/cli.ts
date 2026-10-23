@@ -33,6 +33,7 @@ export const register = (name: string, help: string, run: Handler) => { COMMANDS
 // # Command modules register themselves on import
 const loadCommands = async () => {
   await import('./commands/script')
+  await import('./commands/voice')
 }
 
 const main = async () => {

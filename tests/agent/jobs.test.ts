@@ -22,7 +22,7 @@ describe('jobs', () => {
     markStep(dir, 'research')
     expect(isDone(dir, 'research')).toBe(true)
     expect(nextStep(dir)).toBe('facts')
-    expect(loadJob(dir).steps.topic.area).toBe('investing')
+    expect(loadJob(dir).steps.topic?.area).toBe('investing')
     unmarkFrom(dir, 'research')
     expect(isDone(dir, 'research')).toBe(false)
     expect(isDone(dir, 'topic')).toBe(true)
