@@ -204,3 +204,29 @@ export const ExpressionsHD: React.FC = () => (
     </svg>
   </AbsoluteFill>
 )
+
+export const SceneSheet4: React.FC = () => <SceneSheet page={3} />
+export const SceneSheet5: React.FC = () => <SceneSheet page={4} />
+export const SceneSheet6: React.FC = () => <SceneSheet page={5} />
+
+// # One scene in its variants: times/weathers, colour moods, camera framings
+export const VariantSheet: React.FC = () => {
+  const sc = SCENES.find((x) => x.id === 'wall-street')!
+  const C = sc.Component
+  const cells: [string, Record<string, string>][] = [
+    ['night', { time: 'night' }], ['dusk', { time: 'dusk' }], ['rain', { time: 'rain' }], ['fog', { time: 'fog' }],
+    ['tone blue', { tone: 'blue' }], ['tone gold', { tone: 'gold' }], ['tone red', { tone: 'red' }], ['tone green', { tone: 'green' }],
+    ['wide', { framing: 'wide' }], ['medium', { framing: 'medium' }], ['close', { framing: 'close' }], ['dusk + gold + close', { time: 'dusk', tone: 'gold', framing: 'close' }],
+  ]
+  return (
+    <AbsoluteFill style={{ background: '#000' }}>
+      <style>{fontFaces()}</style>
+      {cells.map(([label, v], i) => (
+        <div key={label} style={{ position: 'absolute', left: (i % 4) * 480, top: Math.floor(i / 4) * 360, width: 480, height: 360, overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', width: 1920, height: 1080, transform: 'scale(0.25)', transformOrigin: '0 0' }}><C frame={30} {...(v as object)} /></div>
+          <div style={{ position: 'absolute', top: 276, width: 480, textAlign: 'center', color: '#9AA6B4', font: '20px Inter' }}>{label}</div>
+        </div>
+      ))}
+    </AbsoluteFill>
+  )
+}

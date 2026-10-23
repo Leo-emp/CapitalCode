@@ -18,9 +18,49 @@ export type Anchor = { x: number; y: number; scale: number; layer: 'back' | 'mid
 // # (back actors stand behind the mid scenery, e.g. behind a counter).
 // # Anchors are in 1920x1080 scene pixels: stand/sit = the point between the feet,
 // # prop*/screen/sign/door/counter = the centre of where the item goes.
+// # Variety (owner 2026-10-24): the same place in 4 times/weathers × 4 colour
+// # moods × 3 camera framings, so a returning scene never repeats the same shot.
+export type SceneTime = 'night' | 'dusk' | 'rain' | 'fog'
+export type SceneTone = 'none' | 'blue' | 'gold' | 'red' | 'green'
+export type SceneFraming = 'wide' | 'medium' | 'close'
 export type SceneProps = {
   t?: number; lightsOn?: number; frame?: number; variant?: string
   actors?: { back?: React.ReactNode; mid?: React.ReactNode; front?: React.ReactNode }
+  time?: SceneTime; tone?: SceneTone; framing?: SceneFraming
+}
+
+const TONES: Record<Exclude<SceneTone, 'none'>, string> = { blue: '#2A8FE0', gold: '#E9B949', red: '#F0454B', green: '#3DDC97' }
+const ZOOM: Record<SceneFraming, number> = { wide: 1, medium: 1.18, close: 1.45 }
+
+// # Camera: zoom toward the focal point, never showing outside the 1920×1080 canvas
+export const cameraFor = (framing: SceneFraming, focus: { x: number; y: number }) => {
+  const k = ZOOM[framing]
+  const clampT = (v: number, size: number) => Math.min(0, Math.max(size * (1 - k), v))
+  return { k, tx: clampT(960 - focus.x * k, 1920), ty: clampT(540 - focus.y * k, 1080) }
+}
+
+// # Weather / time-of-day overlays (no SVG filters — just shapes and gradients)
+const Weather: React.FC<{ time: SceneTime; frame: number; u: (n: string) => string }> = ({ time, frame, u }) => {
+  if (time === 'dusk') return (
+    <g data-weather="dusk">
+      <defs><linearGradient id={u('dusk')} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#FF8A4C" stopOpacity={0.35} /><stop offset="55%" stopColor="#B04A7A" stopOpacity={0.12} /><stop offset="100%" stopColor="#000" stopOpacity={0} /></linearGradient></defs>
+      <rect width={1920} height={1080} fill={`url(#${u('dusk')})`} style={{ mixBlendMode: 'screen' }} />
+    </g>)
+  if (time === 'rain') return (
+    <g data-weather="rain">
+      <rect width={1920} height={1080} fill="#02060E" opacity={0.18} />
+      {Array.from({ length: 90 }, (_, i) => {
+        const x = (rnd(i) * 2100 + frame * 6) % 2100 - 90, y = (rnd(i + 50) * 1200 + frame * 38) % 1200 - 100
+        return <line key={i} x1={x} y1={y} x2={x - 10} y2={y + 46} stroke="#9FC4E8" strokeWidth={1.6} opacity={0.35} />
+      })}
+    </g>)
+  if (time === 'fog') return (
+    <g data-weather="fog">
+      <defs><linearGradient id={u('fog')} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#B8C8DC" stopOpacity={0} /><stop offset="60%" stopColor="#B8C8DC" stopOpacity={0.14} /><stop offset="100%" stopColor="#B8C8DC" stopOpacity={0.26} /></linearGradient></defs>
+      <rect width={1920} height={1080} fill={`url(#${u('fog')})`} />
+      {[0, 1, 2].map((k) => <ellipse key={k} cx={((k * 700 + frame * (0.6 + k * 0.2)) % 2600) - 340} cy={760 + k * 90} rx={620} ry={70} fill="#C8D6E6" opacity={0.08} />)}
+    </g>)
+  return null
 }
 export type SceneEntry = ArtEntry<SceneProps> & { anchors: Record<string, Anchor> }
 export type Layers = { back?: React.ReactNode; mid?: React.ReactNode; front?: React.ReactNode }
@@ -33,19 +73,25 @@ export const rnd = (seed: number) => { const x = Math.sin(seed * 127.1 + 311.7) 
 // # vignette on top. No SVG filters (they tore text during camera moves and cost
 // # most of each frame); grain is one static texture overlay over the whole video.
 export const makeScene = (id: string, title: string, tags: string[], anchors: Record<string, Anchor>, draw: SceneDraw): SceneEntry => {
-  const Component: React.FC<SceneProps> = ({ t = 0, lightsOn = 1, frame = 0, variant, actors = {} }) => {
+  const Component: React.FC<SceneProps> = ({ t = 0, lightsOn = 1, frame = 0, variant, actors = {}, time = 'night', tone = 'none', framing = 'wide' }) => {
     const base = useUid(id)
     const u = (n: string) => `${base}-${n}`
     const layers = draw({ u, frame, t, lightsOn, variant })
+    const focus = anchors.focus ?? anchors.prop1 ?? { x: 960, y: 540 }
+    const cam = cameraFor(framing, focus)
     return (
       <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{ position: 'absolute', inset: 0 }}>
         <rect width={1920} height={1080} fill={COLORS.bg} />
+        <g data-camera={cam.k} transform={`translate(${cam.tx} ${cam.ty}) scale(${cam.k})`}>
         <g transform={`translate(${-12 * t} 0)`}>{layers.back}</g>
         {actors.back && <g transform={`translate(${-36 * t} 0)`}>{actors.back}</g>}
         <g transform={`translate(${-36 * t} 0)`}>{layers.mid}</g>
         {actors.mid && <g transform={`translate(${-36 * t} 0)`}>{actors.mid}</g>}
         <g transform={`translate(${-70 * t} 0)`}>{layers.front}</g>
         {actors.front && <g transform={`translate(${-70 * t} 0)`}>{actors.front}</g>}
+        </g>
+        <Weather time={time} frame={frame} u={u} />
+        {tone !== 'none' && <rect data-tone={tone} width={1920} height={1080} fill={TONES[tone]} opacity={0.22} style={{ mixBlendMode: 'soft-light' }} />}
         <defs><radialGradient id={u('vig')} cx="0.5" cy="0.5" r="0.75"><stop offset="55%" stopColor="#000" stopOpacity={0} /><stop offset="100%" stopColor="#000" stopOpacity={0.8} /></radialGradient></defs>
         <rect width={1920} height={1080} fill={`url(#${u('vig')})`} pointerEvents="none" />
       </svg>

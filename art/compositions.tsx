@@ -2,7 +2,7 @@
 import React from 'react'
 import { Composition } from 'remotion'
 import { LogoReveal, LogoStill } from './logo/LogoReveal'
-import { CastHD, CastLineup, ExpressionsHD, ExpressionStrip, InfoSheet, ThumbSheet, PoseStrip, PropSheet, PropSheet2, SceneSheet, SceneSheet2, SceneSheet3 } from './stylebible/Sheets'
+import { CastHD, CastLineup, ExpressionsHD, ExpressionStrip, InfoSheet, ThumbSheet, PoseStrip, PropSheet, PropSheet2, SceneSheet, SceneSheet2, SceneSheet3, SceneSheet4, SceneSheet5, SceneSheet6, VariantSheet } from './stylebible/Sheets'
 import { Thumbnail } from './thumbnails/Thumbnail'
 import { DEMO_FRAMES, LibraryDemo } from './stylebible/Demo'
 import { FPS, H, W } from './tokens'
@@ -25,6 +25,10 @@ export const ArtCompositions: React.FC = () => (
     <Composition id="LibraryDemo" component={LibraryDemo} durationInFrames={DEMO_FRAMES} fps={FPS} width={W} height={H} />
     <Composition id="CastHD" component={CastHD} durationInFrames={1} fps={FPS} width={W} height={H} />
     <Composition id="ExpressionsHD" component={ExpressionsHD} durationInFrames={1} fps={FPS} width={W} height={H} />
+    <Composition id="SceneSheet4" component={SceneSheet4} durationInFrames={1} fps={FPS} width={W} height={H} />
+    <Composition id="SceneSheet5" component={SceneSheet5} durationInFrames={1} fps={FPS} width={W} height={H} />
+    <Composition id="SceneSheet6" component={SceneSheet6} durationInFrames={1} fps={FPS} width={W} height={H} />
+    <Composition id="VariantSheet" component={VariantSheet} durationInFrames={1} fps={FPS} width={W} height={H} />
     <Composition id="PoseStrip" component={PoseStrip} durationInFrames={1} fps={FPS} width={W} height={H} />
   </>
 )

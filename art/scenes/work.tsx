@@ -47,7 +47,7 @@ export const WORK_SCENES = [
     })),
 
   // ---------------------------------------------------------------- startup garage
-  makeScene('startup-garage', 'Startup garage', ['work', 'startup', 'entrepreneurship', 'tech'],
+  makeScene('startup-garage', 'Startup garage', ['work', 'startup', 'entrepreneurship', 'tech', 'business'],
     { stand: A(430, 1010), sit: A(1150, 1000, 0.9), prop1: A(1600, 300), prop2: A(1150, 520, 0.7) },
     ({ u, frame }) => ({
       back: <g><RoomShell floor={960} panels={false} />{Array.from({ length: 10 }, (_, i) => <line key={i} x1={80} x2={900} y1={120 + i * 40} y2={120 + i * 40} stroke={L.dim} strokeWidth={2} />)}
@@ -59,7 +59,7 @@ export const WORK_SCENES = [
     })),
 
   // ---------------------------------------------------------------- factory floor
-  makeScene('factory-floor', 'Factory floor', ['work', 'industry', 'manufacturing', 'jobs'],
+  makeScene('factory-floor', 'Factory floor', ['work', 'industry', 'manufacturing', 'jobs', 'business', 'economy'],
     { stand: A(360, 1010), prop1: A(1200, 260), prop2: A(1600, 700, 0.8) },
     ({ u, frame }) => ({
       back: <g><RoomShell floor={940} panels={false} />{Array.from({ length: 7 }, (_, i) => <path key={i} d={`M${i * 300} 140 L${i * 300 + 150} 60 L${i * 300 + 300} 140`} stroke={L.line} strokeWidth={2} fill="none" />)}</g>,
@@ -71,7 +71,7 @@ export const WORK_SCENES = [
     })),
 
   // ---------------------------------------------------------------- warehouse
-  makeScene('warehouse', 'Warehouse', ['work', 'logistics', 'inventory', 'trade'],
+  makeScene('warehouse', 'Warehouse', ['work', 'logistics', 'inventory', 'trade', 'business'],
     { stand: A(400, 1010), prop1: A(1300, 260), prop2: A(1250, 700, 0.9) },
     ({ u }) => ({
       back: <g><RoomShell floor={940} panels={false} />{Array.from({ length: 4 }, (_, r) => <line key={r} x1={700} x2={1880} y1={300 + r * 160} y2={300 + r * 160} stroke={L.line} strokeWidth={3} />)}
@@ -82,7 +82,7 @@ export const WORK_SCENES = [
     })),
 
   // ---------------------------------------------------------------- construction site
-  makeScene('construction-site', 'Construction site', ['work', 'property', 'construction', 'housing'],
+  makeScene('construction-site', 'Construction site', ['work', 'property', 'construction', 'housing', 'business', 'economy'],
     { stand: A(360, 1011), prop1: A(1200, 220), prop2: A(1550, 760, 0.8) },
     ({ u, frame }) => ({
       back: <g><NightSky u={u} /><Skyline frame={frame} ground={960} seed={31} tall={0.7} /></g>,
@@ -94,7 +94,7 @@ export const WORK_SCENES = [
     })),
 
   // ---------------------------------------------------------------- port / containers
-  makeScene('port', 'Container port', ['work', 'trade', 'logistics', 'world'],
+  makeScene('port', 'Container port', ['work', 'trade', 'logistics', 'world', 'business', 'economy'],
     { stand: A(300, 1011), prop1: A(1100, 220), prop2: A(1500, 300) },
     ({ u, frame }) => ({
       back: <g><NightSky u={u} /><rect x={0} y={760} width={1920} height={320} fill="#06121F" />
@@ -119,7 +119,7 @@ export const WORK_SCENES = [
     }),
 
   // ---------------------------------------------------------------- courtroom
-  makeScene('courtroom', 'Courtroom', ['work', 'legal', 'court', 'regulation'],
+  makeScene('courtroom', 'Courtroom', ['work', 'legal', 'court', 'regulation', 'business'],
     { stand: A(400, 1010), prop1: A(1300, 260), prop2: A(1300, 560, 0.7) },
     ({ u }) => ({
       back: <g><RoomShell floor={960} panels={false} />{[400, 700, 1000, 1300, 1600].map((x) => <rect key={x} x={x - 20} y={80} width={40} height={880} fill="none" stroke={L.line} strokeWidth={2} />)}

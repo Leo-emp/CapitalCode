@@ -36,7 +36,7 @@ const ShopWindow: React.FC<{ x: number; y: number; w: number; h: number; on: num
 
 export const STREET_SCENES = [
   // ---------------------------------------------------------------- the approved shop
-  makeScene('shop-street', 'Corner shop at night', ['money', 'small-business', 'street', 'retail'],
+  makeScene('shop-street', 'Corner shop at night', ['money', 'small-business', 'street', 'retail', 'business', 'personal-finance'],
     { stand: A(420, 1011), door: A(1470, 960, 0.45), prop1: A(1130, 150, 1), prop2: A(1000, 770, 0.8), sign: A(1190, 494, 1) },
     ({ u, frame, lightsOn }) => ({
       back: <g><NightSky u={u} /><Skyline frame={frame} x0={-20} x1={640} ground={960} seed={3} /><Skyline frame={frame} x0={1770} x1={1990} ground={960} seed={8} /></g>,
@@ -67,7 +67,7 @@ export const STREET_SCENES = [
     })),
 
   // ---------------------------------------------------------------- bank interior
-  makeScene('bank-interior', 'Bank hall', ['money', 'bank', 'finance', 'institution'],
+  makeScene('bank-interior', 'Bank hall', ['money', 'bank', 'finance', 'institution', 'personal-finance', 'investing'],
     { stand: A(560, 1010), counter: A(1300, 760, 0.8), prop1: A(1300, 300), prop2: A(960, 620, 0.8) },
     ({ u, frame }) => ({
       back: <g><RoomShell floor={900} panels={false} />{[260, 620, 980, 1340, 1700].map((x) => <g key={x}><rect x={x - 34} y={140} width={68} height={760} fill="none" stroke={L.line} strokeWidth={2} /><rect x={x - 50} y={124} width={100} height={20} fill="none" stroke={L.line} strokeWidth={2} /></g>)}
@@ -81,7 +81,7 @@ export const STREET_SCENES = [
     })),
 
   // ---------------------------------------------------------------- vault
-  makeScene('vault-room', 'Bank vault', ['money', 'bank', 'wealth', 'security'],
+  makeScene('vault-room', 'Bank vault', ['money', 'bank', 'wealth', 'security', 'investing'],
     { stand: A(500, 1010), prop1: A(1300, 520, 1.6), prop2: A(1600, 820, 0.9) },
     ({ u, frame }) => ({
       back: <g><RoomShell floor={900} /><LightPool cx={1300} cy={520} rx={500} ry={360} u={u} k="v" color={COLORS.champagne} o={0.22} /></g>,
@@ -93,7 +93,7 @@ export const STREET_SCENES = [
     })),
 
   // ---------------------------------------------------------------- ATM street
-  makeScene('atm-street', 'ATM on a night street', ['money', 'bank', 'cash', 'street'],
+  makeScene('atm-street', 'ATM on a night street', ['money', 'bank', 'cash', 'street', 'personal-finance'],
     { stand: A(760, 1011), prop1: A(1260, 330), prop2: A(1260, 640, 0.8) },
     ({ u, frame }) => ({
       back: <g><NightSky u={u} /><Skyline frame={frame} ground={960} seed={11} tall={1.2} /></g>,
@@ -106,7 +106,7 @@ export const STREET_SCENES = [
     })),
 
   // ---------------------------------------------------------------- mansion
-  makeScene('mansion', 'Mansion at night', ['money', 'wealth', 'property', 'luxury'],
+  makeScene('mansion', 'Mansion at night', ['money', 'wealth', 'property', 'luxury', 'investing', 'personal-finance'],
     { stand: A(300, 1011), prop1: A(1150, 200), prop2: A(1500, 860, 0.8) },
     ({ u, frame, lightsOn }) => ({
       back: <g><NightSky u={u} stars={70} /><path d="M0 760 Q480 680 960 740 T1920 720 L1920 1080 L0 1080 Z" fill="#06101C" /></g>,
@@ -121,7 +121,7 @@ export const STREET_SCENES = [
     })),
 
   // ---------------------------------------------------------------- supermarket
-  makeScene('supermarket', 'Supermarket aisle', ['money', 'consumer', 'inflation', 'retail'],
+  makeScene('supermarket', 'Supermarket aisle', ['money', 'consumer', 'inflation', 'retail', 'personal-finance', 'economy'],
     { stand: A(960, 1011), prop1: A(500, 300), prop2: A(1450, 300) },
     ({ u }) => ({
       back: <g><RoomShell floor={900} panels={false} />{Array.from({ length: 6 }, (_, i) => <rect key={i} x={120 + i * 300} y={60} width={200} height={14} fill="#DCEBF7" opacity={0.5} />)}</g>,
@@ -143,7 +143,7 @@ export const STREET_SCENES = [
     })),
 
   // ---------------------------------------------------------------- living room
-  makeScene('living-room', 'Living room at night', ['money', 'personal', 'home', 'family'],
+  makeScene('living-room', 'Living room at night', ['money', 'personal', 'home', 'family', 'personal-finance'],
     { stand: A(500, 1010), sit: A(1150, 900, 0.9), prop1: A(1550, 380), prop2: A(1150, 560, 0.8) },
     ({ u, frame }) => ({
       back: <g><RoomShell floor={900} /><BlindsWindow x={1380} y={160} w={360} h={420} city frame={frame} /><Shelf x={180} y={360} w={340} seed={4} /></g>,
@@ -154,7 +154,7 @@ export const STREET_SCENES = [
     })),
 
   // ---------------------------------------------------------------- kitchen table bills
-  makeScene('kitchen-bills', 'Kitchen table with bills', ['money', 'personal', 'debt', 'cost-of-living'],
+  makeScene('kitchen-bills', 'Kitchen table with bills', ['money', 'personal', 'debt', 'cost-of-living', 'personal-finance'],
     { stand: A(560, 1010), sit: A(980, 930, 0.9), prop1: A(1380, 640, 0.8), prop2: A(1100, 300) },
     ({ u, frame }) => ({
       back: <g><RoomShell floor={900} panels={false} />{[0, 1, 2].map((i) => <rect key={i} x={1300 + i * 140} y={180} width={120} height={160} fill="none" stroke={L.line} strokeWidth={2} />)}

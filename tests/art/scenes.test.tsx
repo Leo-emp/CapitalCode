@@ -47,3 +47,37 @@ test('two copies of a scene do not share ids', () => {
   const ids = [...html.matchAll(/ id="([^"]+)"/g)].map((m) => m[1])
   expect(new Set(ids).size).toBe(ids.length)
 })
+
+// ------------------------------------------------------------ expansion 2026-10-24: niche coverage + variety
+test('60+ scenes after the expansion', () => {
+  expect(SCENES.length).toBeGreaterThanOrEqual(60)
+})
+
+test('every niche area has its own scenes (topic split: investing, personal finance, AI & tech, business, crypto, economy)', () => {
+  for (const [tag, min] of [['investing', 8], ['personal-finance', 7], ['ai', 5], ['tech', 6], ['business', 8], ['crypto', 3], ['economy', 3]] as const)
+    expect(findScenes(tag).length, tag).toBeGreaterThanOrEqual(min)
+})
+
+test('every scene renders in every time/weather, colour mood and camera framing', () => {
+  for (const s of SCENES) {
+    const C = s.Component
+    for (const time of ['night', 'dusk', 'rain', 'fog'] as const)
+      for (const tone of ['blue', 'gold', 'red', 'green'] as const)
+        expect(() => renderToStaticMarkup(<C time={time} tone={tone} framing="medium" frame={12} />), `${s.id} ${time} ${tone}`).not.toThrow()
+    for (const framing of ['wide', 'medium', 'close'] as const)
+      expect(() => renderToStaticMarkup(<C framing={framing} />), `${s.id} ${framing}`).not.toThrow()
+  }
+}, 180_000)
+
+test('close framing zooms the camera toward the focal point; wide does not', () => {
+  const C = getScene('trading-desk').Component
+  const cam = (html: string) => /data-camera="([^"]+)"/.exec(html)?.[1]
+  expect(cam(renderToStaticMarkup(<C framing="wide" />))).toBe('1')
+  expect(Number(cam(renderToStaticMarkup(<C framing="close" />)))).toBeGreaterThan(1.3)
+})
+
+test('variants change the picture: rain adds streaks, a tone adds its colour wash', () => {
+  const C = getScene('wall-street').Component
+  expect(renderToStaticMarkup(<C time="rain" />)).toContain('data-weather="rain"')
+  expect(renderToStaticMarkup(<C tone="red" />)).toContain('data-tone="red"')
+})

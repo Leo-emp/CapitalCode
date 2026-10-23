@@ -58,7 +58,7 @@ export const WORLD_SCENES = [
         <LightPool cx={1300} cy={600} rx={600} ry={420} u={u} k="mn" color="#F7931A" o={0.12} /></g>,
     })),
 
-  makeScene('phone-frame', 'Phone screen close-up', ['tech', 'app', 'consumer', 'screen'],
+  makeScene('phone-frame', 'Phone screen close-up', ['tech', 'app', 'consumer', 'screen', 'personal-finance'],
     { stand: A(360, 1040, 1.1), screen: A(1180, 540, 1), prop1: A(1650, 260), prop2: A(1650, 820, 0.8) },
     ({ u }) => ({
       back: <g><rect width={1920} height={1080} fill="#03050A" /><LightPool cx={1180} cy={540} rx={700} ry={520} u={u} k="ph" color="#1E6FA8" o={0.2} /></g>,
@@ -66,7 +66,7 @@ export const WORLD_SCENES = [
         <rect x={988} y={110} width={384} height={860} rx={30} fill="#071526" /><rect x={1130} y={80} width={100} height={18} rx={9} fill="#03050A" /></g>,
     })),
 
-  makeScene('laptop-frame', 'Laptop screen close-up', ['tech', 'work', 'online', 'screen'],
+  makeScene('laptop-frame', 'Laptop screen close-up', ['tech', 'work', 'online', 'screen', 'business'],
     { stand: A(300, 1040, 1.1), screen: A(1160, 470, 1), prop1: A(1700, 200), prop2: A(1700, 900, 0.7) },
     ({ u }) => ({
       back: <g><rect width={1920} height={1080} fill="#03050A" /><LightPool cx={1160} cy={470} rx={800} ry={500} u={u} k="lp" color="#1E6FA8" o={0.2} /></g>,
@@ -74,7 +74,7 @@ export const WORLD_SCENES = [
         <rect x={672} y={142} width={976} height={596} rx={8} fill="#071526" /><path d="M560 790 L1760 790 L1700 860 L620 860 Z" fill="#2A3446" stroke="#3A4558" strokeWidth={4} /></g>,
     })),
 
-  makeScene('news-desk', 'News desk', ['world', 'news', 'media', 'breaking'],
+  makeScene('news-desk', 'News desk', ['world', 'news', 'media', 'breaking', 'economy', 'investing'],
     { stand: A(960, 1010), prop1: A(1500, 300), prop2: A(420, 300) },
     ({ u, frame }) => ({
       back: <g><RoomShell floor={960} panels={false} /><rect x={160} y={120} width={1600} height={500} fill="#071526" stroke={L.line} strokeWidth={2} />
@@ -86,7 +86,7 @@ export const WORLD_SCENES = [
       mid: <g><path d="M520 760 L1400 760 L1460 960 L460 960 Z" fill="#0E1A2E" stroke={L.line} strokeWidth={2} /><LightPool cx={960} cy={760} rx={600} ry={180} u={u} k="nd" color="#DCEBF7" o={0.15} /></g>,
     })),
 
-  makeScene('parliament', 'Parliament / government', ['world', 'government', 'policy', 'tax'],
+  makeScene('parliament', 'Parliament / government', ['world', 'government', 'policy', 'tax', 'economy'],
     { stand: A(330, 1011), prop1: A(1150, 160), prop2: A(1550, 700, 0.8) },
     ({ u }) => ({
       back: <g><NightSky u={u} stars={60} /></g>,
@@ -97,7 +97,7 @@ export const WORLD_SCENES = [
       front: <rect x={0} y={960} width={1920} height={120} fill="#050A10" />,
     })),
 
-  makeScene('airport', 'Airport window', ['world', 'travel', 'trade', 'global'],
+  makeScene('airport', 'Airport window', ['world', 'travel', 'trade', 'global', 'business', 'economy'],
     { stand: A(400, 1010), prop1: A(1300, 300), prop2: A(1600, 700, 0.8) },
     ({ u, frame }) => {
       const px = ((frame * 6) % 2600) - 400
@@ -134,7 +134,7 @@ export const WORLD_SCENES = [
         <LightPool cx={1250} cy={420} rx={500} ry={420} u={u} k="ai" color="#4FB5E8" o={0.2} /></g>,
     })),
 
-  makeScene('stage', 'Presentation stage', ['work', 'presentation', 'launch', 'thumbnail'],
+  makeScene('stage', 'Presentation stage', ['work', 'presentation', 'launch', 'thumbnail', 'business'],
     { stand: A(960, 1000, 1.05), prop1: A(1500, 320), prop2: A(420, 320) },
     ({ u }) => ({
       back: <g><rect width={1920} height={1080} fill="#03050A" /><rect x={260} y={100} width={1400} height={560} fill="#071526" stroke={L.line} strokeWidth={2} /></g>,
