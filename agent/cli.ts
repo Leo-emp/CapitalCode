@@ -30,7 +30,13 @@ export const COMMANDS: Record<string, { help: string; run: Handler }> = {
 // # Later tasks register more commands here (gate-script, voice, gate-plan, render, …)
 export const register = (name: string, help: string, run: Handler) => { COMMANDS[name] = { help, run } }
 
+// # Command modules register themselves on import
+const loadCommands = async () => {
+  await import('./commands/script')
+}
+
 const main = async () => {
+  await loadCommands()
   const [cmd, ...args] = process.argv.slice(2)
   if (!cmd || !COMMANDS[cmd]) {
     console.log('Commands:\n' + Object.values(COMMANDS).map((c) => `  ${c.help}`).join('\n'))
