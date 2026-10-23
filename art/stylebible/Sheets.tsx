@@ -10,6 +10,7 @@ import { Character, type FaceSlot } from '../rig/Character'
 import type { Look } from '../rig/looks'
 import { HERO, LOOKS } from '../rig/looks'
 import { EXPRESSIONS } from '../rig/faces'
+import { PROPS } from '../props/registry'
 import { type Pose, POSE_IDS, POSES } from '../rig/pose'
 import { COLORS, fontFaces } from '../tokens'
 
@@ -67,3 +68,26 @@ export const CastLineup: React.FC = () => (
   <CharacterGrid cells={Object.entries(LOOKS).map(([id, look], i) => [id, POSES[(['idle', 'armsCrossed', 'present', 'hold', 'point'] as const)[i % 5]], look] as [string, Pose, Look])}
     cols={5} scale={1.15} cellH={1080} />
 )
+
+// # Every prop on one sheet (grid), each with its id
+export const PropSheet: React.FC<{ page?: number }> = ({ page = 0 }) => {
+  const per = 40, cols = 10, list = PROPS.slice(page * per, page * per + per)
+  return (
+    <AbsoluteFill style={{ background: COLORS.bg }}>
+      <style>{fontFaces()}</style>
+      <svg width={1920} height={1080} viewBox="0 0 1920 1080">
+        {list.map((p, i) => {
+          const x = (i % cols) * 192, y = Math.floor(i / cols) * 270
+          const C = p.Component
+          return (
+            <g key={p.id}>
+              <C size={160} x={x + 16} y={y + 20} frame={12} />
+              <text x={x + 96} y={y + 220} textAnchor="middle" fill={COLORS.dim} style={{ fontFamily: 'Inter', fontSize: 20 }}>{p.id}</text>
+            </g>
+          )
+        })}
+      </svg>
+    </AbsoluteFill>
+  )
+}
+export const PropSheet2: React.FC = () => <PropSheet page={1} />
