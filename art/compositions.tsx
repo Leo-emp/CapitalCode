@@ -2,7 +2,7 @@
 import React from 'react'
 import { Composition } from 'remotion'
 import { LogoReveal, LogoStill } from './logo/LogoReveal'
-import { CastLineup, ExpressionStrip, PoseStrip, PropSheet, PropSheet2, SceneSheet, SceneSheet2, SceneSheet3 } from './stylebible/Sheets'
+import { CastLineup, ExpressionStrip, InfoSheet, PoseStrip, PropSheet, PropSheet2, SceneSheet, SceneSheet2, SceneSheet3 } from './stylebible/Sheets'
 import { FPS, H, W } from './tokens'
 
 export const ArtCompositions: React.FC = () => (
@@ -16,6 +16,7 @@ export const ArtCompositions: React.FC = () => (
     <Composition id="SceneSheet" component={SceneSheet} durationInFrames={1} fps={FPS} width={W} height={H} />
     <Composition id="SceneSheet2" component={SceneSheet2} durationInFrames={1} fps={FPS} width={W} height={H} />
     <Composition id="SceneSheet3" component={SceneSheet3} durationInFrames={1} fps={FPS} width={W} height={H} />
+    <Composition id="InfoSheet" component={InfoSheet} durationInFrames={1} fps={FPS} width={W} height={H} />
     <Composition id="PoseStrip" component={PoseStrip} durationInFrames={1} fps={FPS} width={W} height={H} />
   </>
 )
