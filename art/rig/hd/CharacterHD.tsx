@@ -33,6 +33,7 @@ export type LookHD = {
   hairColor: [string, string]        // # base, highlight
   glasses: boolean
   rim: string
+  brow?: string                     // # eyebrow colour (default light blue)
   apron?: boolean
   hardhat?: boolean
 }
@@ -41,13 +42,13 @@ export const LOOKS_HD: Record<string, LookHD> = {
   hero: { top: 'blazer', jacket: ['#5CC6FF', '#2B8FE0', '#1A62B0'], tee: '#EEF3FA', pants: ['#1C3466', '#132449'], shoes: 'sneaker',
     skin: ['#1E2F55', '#15213F'], hair: 'swoop', hairColor: ['#13306B', '#3E6FD0'], glasses: true, rim: '#7FD0FF' },
   buyer: { top: 'blazer', jacket: ['#B8C0CA', '#8C96A3', '#646E7B'], tee: '#F2F4F7', tie: '#E0464B', pants: ['#2A2F38', '#1D2128'], shoes: 'dress',
-    skin: ['#1F2B4A', '#161F37'], hair: 'side', hairColor: ['#1A2134', '#5A6680'], glasses: false, rim: '#D8E2EE' },
+    skin: ['#1F2B4A', '#161F37'], hair: 'side', hairColor: ['#1A2134', '#5A6680'], glasses: false, brow: '#E8B48A', rim: '#D8E2EE' },
   investor: { top: 'blazer', jacket: ['#3A4E9A', '#22306E', '#151F4E'], tee: '#F2F4F7', pants: ['#1B2450', '#121939'], shoes: 'dress',
-    skin: ['#1F2B4A', '#161F37'], hair: 'slick', hairColor: ['#1A1636', '#4B3E8A'], glasses: false, rim: '#7F8FEF' },
+    skin: ['#1F2B4A', '#161F37'], hair: 'slick', hairColor: ['#1A1636', '#4B3E8A'], glasses: false, brow: '#E8B48A', rim: '#7F8FEF' },
   owner: { top: 'shirt', jacket: ['#48B87A', '#2A8C57', '#1D6640'], tee: '#EEF3FA', pants: ['#232634', '#191B25'], shoes: 'dress',
-    skin: ['#1F2B4A', '#161F37'], hair: 'bun', hairColor: ['#101A2C', '#2E6E5A'], glasses: false, rim: '#9FE8C2', apron: true },
+    skin: ['#1F2B4A', '#161F37'], hair: 'bun', hairColor: ['#101A2C', '#2E6E5A'], glasses: false, brow: '#E8B48A', rim: '#9FE8C2', apron: true },
   worker: { top: 'hivis', jacket: ['#FFB04D', '#F38A1E', '#C76A0E'], tee: '#EEF3FA', pants: ['#26355C', '#1A2645'], shoes: 'boot',
-    skin: ['#1F2B4A', '#161F37'], hair: 'none', hairColor: ['#101A2C', '#2A3550'], glasses: false, rim: '#FFD39E', hardhat: true },
+    skin: ['#1F2B4A', '#161F37'], hair: 'none', hairColor: ['#101A2C', '#2A3550'], glasses: false, brow: '#E8B48A', rim: '#FFD39E', hardhat: true },
 }
 
 export const getLookHD = (id: string): LookHD => {
@@ -67,12 +68,12 @@ const capsule = (L: number, w1: number, w2: number) =>
 const BROW = '#8FC8F5', LINE = '#0B1326'
 type FaceSpec = { browL: [number, number]; browR: [number, number]; browArc: number; eye: 'open' | 'wide' | 'happy' | 'lidded' | 'squint'; look: number; mouth: string; mouthFill?: string }
 const FACES: Record<ExpressionId, FaceSpec> = {
-  neutral: { browL: [-122, -120], browR: [-120, -122], browArc: -4, eye: 'open', look: 3, mouth: 'M-8 -61 Q6 -50 19 -61' },
-  thinking: { browL: [-120, -120], browR: [-132, -126], browArc: -4, eye: 'open', look: 4, mouth: 'M-2 -58 Q8 -56 18 -61' },
+  neutral: { browL: [-122, -120], browR: [-120, -122], browArc: -4, eye: 'open', look: 3, mouth: 'M-4 -63 Q10 -59 24 -65 Q16 -50 2 -56 Q-2 -59 -4 -63 Z', mouthFill: '#F4F7FC' },
+  thinking: { browL: [-120, -120], browR: [-132, -126], browArc: -4, eye: 'open', look: 4, mouth: 'M2 -61 Q13 -58 23 -64 Q16 -52 5 -56 Z', mouthFill: '#F4F7FC' },
   shocked: { browL: [-130, -132], browR: [-132, -130], browArc: -6, eye: 'wide', look: 0, mouth: 'M-3 -60 A8 10 0 1 0 13 -60 A8 10 0 1 0 -3 -60', mouthFill: '#0A0F1E' },
   worried: { browL: [-114, -124], browR: [-124, -114], browArc: 2, eye: 'open', look: 0, mouth: 'M-6 -56 Q-1 -62 4 -58 Q9 -54 15 -60' },
-  smiling: { browL: [-120, -122], browR: [-122, -120], browArc: -5, eye: 'happy', look: 0, mouth: 'M-10 -63 Q5 -46 20 -63 Z', mouthFill: '#F4F7FC' },
-  smug: { browL: [-116, -116], browR: [-126, -122], browArc: -3, eye: 'lidded', look: 3, mouth: 'M-6 -59 Q8 -56 20 -66' },
+  smiling: { browL: [-122, -124], browR: [-124, -122], browArc: -5, eye: 'happy', look: 0, mouth: 'M-8 -64 Q9 -59 26 -66 Q18 -45 0 -52 Q-6 -57 -8 -64 Z', mouthFill: '#F4F7FC' },
+  smug: { browL: [-116, -116], browR: [-126, -122], browArc: -3, eye: 'lidded', look: 3, mouth: 'M2 -61 Q14 -59 24 -68 Q18 -54 4 -57 Z', mouthFill: '#F4F7FC' },
   angry: { browL: [-126, -114], browR: [-114, -126], browArc: 2, eye: 'squint', look: 0, mouth: 'M-6 -55 Q5 -63 16 -55' },
 }
 
@@ -96,16 +97,16 @@ const Eye: React.FC<{ cx: number; spec: FaceSpec }> = ({ cx, spec }) => {
   )
 }
 
-export const FaceHD: React.FC<{ expression: ExpressionId }> = ({ expression }) => {
+export const FaceHD: React.FC<{ expression: ExpressionId; brow?: string }> = ({ expression, brow: browColor = BROW }) => {
   const s = FACES[expression]
   const brow = (x1: number, x2: number, y: [number, number]) =>
-    <path d={`M${x1} ${y[0]} Q${(x1 + x2) / 2} ${(y[0] + y[1]) / 2 + s.browArc} ${x2} ${y[1]}`} stroke={BROW} strokeWidth={4.5} strokeLinecap="round" fill="none" />
+    <path d={`M${x1} ${y[0]} Q${(x1 + x2) / 2} ${(y[0] + y[1]) / 2 + s.browArc} ${x2} ${y[1]}`} stroke={browColor} strokeWidth={4.5} strokeLinecap="round" fill="none" />
   return (
     <g data-expression={expression}>
       <g transform="translate(0 -3)">{brow(-28, -4, s.browL)}{brow(14, 38, s.browR)}</g>
       <Eye cx={-15} spec={s} /><Eye cx={25} spec={s} />
       <path d="M6 -90 Q11 -80 5 -76" stroke="#0E1730" strokeWidth={3} fill="none" strokeLinecap="round" />
-      <path d={s.mouth} stroke={LINE} strokeWidth={3.5} fill={s.mouthFill ?? 'none'} strokeLinecap="round" strokeLinejoin="round" />
+      <path d={s.mouth} stroke={s.mouthFill === '#F4F7FC' ? 'none' : LINE} strokeWidth={3.5} fill={s.mouthFill ?? 'none'} strokeLinecap="round" strokeLinejoin="round" />
     </g>
   )
 }
@@ -137,7 +138,7 @@ const Head: React.FC<{ look: LookHD; expression: ExpressionId; tilt: number; u: 
       <path d="M-52 -96 C-58 -148 -24 -180 10 -178 C46 -178 66 -150 60 -100 C52 -124 34 -136 8 -136 C-18 -134 -40 -120 -52 -96 Z" fill={look.hairColor[0]} />
       <path d="M58 -104 C62 -80 58 -60 50 -50" stroke={look.hairColor[0]} strokeWidth={9} fill="none" strokeLinecap="round" />
       <path d="M-20 -164 C6 -176 34 -172 50 -150" stroke={look.hairColor[1]} strokeWidth={4} fill="none" strokeLinecap="round" opacity={0.75} /></g>}
-    <FaceHD expression={expression} />
+    <FaceHD expression={expression} brow={look.brow} />
     {look.glasses && <g fill="rgba(160,215,255,0.07)" stroke="#8FD0FF" strokeWidth={3}>
       <circle cx={-15} cy={-100} r={17} /><circle cx={25} cy={-100} r={17} /><path d="M2 -102 Q5 -106 8 -102" fill="none" />
       <path d="M-32 -102 L-44 -104 M42 -102 L52 -104" fill="none" /></g>}

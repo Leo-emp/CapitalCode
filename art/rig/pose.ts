@@ -30,7 +30,7 @@ const STAND = { rl: leg(-3, 1), ll: leg(3, -1) }
 
 export const POSES = {
   idle: { head: 0, lean: 0, bob: 0, expression: 'neutral', r: arm(-6, 4, 'rest'), l: arm(6, -4, 'rest'), ...STAND },
-  think: { head: -4, lean: 0, bob: 0, expression: 'thinking', r: arm(22.8, 147, 'chin', 0.87, 1.08), l: arm(0, -93, 'fist', 0.88, 1.08), ...STAND },
+  think: { head: -4, lean: 0, bob: 0, expression: 'thinking', r: arm(22.8, 147, 'chin', 0.87, 0.94), l: arm(0, -93, 'fist', 0.88, 1.08), ...STAND },
   point: { head: 4, lean: 2, bob: 0, expression: 'neutral', r: arm(-86, -4, 'point'), l: arm(6, -4, 'rest'), ...STAND },
   shrug: { head: -8, lean: 0, bob: -4, expression: 'worried', r: arm(-30, -118, 'open', 0.95, 0.9), l: arm(30, 118, 'open', 0.95, 0.9), ...STAND },
   present: { head: 6, lean: 1, bob: 0, expression: 'smiling', r: arm(-25, -134, 'open', 1, 0.79), l: arm(6, -4, 'rest'), ...STAND },
