@@ -124,6 +124,23 @@ that area). Formats: about **70% evergreen** (explainers, lists, step-by-step
 guides, comparisons, breakdowns/case studies) and **30% trending** (news
 reactions, market moves, new AI tools); news reactions kept to a minimum.
 
+**Formats (owner-approved table, 2026-10-23):**
+
+| Format | Example | Role |
+|---|---|---|
+| Explainers | "How compound interest really works" | Evergreen search traffic for years |
+| Lists | "7 AI tools that make you money in 2026" | High click-through, easy to automate |
+| Step-by-step guides | "How to start investing with $100" | Beginner magnet, affiliate links fit naturally |
+| Breakdowns / case studies | "How Nvidia became a $4T company" | Long watch time, documentary feel |
+| News reactions | "What the Fed rate cut means for you" | Quick spikes; keep to a minimum |
+| Comparisons | "ETF vs index fund vs savings account" | High buyer intent, strong for affiliates |
+
+**Brand lens:** one premium money-media brand, not a channel that jumps
+between unrelated niches. Whatever the topic or format, the video is told
+through the same lens — how the money actually works — in the same calm,
+data-backed voice and the same visual identity. (Affiliate links are a later
+owner decision.)
+
 ## 5b. Topic guardrails
 
 - No personal investment advice; no "buy/sell X"; no price predictions stated as
