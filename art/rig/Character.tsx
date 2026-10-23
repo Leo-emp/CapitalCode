@@ -7,6 +7,7 @@
 
 import React from 'react'
 import { useUid } from '../uid'
+import { Face as DefaultFace } from './faces'
 import { HERO, type Look } from './looks'
 import { type ArmPose, footDrop, type HandShape, type LegPose, type Pose, SKELETON } from './pose'
 
@@ -65,7 +66,7 @@ const Leg: React.FC<{ g: LegPose; pants: string }> = ({ g, pants }) => {
 // # `frame` is passed in (not useCurrentFrame) so the art renders anywhere,
 // # including tests and stills — library convention.
 export const Character: React.FC<{ pose: Pose; frame?: number; look?: Look; Face?: FaceSlot; breathe?: boolean }> = ({
-  pose: p, frame: f = 0, look = HERO, Face, breathe = true,
+  pose: p, frame: f = 0, look = HERO, Face = DefaultFace, breathe = true,
 }) => {
   const jacket = useUid('jacket'), head = useUid('head'), pants = useUid('pants')
   const b = breathe ? Math.sin(f / 18) * 0.8 : 0
@@ -103,7 +104,6 @@ export const Character: React.FC<{ pose: Pose; frame?: number; look?: Look; Face
             <path d="M-52 -96 Q-48 -156 4 -152 Q52 -150 52 -100 Q36 -128 0 -128 Q-30 -126 -52 -96 Z" fill={look.hairColor} />
           )}
           <ellipse cx={-50} cy={-84} rx={8} ry={14} fill="#0E1B2C" />
-          {Face && <Face expression={p.expression} look={look} />}
           {look.glasses && (
             <g>
               <circle cx={-16} cy={-84} r={15} fill="rgba(160,215,255,0.08)" stroke="#9FD8FF" strokeWidth={3} />
@@ -111,6 +111,7 @@ export const Character: React.FC<{ pose: Pose; frame?: number; look?: Look; Face
               <line x1={-1} x2={7} y1={-84} y2={-84} stroke="#9FD8FF" strokeWidth={3} />
             </g>
           )}
+          <Face expression={p.expression} look={look} />
         </g>
         {/* # Arms on top: left first, right (the gesturing arm) over it */}
         <g transform={`translate(0 ${b})`}>
