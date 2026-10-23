@@ -67,8 +67,8 @@ const capsule = (L: number, w1: number, w2: number) =>
 const BROW = '#8FC8F5', LINE = '#0B1326'
 type FaceSpec = { browL: [number, number]; browR: [number, number]; browArc: number; eye: 'open' | 'wide' | 'happy' | 'lidded' | 'squint'; look: number; mouth: string; mouthFill?: string }
 const FACES: Record<ExpressionId, FaceSpec> = {
-  neutral: { browL: [-118, -118], browR: [-118, -118], browArc: -3, eye: 'open', look: 1.5, mouth: 'M-8 -60 Q5 -53 18 -60' },
-  thinking: { browL: [-116, -116], browR: [-128, -122], browArc: -4, eye: 'open', look: 4, mouth: 'M-2 -58 Q8 -58 16 -61' },
+  neutral: { browL: [-122, -120], browR: [-120, -122], browArc: -4, eye: 'open', look: 3, mouth: 'M-8 -61 Q6 -50 19 -61' },
+  thinking: { browL: [-120, -120], browR: [-132, -126], browArc: -4, eye: 'open', look: 4, mouth: 'M-2 -58 Q8 -56 18 -61' },
   shocked: { browL: [-130, -132], browR: [-132, -130], browArc: -6, eye: 'wide', look: 0, mouth: 'M-3 -60 A8 10 0 1 0 13 -60 A8 10 0 1 0 -3 -60', mouthFill: '#0A0F1E' },
   worried: { browL: [-114, -124], browR: [-124, -114], browArc: 2, eye: 'open', look: 0, mouth: 'M-6 -56 Q-1 -62 4 -58 Q9 -54 15 -60' },
   smiling: { browL: [-120, -122], browR: [-122, -120], browArc: -5, eye: 'happy', look: 0, mouth: 'M-10 -63 Q5 -46 20 -63 Z', mouthFill: '#F4F7FC' },
@@ -79,15 +79,19 @@ const FACES: Record<ExpressionId, FaceSpec> = {
 const Eye: React.FC<{ cx: number; spec: FaceSpec }> = ({ cx, spec }) => {
   const cy = -100
   if (spec.eye === 'happy') return <path d={`M${cx - 9} ${cy + 2} Q${cx} ${cy - 9} ${cx + 9} ${cy + 2}`} stroke={LINE} strokeWidth={4} fill="none" strokeLinecap="round" />
-  const ry = spec.eye === 'wide' ? 12.5 : spec.eye === 'squint' ? 7 : 10.5
-  const lid = spec.eye === 'lidded' ? 6 : spec.eye === 'squint' ? 3 : 0
+  const rx = 11.5, ry = spec.eye === 'wide' ? 15 : spec.eye === 'squint' ? 8 : 13
+  const lid = spec.eye === 'lidded' ? 8 : spec.eye === 'squint' ? 4 : 0
+  const pr = spec.eye === 'wide' ? 6.5 : 8          // # big dark pupil like the reference
+  const px = cx + spec.look, py = cy + 1.5
   return (
     <g>
-      <ellipse cx={cx} cy={cy} rx={9.5} ry={ry} fill="#F3F6FC" />
-      <circle cx={cx + spec.look} cy={cy + 1} r={spec.eye === 'wide' ? 5 : 5.8} fill={LINE} />
-      <circle cx={cx + spec.look + 2} cy={cy - 2} r={1.9} fill="#FFFFFF" />
-      {lid > 0 && <path d={`M${cx - 10} ${cy - ry} L${cx + 10} ${cy - ry} L${cx + 10} ${cy - ry + lid + 4} Q${cx} ${cy - ry + lid + 7} ${cx - 10} ${cy - ry + lid + 4} Z`} fill="#1E2F55" />}
-      <ellipse cx={cx} cy={cy} rx={9.5} ry={ry} fill="none" stroke={LINE} strokeWidth={1.5} opacity={0.6} />
+      <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill="#F3F6FC" />
+      <circle cx={px} cy={py} r={pr} fill={LINE} />
+      <circle cx={px + 2.8} cy={py - 3.2} r={2.6} fill="#FFFFFF" />
+      <circle cx={px - 2.4} cy={py + 2.6} r={1.1} fill="#FFFFFF" opacity={0.7} />
+      {lid > 0 && <path d={`M${cx - rx - 1} ${cy - ry - 1} L${cx + rx + 1} ${cy - ry - 1} L${cx + rx + 1} ${cy - ry + lid + 4} Q${cx} ${cy - ry + lid + 8} ${cx - rx - 1} ${cy - ry + lid + 4} Z`} fill="#1E2F55" />}
+      {/* # dark upper lash line */}
+      <path d={`M${cx - rx - 1.5} ${cy - ry * 0.25 + (lid > 0 ? lid : 0)} Q${cx} ${cy - ry - 3 + (lid > 0 ? lid + 4 : 0)} ${cx + rx + 1.5} ${cy - ry * 0.35 + (lid > 0 ? lid : 0)}`} stroke={LINE} strokeWidth={3.2} fill="none" strokeLinecap="round" />
     </g>
   )
 }
@@ -98,7 +102,7 @@ export const FaceHD: React.FC<{ expression: ExpressionId }> = ({ expression }) =
     <path d={`M${x1} ${y[0]} Q${(x1 + x2) / 2} ${(y[0] + y[1]) / 2 + s.browArc} ${x2} ${y[1]}`} stroke={BROW} strokeWidth={4.5} strokeLinecap="round" fill="none" />
   return (
     <g data-expression={expression}>
-      {brow(-26, -4, s.browL)}{brow(14, 36, s.browR)}
+      <g transform="translate(0 -3)">{brow(-28, -4, s.browL)}{brow(14, 38, s.browR)}</g>
       <Eye cx={-15} spec={s} /><Eye cx={25} spec={s} />
       <path d="M6 -90 Q11 -80 5 -76" stroke="#0E1730" strokeWidth={3} fill="none" strokeLinecap="round" />
       <path d={s.mouth} stroke={LINE} strokeWidth={3.5} fill={s.mouthFill ?? 'none'} strokeLinecap="round" strokeLinejoin="round" />
@@ -262,7 +266,7 @@ export const CharacterHD: React.FC<{ pose: Pose; look?: LookHD; frame?: number; 
         {/* # Arms that hang behind the body when crossed are drawn first */}
         <g transform={`translate(0 ${b})`}><Torso look={look} /></g>
         <path d="M-16 -30 L18 -30 L20 14 L-16 14 Z" fill={look.skin[1]} />
-        <g transform="translate(0 16) scale(1.14) translate(0 -4)"><Head look={look} expression={p.expression} tilt={Math.sin(f / 40) * 1.5 + p.head} u={u} /></g>
+        <g transform="translate(0 26) scale(1.14) translate(0 -4)"><Head look={look} expression={p.expression} tilt={Math.sin(f / 40) * 1.5 + p.head} u={u} /></g>
         <g transform={`translate(0 ${b})`}>
           <g transform={`translate(${S.shoulderL.x} ${S.shoulderL.y})`}><Arm a={p.l} side={-1} look={look} /></g>
           <g transform={`translate(${S.shoulderR.x} ${S.shoulderR.y})`}><Arm a={p.r} side={1} look={look} /></g>

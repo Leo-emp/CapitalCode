@@ -176,7 +176,7 @@ export const ThumbSheet: React.FC = () => (
 
 // # HD cast in the owner's reference poses + HD expression strip
 export const CastHD: React.FC = () => {
-  const cast: [string, keyof typeof POSES, string][] = [['hero', 'pockets', 'smiling'], ['buyer', 'think', 'thinking'], ['investor', 'holdChest', 'smiling'], ['owner', 'present', 'smiling'], ['worker', 'armsCrossed', 'smiling']]
+  const cast: [string, keyof typeof POSES, string][] = [['hero', 'pockets', 'neutral'], ['buyer', 'think', 'thinking'], ['investor', 'holdChest', 'neutral'], ['owner', 'present', 'neutral'], ['worker', 'armsCrossed', 'neutral']]
   return (
     <AbsoluteFill style={{ background: '#05070C' }}>
       <style>{fontFaces()}</style>
