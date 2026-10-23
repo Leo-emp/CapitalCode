@@ -19,6 +19,7 @@
     "@google/genai": "^2.15.0",
     "@libsql/client": "^0.17.4",
     "@remotion/cli": "^4.0.506",
+    "@remotion/fonts": "4.0.506",
     "@remotion/renderer": "^4.0.506",
     "@tailwindcss/postcss": "^4.3.3",
     "drizzle-orm": "^0.45.2",

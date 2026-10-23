@@ -65,3 +65,10 @@ export const WORKER: Look = {
 }
 
 export const LOOKS: Record<string, Look> = { hero: HERO, buyer: BUYER, investor: INVESTOR, owner: OWNER, worker: WORKER }
+
+// # Engine-facing lookup: never silently fall back to the hero on a typo
+export const getLook = (id: string): Look => {
+  const l = LOOKS[id]
+  if (!l) throw new Error(`unknown look "${id}" (known: ${Object.keys(LOOKS).join(', ')})`)
+  return l
+}

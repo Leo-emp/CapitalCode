@@ -46,6 +46,13 @@ export const POSES = {
 export type PoseId = keyof typeof POSES
 export const POSE_IDS = Object.keys(POSES) as PoseId[]
 
+// # Engine-facing lookup: ids come from LLM-written plans, so fail loudly on typos
+export const getPose = (id: string): Pose => {
+  const p = (POSES as Record<string, Pose>)[id]
+  if (!p) throw new Error(`unknown pose "${id}" (known: ${POSE_IDS.join(', ')})`)
+  return p
+}
+
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 const mixArm = (a: ArmPose, b: ArmPose, t: number): ArmPose => ({
   sh: lerp(a.sh, b.sh, t), el: lerp(a.el, b.el, t), up: lerp(a.up, b.up, t), fo: lerp(a.fo, b.fo, t), hand: t < 0.5 ? a.hand : b.hand,

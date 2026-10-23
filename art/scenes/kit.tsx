@@ -10,12 +10,18 @@ import { Emblem } from '../logo/Emblem'
 import type { ArtEntry } from '../registry'
 import { COLORS } from '../tokens'
 import { useUid } from '../uid'
-import { GrainFilter } from '../Grain'
 
 export const L = { line: COLORS.line, dim: COLORS.lineDim, ink: '#0A1220', cream: '#F4E9D8', warm: COLORS.warm }
 
 export type Anchor = { x: number; y: number; scale: number; layer: 'back' | 'mid' | 'front' }
-export type SceneProps = { t?: number; lightsOn?: number; frame?: number; variant?: string }
+// # actors: characters/props the engine places, drawn BETWEEN the scenery layers
+// # (back actors stand behind the mid scenery, e.g. behind a counter).
+// # Anchors are in 1920x1080 scene pixels: stand/sit = the point between the feet,
+// # prop*/screen/sign/door/counter = the centre of where the item goes.
+export type SceneProps = {
+  t?: number; lightsOn?: number; frame?: number; variant?: string
+  actors?: { back?: React.ReactNode; mid?: React.ReactNode; front?: React.ReactNode }
+}
 export type SceneEntry = ArtEntry<SceneProps> & { anchors: Record<string, Anchor> }
 export type Layers = { back?: React.ReactNode; mid?: React.ReactNode; front?: React.ReactNode }
 export type SceneDraw = (a: { u: (n: string) => string; frame: number; t: number; lightsOn: number; variant?: string }) => Layers
@@ -23,22 +29,24 @@ export type SceneDraw = (a: { u: (n: string) => string; frame: number; t: number
 // # Seeded pseudo-random, so drawings are identical every frame
 export const rnd = (seed: number) => { const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x) }
 
-// # Wrap a drawing as a scene: 3 parallax layers, grain on mid, vignette
+// # Wrap a drawing as a scene: 3 parallax layers with actor slots between them,
+// # vignette on top. No SVG filters (they tore text during camera moves and cost
+// # most of each frame); grain is one static texture overlay over the whole video.
 export const makeScene = (id: string, title: string, tags: string[], anchors: Record<string, Anchor>, draw: SceneDraw): SceneEntry => {
-  const Component: React.FC<SceneProps> = ({ t = 0, lightsOn = 1, frame = 0, variant }) => {
+  const Component: React.FC<SceneProps> = ({ t = 0, lightsOn = 1, frame = 0, variant, actors = {} }) => {
     const base = useUid(id)
     const u = (n: string) => `${base}-${n}`
     const layers = draw({ u, frame, t, lightsOn, variant })
     return (
       <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{ position: 'absolute', inset: 0 }}>
-        <defs>
-          <GrainFilter id={u('grain')} strength={0.3} />
-          <radialGradient id={u('vig')} cx="0.5" cy="0.5" r="0.75"><stop offset="55%" stopColor="#000" stopOpacity={0} /><stop offset="100%" stopColor="#000" stopOpacity={0.8} /></radialGradient>
-        </defs>
         <rect width={1920} height={1080} fill={COLORS.bg} />
         <g transform={`translate(${-12 * t} 0)`}>{layers.back}</g>
-        <g transform={`translate(${-36 * t} 0)`} filter={`url(#${u('grain')})`}>{layers.mid}</g>
+        {actors.back && <g transform={`translate(${-36 * t} 0)`}>{actors.back}</g>}
+        <g transform={`translate(${-36 * t} 0)`}>{layers.mid}</g>
+        {actors.mid && <g transform={`translate(${-36 * t} 0)`}>{actors.mid}</g>}
         <g transform={`translate(${-70 * t} 0)`}>{layers.front}</g>
+        {actors.front && <g transform={`translate(${-70 * t} 0)`}>{actors.front}</g>}
+        <defs><radialGradient id={u('vig')} cx="0.5" cy="0.5" r="0.75"><stop offset="55%" stopColor="#000" stopOpacity={0} /><stop offset="100%" stopColor="#000" stopOpacity={0.8} /></radialGradient></defs>
         <rect width={1920} height={1080} fill={`url(#${u('vig')})`} pointerEvents="none" />
       </svg>
     )

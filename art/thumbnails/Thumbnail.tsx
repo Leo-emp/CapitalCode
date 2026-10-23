@@ -16,6 +16,7 @@ import { type ExpressionId, type PoseId, POSES } from '../rig/pose'
 import { getScene } from '../scenes/registry'
 import { COLORS, fontFaces } from '../tokens'
 import { fitText } from './fitText'
+import { GrainOverlay } from '../GrainOverlay'
 
 export type ThumbTone = 'champagne' | 'green' | 'red' | 'white'
 export type ThumbProps = {
@@ -103,6 +104,7 @@ export const Thumbnail: React.FC<ThumbProps> = ({ layout, words, accent = [], to
           </>
         )}
 
+        <GrainOverlay frame={0} opacity={0.07} />
         {/* # Brand badge: same corner every time */}
         <div style={{ position: 'absolute', left: 46, bottom: 40, width: 150, height: 150, borderRadius: 18, background: 'rgba(5,7,12,0.82)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 30px rgba(0,0,0,0.6)' }}>

@@ -37,5 +37,5 @@ export const fitText = (
     if (lines && lines.length * size * lh <= box.h) return { size, lines, overflow: false }
   }
   // # Even the minimum size does not fit: one word per line, flagged
-  return { size: font.min, lines: wrap(words, font.min, Infinity, measure) ?? words, overflow: true }
+  return { size: font.min, lines: words, overflow: true }
 }

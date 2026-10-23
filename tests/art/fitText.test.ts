@@ -23,6 +23,8 @@ test('text that cannot fit reports overflow at the minimum size', () => {
   const r = fitText('THIS IS FAR TOO MUCH TEXT FOR A TINY BOX', { w: 100, h: 50 }, { min: 30, max: 60, lineHeight: 1 }, mono)
   expect(r.overflow).toBe(true)
   expect(r.size).toBe(30)
+  // # fallback breaks one word per line instead of one 2,000px line
+  expect(r.lines).toEqual(['THIS', 'IS', 'FAR', 'TOO', 'MUCH', 'TEXT', 'FOR', 'A', 'TINY', 'BOX'])
 })
 
 test('wrapping respects the box height', () => {

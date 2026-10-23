@@ -17,6 +17,7 @@ import { getScene } from '../scenes/registry'
 import { cueFrame } from '../timing'
 import { fontFaces, FPS } from '../tokens'
 import { DEMO_VOICE, DEMO_WORDS } from './demoWords'
+import { GrainOverlay } from '../GrainOverlay'
 
 const c = (w: string, n = 1) => cueFrame(DEMO_WORDS, w, n)
 const C = {
@@ -74,8 +75,8 @@ const Burn: React.FC<{ f: number }> = ({ f }) => {
   return (
     <AbsoluteFill style={{ opacity: enter }}>
       <AbsoluteFill style={{ transformOrigin: '1470px 760px', transform: `scale(${zoom}) translate(${shake * 14 * Math.sin(f * 2.7)}px, ${shake * 10 * Math.cos(f * 3.3)}px)` }}>
-        <AbsoluteFill style={{ opacity: 1 - gone }}><Shop.Component frame={f} t={0.4} lightsOn={1} /></AbsoluteFill>
-        <AbsoluteFill style={{ opacity: gone }}><Shop.Component frame={f} t={0.4} lightsOn={1} variant="empty" /></AbsoluteFill>
+        {gone < 1 && <AbsoluteFill style={{ opacity: 1 - gone }}><Shop.Component frame={f} t={0.4} lightsOn={1} /></AbsoluteFill>}
+        {gone > 0 && <AbsoluteFill style={{ opacity: gone }}><Shop.Component frame={f} t={0.4} lightsOn={1} variant="empty" /></AbsoluteFill>}
         <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>
           <g opacity={1 - burn}><Contract size={300} x={1020} y={250} frame={f} enter={C.deal} /></g>
           {[0, 1, 2, 3, 4].map((i) => <Fire key={i} size={420} x={600 + i * 230} y={600} frame={f + i * 5} enter={C.flames - 2 + i} />)}
@@ -98,6 +99,7 @@ export const LibraryDemo: React.FC = () => {
       {f < C.picture && <Street f={f} />}
       {f >= C.picture && f < C.but && <Maths f={f} />}
       {f >= C.but - 6 && <Burn f={f} />}
+      <GrainOverlay frame={f} />
       {hits.map(([at, n, v], i) => <Sequence key={i} from={at}><Audio src={sfx(n)} volume={v} /></Sequence>)}
     </AbsoluteFill>
   )

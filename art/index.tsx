@@ -6,5 +6,9 @@
 import React from 'react'
 import { registerRoot } from 'remotion'
 import { ArtCompositions } from './compositions'
+import { loadBrandFonts } from './fonts'
+
+// # Fonts must be ready before any frame is captured
+loadBrandFonts()
 
 registerRoot(() => <ArtCompositions />)
