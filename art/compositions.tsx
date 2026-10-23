@@ -4,6 +4,7 @@ import { Composition } from 'remotion'
 import { LogoReveal, LogoStill } from './logo/LogoReveal'
 import { CastLineup, ExpressionStrip, InfoSheet, ThumbSheet, PoseStrip, PropSheet, PropSheet2, SceneSheet, SceneSheet2, SceneSheet3 } from './stylebible/Sheets'
 import { Thumbnail } from './thumbnails/Thumbnail'
+import { DEMO_FRAMES, LibraryDemo } from './stylebible/Demo'
 import { FPS, H, W } from './tokens'
 
 export const ArtCompositions: React.FC = () => (
@@ -21,6 +22,7 @@ export const ArtCompositions: React.FC = () => (
     <Composition id="ThumbSheet" component={ThumbSheet} durationInFrames={1} fps={FPS} width={W} height={H} />
     <Composition id="Thumb" component={Thumbnail} durationInFrames={1} fps={FPS} width={1280} height={720}
       defaultProps={{ layout: 'hero-left' as const, words: 'WHO GETS THE $1M?', accent: [3], tone: 'green' as const, character: { pose: 'think' as const, expression: 'shocked' as const }, prop: 'cash-stack' }} />
+    <Composition id="LibraryDemo" component={LibraryDemo} durationInFrames={DEMO_FRAMES} fps={FPS} width={W} height={H} />
     <Composition id="PoseStrip" component={PoseStrip} durationInFrames={1} fps={FPS} width={W} height={H} />
   </>
 )
