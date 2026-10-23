@@ -2,7 +2,8 @@
 import React from 'react'
 import { Composition } from 'remotion'
 import { LogoReveal, LogoStill } from './logo/LogoReveal'
-import { CastLineup, ExpressionStrip, InfoSheet, PoseStrip, PropSheet, PropSheet2, SceneSheet, SceneSheet2, SceneSheet3 } from './stylebible/Sheets'
+import { CastLineup, ExpressionStrip, InfoSheet, ThumbSheet, PoseStrip, PropSheet, PropSheet2, SceneSheet, SceneSheet2, SceneSheet3 } from './stylebible/Sheets'
+import { Thumbnail } from './thumbnails/Thumbnail'
 import { FPS, H, W } from './tokens'
 
 export const ArtCompositions: React.FC = () => (
@@ -17,6 +18,9 @@ export const ArtCompositions: React.FC = () => (
     <Composition id="SceneSheet2" component={SceneSheet2} durationInFrames={1} fps={FPS} width={W} height={H} />
     <Composition id="SceneSheet3" component={SceneSheet3} durationInFrames={1} fps={FPS} width={W} height={H} />
     <Composition id="InfoSheet" component={InfoSheet} durationInFrames={1} fps={FPS} width={W} height={H} />
+    <Composition id="ThumbSheet" component={ThumbSheet} durationInFrames={1} fps={FPS} width={W} height={H} />
+    <Composition id="Thumb" component={Thumbnail} durationInFrames={1} fps={FPS} width={1280} height={720}
+      defaultProps={{ layout: 'hero-left' as const, words: 'WHO GETS THE $1M?', accent: [3], tone: 'green' as const, character: { pose: 'think' as const, expression: 'shocked' as const }, prop: 'cash-stack' }} />
     <Composition id="PoseStrip" component={PoseStrip} durationInFrames={1} fps={FPS} width={W} height={H} />
   </>
 )

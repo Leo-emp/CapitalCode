@@ -15,6 +15,7 @@ import { SCENES } from '../scenes/registry'
 import { BarChart, Equation, LineChart, NumberBuild, StackedBar } from '../infographics/charts'
 import { ChapterCard, CompareCards, FlowDiagram, KeywordSlam, MapHighlight, QuoteCard, Timeline } from '../infographics/cards'
 import { SlideFrame } from '../infographics/SlideFrame'
+import { type ThumbProps, Thumbnail } from '../thumbnails/Thumbnail'
 import { type Pose, POSE_IDS, POSES } from '../rig/pose'
 import { COLORS, fontFaces } from '../tokens'
 
@@ -147,5 +148,27 @@ export const InfoSheet: React.FC = () => (
         <div style={{ position: 'absolute', top: 276, width: 480, textAlign: 'center', color: '#9AA6B4', font: '20px Inter' }}>{name}</div>
       </div>
     ))}
+  </AbsoluteFill>
+)
+
+// # 6 sample thumbnails for the test story (3 dark, 3 bright) + the same at phone size
+export const THUMB_SAMPLES: ThumbProps[] = [
+  { layout: 'hero-left', words: 'WHO GETS THE $1M?', accent: [3], tone: 'green', character: { pose: 'think', expression: 'shocked' }, prop: 'cash-stack', scene: 'shop-street' },
+  { layout: 'object-center', words: 'THE DEAL BURNS', accent: [2], tone: 'red', prop: 'fire' },
+  { layout: 'split', words: 'NOT FOR PROFIT', accent: [2], tone: 'champagne', character: { pose: 'shrug', expression: 'worried' }, prop: 'shop-mini' },
+  { layout: 'hero-left', words: "BUYERS DON'T PAY THIS", accent: [1], tone: 'red', character: { pose: 'point', expression: 'smug' }, prop: 'price-tag', bright: true },
+  { layout: 'object-center', words: '$350K × 3 = ?', accent: [2], tone: 'champagne', prop: 'calculator', bright: true },
+  { layout: 'split', words: 'SMALL SHOP. $1M EXIT', accent: [2, 3], tone: 'green', character: { pose: 'celebrate', expression: 'smiling' }, prop: 'money-bag', bright: true },
+]
+export const ThumbSheet: React.FC = () => (
+  <AbsoluteFill style={{ background: '#111' }}>
+    <style>{fontFaces()}</style>
+    {THUMB_SAMPLES.map((t, i) => (
+      <React.Fragment key={i}>
+        <div style={{ position: 'absolute', left: (i % 3) * 640, top: Math.floor(i / 3) * 360, width: 640, height: 360, overflow: 'hidden' }}><Thumbnail {...t} width={640} /></div>
+        <div style={{ position: 'absolute', left: 60 + i * 300, top: 860, width: 168, height: 94, overflow: 'hidden' }}><Thumbnail {...t} width={168} /></div>
+      </React.Fragment>
+    ))}
+    <div style={{ position: 'absolute', left: 60, top: 790, color: '#9AA6B4', font: '24px Inter' }}>Phone size (168 × 94) — words must still read:</div>
   </AbsoluteFill>
 )
