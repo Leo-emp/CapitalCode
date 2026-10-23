@@ -119,25 +119,45 @@ const Head: React.FC<{ look: LookHD; expression: ExpressionId; tilt: number; u: 
     <defs>
       <linearGradient id={u('face')} x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor={look.skin[0]} /><stop offset="100%" stopColor={look.skin[1]} /></linearGradient>
     </defs>
-    {look.hair === 'bun' && <circle cx={-22} cy={-150} r={24} fill={look.hairColor[0]} />}
+    {look.hair === 'bun' && <g><circle cx={-44} cy={-142} r={26} fill={look.hairColor[0]} /><path d="M-66 -150 C-60 -170 -36 -172 -24 -158" stroke={look.hairColor[1]} strokeWidth={4} fill="none" /></g>}
     <ellipse cx={-47} cy={-96} rx={9} ry={14} fill={look.skin[1]} /><ellipse cx={55} cy={-96} rx={9} ry={14} fill={look.skin[1]} />
     <path d="M-46 -104 C-46 -150 -14 -170 8 -168 C42 -166 56 -136 54 -104 C54 -72 44 -50 26 -40 C14 -33 -4 -33 -16 -40 C-34 -50 -46 -74 -46 -104 Z" fill={`url(#${u('face')})`} />
     <path d="M-44 -116 C-46 -80 -36 -52 -16 -40" stroke={look.rim} strokeWidth={3} fill="none" opacity={0.55} />
+    {/* # Hair — sculpted chunks with highlight strands and an edge light, after the reference sheet */}
     {look.hair === 'swoop' && <g>
-      <path d="M-50 -98 C-58 -128 -52 -162 -26 -178 C-4 -194 32 -196 52 -178 C68 -164 68 -138 60 -110 L54 -96 C52 -116 46 -126 36 -130 C22 -136 2 -134 -14 -126 C-30 -120 -42 -110 -50 -98 Z" fill={look.hairColor[0]} />
-      <path d="M-40 -128 C-22 -156 14 -160 40 -140 C22 -142 4 -138 -12 -128 C-22 -124 -32 -122 -40 -128 Z" fill={look.hairColor[1]} opacity={0.55} />
-      <path d="M-26 -170 C-2 -192 34 -190 54 -164" stroke={look.hairColor[1]} strokeWidth={5} fill="none" strokeLinecap="round" opacity={0.85} />
-      <path d="M-6 -158 C10 -176 32 -176 46 -160" stroke={look.hairColor[1]} strokeWidth={3} fill="none" strokeLinecap="round" opacity={0.6} /></g>}
+      <path d="M-50 -96 C-58 -132 -50 -166 -22 -182 C2 -196 40 -196 58 -176 C70 -160 66 -130 58 -106 L54 -96 C50 -118 40 -128 26 -132 C8 -136 -14 -132 -30 -122 C-40 -116 -46 -106 -50 -96 Z" fill={look.hairColor[0]} />
+      <path d="M-46 -122 C-50 -158 -22 -188 14 -192 C-8 -178 -16 -160 -18 -138 C-28 -136 -38 -130 -46 -122 Z" fill={look.hairColor[0]} />
+      <path d="M-22 -140 C-16 -178 16 -204 52 -196 C30 -184 20 -168 16 -146 C4 -148 -10 -146 -22 -140 Z" fill={look.hairColor[0]} />
+      <path d="M12 -148 C22 -184 54 -198 76 -170 C58 -170 44 -160 38 -142 C30 -146 20 -148 12 -148 Z" fill={look.hairColor[0]} />
+      <path d="M-36 -146 C-26 -170 -8 -182 10 -186" stroke={look.hairColor[1]} strokeWidth={5} fill="none" strokeLinecap="round" />
+      <path d="M-6 -160 C8 -182 30 -192 48 -190" stroke={look.hairColor[1]} strokeWidth={5} fill="none" strokeLinecap="round" />
+      <path d="M24 -164 C38 -180 56 -182 68 -172" stroke={look.hairColor[1]} strokeWidth={4} fill="none" strokeLinecap="round" />
+      <path d="M58 -176 C70 -160 66 -130 58 -106" stroke={look.hairColor[1]} strokeWidth={3} fill="none" opacity={0.8} />
+      <path d="M-50 -98 C-52 -88 -50 -80 -46 -76" stroke={look.hairColor[0]} strokeWidth={7} strokeLinecap="round" /></g>}
     {look.hair === 'side' && <g>
-      <path d="M-50 -98 C-56 -146 -26 -180 12 -180 C48 -180 66 -152 58 -108 L54 -98 C52 -118 42 -130 22 -134 L-8 -128 C-26 -122 -40 -112 -50 -98 Z" fill={look.hairColor[0]} />
-      <path d="M-20 -164 C6 -178 36 -174 52 -150" stroke={look.hairColor[1]} strokeWidth={4} fill="none" strokeLinecap="round" opacity={0.75} /></g>}
+      <path d="M-50 -96 C-56 -140 -30 -178 8 -180 C46 -182 66 -156 60 -110 L56 -96 C52 -122 40 -134 18 -138 L-30 -134 C-40 -124 -46 -112 -50 -96 Z" fill={look.hairColor[0]} />
+      <path d="M-30 -150 C-10 -174 30 -182 56 -158 C40 -160 22 -156 4 -146 C-8 -142 -20 -142 -30 -150 Z" fill={look.hairColor[0]} />
+      <path d="M-30 -150 L-26 -176" stroke="#0A1020" strokeWidth={3} strokeLinecap="round" />
+      <path d="M-18 -164 C4 -178 32 -178 52 -160" stroke={look.hairColor[1]} strokeWidth={4} fill="none" strokeLinecap="round" />
+      <path d="M-50 -98 C-54 -120 -48 -140 -34 -152 L-28 -140 C-38 -128 -42 -114 -42 -98 Z" fill={look.hairColor[1]} opacity={0.8} />
+      <path d="M56 -98 C60 -120 54 -140 40 -152 L34 -140 C44 -128 48 -114 48 -98 Z" fill={look.hairColor[1]} opacity={0.8} />
+      <path d="M8 -180 C40 -182 62 -160 60 -112" stroke={look.hairColor[1]} strokeWidth={3} fill="none" opacity={0.8} /></g>}
     {look.hair === 'slick' && <g>
-      <path d="M-50 -98 C-58 -150 -20 -184 16 -182 C52 -180 68 -150 58 -106 L54 -98 C50 -122 36 -136 12 -138 C-14 -138 -36 -124 -50 -98 Z" fill={look.hairColor[0]} />
-      <path d="M-24 -168 C8 -186 40 -176 54 -146" stroke={look.hairColor[1]} strokeWidth={5} fill="none" strokeLinecap="round" opacity={0.8} /></g>}
+      <path d="M-50 -96 C-58 -142 -26 -184 12 -184 C50 -184 68 -152 60 -106 L56 -96 C52 -122 36 -136 12 -138 C-14 -138 -36 -124 -50 -96 Z" fill={look.hairColor[0]} />
+      {[[-40, -150, -30, -186, -12, -150], [-22, -156, -6, -196, 10, -156], [-2, -158, 18, -198, 30, -154], [18, -154, 44, -190, 50, -146], [34, -146, 64, -172, 60, -128]].map(([x1, y1, cx, cy, x2, y2], k) => (
+        <path key={k} d={`M${x1} ${y1} Q${cx} ${cy} ${x2} ${y2} Z`} fill={look.hairColor[0]} />))}
+      {[[-32, -154, -26, -168], [-12, -158, -6, -174], [8, -160, 14, -176], [28, -154, 36, -168]].map(([x1, y1, x2, y2], k) => (
+        <path key={k} d={`M${x1} ${y1} L${x2} ${y2}`} stroke={look.hairColor[1]} strokeWidth={4} strokeLinecap="round" />))}
+      <path d="M12 -184 C50 -184 68 -152 60 -106" stroke={look.hairColor[1]} strokeWidth={3} fill="none" opacity={0.8} /></g>}
     {look.hair === 'bun' && <g>
-      <path d="M-52 -96 C-58 -148 -24 -180 10 -178 C46 -178 66 -150 60 -100 C52 -124 34 -136 8 -136 C-18 -134 -40 -120 -52 -96 Z" fill={look.hairColor[0]} />
-      <path d="M58 -104 C62 -80 58 -60 50 -50" stroke={look.hairColor[0]} strokeWidth={9} fill="none" strokeLinecap="round" />
-      <path d="M-20 -164 C6 -176 34 -172 50 -150" stroke={look.hairColor[1]} strokeWidth={4} fill="none" strokeLinecap="round" opacity={0.75} /></g>}
+      <path d="M58 -100 C64 -150 30 -182 -6 -180 C-36 -178 -56 -150 -54 -104 C-44 -138 -12 -152 22 -142 C38 -136 52 -122 58 -100 Z" fill={look.hairColor[0]} />
+      <path d="M-50 -110 C-40 -150 0 -164 40 -150 C20 -148 -8 -140 -26 -122 C-36 -114 -44 -108 -50 -110 Z" fill={look.hairColor[0]} />
+      <path d="M58 -102 C64 -80 60 -58 50 -46" stroke={look.hairColor[0]} strokeWidth={9} fill="none" strokeLinecap="round" />
+      <path d="M-6 -180 C-36 -178 -56 -150 -54 -104" stroke={look.hairColor[1]} strokeWidth={4} fill="none" />
+      <path d="M58 -100 C64 -150 30 -182 -6 -180" stroke={look.hairColor[1]} strokeWidth={4} fill="none" />
+      <path d="M-24 -160 C0 -172 24 -168 40 -152" stroke={look.hairColor[1]} strokeWidth={3} fill="none" strokeLinecap="round" opacity={0.7} /></g>}
+    {look.hair === 'none' && <g>
+      <path d="M-50 -110 L-48 -86 L-42 -88 L-42 -112 Z M54 -110 L52 -86 L46 -88 L46 -112 Z" fill={look.hairColor[0]} /></g>}
     <FaceHD expression={expression} brow={look.brow} />
     {look.glasses && <g fill="rgba(160,215,255,0.07)" stroke="#8FD0FF" strokeWidth={3}>
       <circle cx={-15} cy={-100} r={17} /><circle cx={25} cy={-100} r={17} /><path d="M2 -102 Q5 -106 8 -102" fill="none" />
@@ -204,9 +224,9 @@ const Leg: React.FC<{ g: LegPose; look: LookHD; side: 1 | -1 }> = ({ g, look, si
       : <path d={`M-24 ${L2 - 4} Q0 ${L2 - 14} 30 ${L2 - 2} L34 ${L2 + 12} L-28 ${L2 + 12} Z`} fill="#141824" />
   return (
     <g transform={`rotate(${g.hip})`}>
-      <path d={capsule(L1 + 8, 62, 52)} fill={fill} />
+      <path d={capsule(L1 + 8, 58, 48)} fill={fill} />
       <g transform={`translate(0 ${L1}) rotate(${g.knee})`}>
-        <path d={capsule(L2, 52, 44)} fill={fill} />
+        <path d={capsule(L2, 48, 42)} fill={fill} />
         <path d={`M${side * 8} -${L1 * 0.6} L${side * 6} ${L2 - 10}`} stroke={look.pants[side === 1 ? 0 : 1]} strokeWidth={2} opacity={0.5} />
         {look.top === 'hivis' && side === -1 && <rect x={-30} y={20} width={20} height={44} rx={3} fill={look.pants[1]} stroke={look.pants[0]} strokeWidth={2} />}
         <g transform={`translate(0 ${L2}) scale(1.3) translate(0 ${-L2})`}>{shoe}</g>
@@ -223,25 +243,34 @@ const Torso: React.FC<{ look: LookHD }> = ({ look }) => {
   return (
     <g>
       {/* # Tee / shirt in the opening */}
-      <path d="M-42 4 L46 4 L42 300 L-38 300 Z" fill={look.tee} />
-      <path d="M12 4 L46 4 L42 300 L18 300 Z" fill="#000" opacity={0.08} />
+      <path d="M-44 4 L48 4 L46 262 L-42 262 Z" fill={look.tee} />
+      <path d="M12 4 L48 4 L46 262 L18 262 Z" fill="#000" opacity={0.08} />
+      <rect x={-48} y={258} width={98} height={16} rx={3} fill={look.pants[1]} />
+      <rect x={-6} y={260} width={14} height={12} rx={2} fill="#9AA6B8" opacity={0.7} />
       {look.tie && <path d="M-2 14 L10 14 L14 30 L8 150 L2 164 L-4 150 L-8 30 Z" fill={look.tie} />}
       {look.top === 'shirt' && <path d="M-26 0 L4 24 L32 0 L40 14 L4 40 L-34 14 Z" fill={hi} />}
       {/* # Left panel (lit), right panel (shadow) */}
-      <path d={look.top === 'shirt' ? 'M-104 46 Q-98 12 -30 2 L-6 40 L-10 300 L-94 298 Q-108 170 -104 46 Z' : 'M-104 46 Q-98 12 -38 2 L-14 150 L-18 304 L-96 300 Q-110 170 -104 46 Z'} fill={base} />
-      <path d={look.top === 'shirt' ? 'M108 46 Q102 12 36 2 L12 40 L16 300 L98 298 Q112 170 108 46 Z' : 'M108 46 Q102 12 44 2 L20 150 L24 304 L100 300 Q114 170 108 46 Z'} fill={sh} />
+      <path d={look.top === 'shirt'
+        ? 'M-30 2 C-74 8 -104 24 -108 68 C-110 120 -98 168 -90 200 C-92 236 -96 262 -98 282 L-10 284 L-6 40 Z'
+        : 'M-38 2 C-78 8 -106 24 -110 68 C-112 120 -98 168 -88 200 C-90 236 -94 262 -96 284 L-18 288 L-14 150 Z'} fill={base} />
+      <path d={look.top === 'shirt'
+        ? 'M36 2 C80 8 110 24 114 68 C116 120 104 168 96 200 C98 236 102 262 104 282 L16 284 L12 40 Z'
+        : 'M44 2 C84 8 112 24 116 68 C118 120 104 168 94 200 C96 236 100 262 102 284 L24 288 L20 150 Z'} fill={sh} />
+      {/* # soft fold under the chest and at the waist */}
+      <path d="M-84 150 C-70 160 -52 164 -36 162" stroke={sh} strokeWidth={3} fill="none" opacity={0.45} />
+      <path d="M90 196 C78 204 62 206 50 204" stroke="#000" strokeWidth={3} fill="none" opacity={0.18} />
       {look.top === 'blazer' && <g>
         {/* # Lapels */}
         <path d="M-38 2 L-26 2 L-12 112 L-30 70 L-50 60 Z" fill={hi} opacity={0.9} />
         <path d="M44 2 L32 2 L18 112 L36 70 L56 60 Z" fill={base} opacity={0.9} />
         {/* # Pockets + button */}
-        <path d="M-86 232 L-44 236" stroke={sh} strokeWidth={4} strokeLinecap="round" /><path d="M34 236 L78 232" stroke={hi} strokeWidth={4} strokeLinecap="round" opacity={0.6} />
-        <circle cx={-16} cy={200} r={4} fill={sh} /></g>}
+        <path d="M-84 226 L-44 230" stroke={sh} strokeWidth={4} strokeLinecap="round" /><path d="M34 230 L76 226" stroke={hi} strokeWidth={4} strokeLinecap="round" opacity={0.6} />
+        <circle cx={-15} cy={196} r={4} fill={sh} /></g>}
       {look.top === 'hivis' && <g fill="#F4E8C8" opacity={0.9}>
         <rect x={-100} y={170} width={84} height={14} /><rect x={22} y={170} width={84} height={14} />
         <rect x={-60} y={10} width={14} height={160} /><rect x={50} y={10} width={14} height={160} /></g>}
       {/* # Rim light on the lit edge */}
-      <path d="M-104 50 Q-110 170 -96 300" stroke={look.rim} strokeWidth={4} fill="none" opacity={0.6} />
+      <path d="M-110 70 C-112 120 -98 168 -88 200 C-90 236 -94 262 -96 284" stroke={look.rim} strokeWidth={4} fill="none" opacity={0.6} />
       {look.apron && <g>
         <path d="M-66 110 L70 110 L78 330 Q4 344 -74 330 Z" fill="#F0E6D4" />
         <path d="M-60 110 L-34 6 M64 110 L38 6" stroke="#F0E6D4" strokeWidth={9} />
