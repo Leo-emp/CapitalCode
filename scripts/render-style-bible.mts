@@ -8,7 +8,7 @@ import { execFileSync } from 'node:child_process'
 import { mkdirSync } from 'node:fs'
 
 const OUT = 'output/style-bible'
-const PAGES = ['LogoStill', 'CastLineup', 'ExpressionStrip', 'PoseStrip', 'PropSheet', 'PropSheet2', 'SceneSheet', 'SceneSheet2', 'SceneSheet3', 'InfoSheet', 'ThumbSheet']
+const PAGES = ['LogoStill', 'CastHD', 'ExpressionsHD', 'PoseStrip', 'PropSheet', 'PropSheet2', 'SceneSheet', 'SceneSheet2', 'SceneSheet3', 'SceneSheet4', 'SceneSheet5', 'SceneSheet6', 'VariantSheet', 'InfoSheet', 'ThumbSheet']
 const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx'
 const run = (args: string[]) => execFileSync(npx, ['remotion', ...args, '--port=3177', '--log=error'], { stdio: 'inherit', shell: process.platform === 'win32' })
 
