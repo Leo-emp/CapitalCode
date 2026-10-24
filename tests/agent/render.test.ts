@@ -142,3 +142,13 @@ test('render concurrency follows free memory and cores', () => {
   expect(renderConcurrency(1.0, 16)).toBe(1)      // # never zero
   expect(renderConcurrency(32, 4)).toBe(2)        // # never more than half the cores
 })
+
+// # owner PC kept getting renders stopped on low memory: CC_RENDER_WORKERS caps the browser tabs
+test('CC_RENDER_WORKERS caps the workers (never above what memory allows)', () => {
+  process.env.CC_RENDER_WORKERS = '2'
+  try {
+    expect(renderConcurrency(9.0, 16)).toBe(2)
+    expect(renderConcurrency(3.5, 16)).toBe(1)
+  } finally { delete process.env.CC_RENDER_WORKERS }
+  expect(renderConcurrency(9.0, 16)).toBe(8)
+})

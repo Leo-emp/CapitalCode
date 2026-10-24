@@ -262,5 +262,8 @@ export const mux = (video: string, audio: string, out: string) =>
 
 // # Browser tabs for one chunk: half the cores at most, and only as many as free memory allows
 // # (≈ 0.7 GB per tab, 3 GB kept for the system — measured: 0.45/2 still got renders killed) — a render on a busy PC slows down instead of being killed
-export const renderConcurrency = (freeGB: number, cores: number) =>
-  Math.max(1, Math.min(Math.max(1, Math.floor(cores / 2)), Math.floor((freeGB - 3) / 0.7)))
+// # CC_RENDER_WORKERS (optional) caps it further on a PC where renders keep getting stopped for low memory
+export const renderConcurrency = (freeGB: number, cores: number) => {
+  const cap = Number(process.env.CC_RENDER_WORKERS) || Infinity
+  return Math.max(1, Math.min(cap, Math.max(1, Math.floor(cores / 2)), Math.floor((freeGB - 3) / 0.7)))
+}
