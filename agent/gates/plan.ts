@@ -62,6 +62,16 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
   if (!plan.shots?.length) return { ok: false, problems: ['plan has no shots'], stats: null }
   const ids = new Set<string>()
   const starts: number[] = []
+  // # zoom-into (living film): a shot grows out of a spot (or a point) of the shot before it
+  plan.shots.forEach((s, i) => {
+    const z = s.enter?.zoomInto
+    if (z === undefined) return
+    if (i === 0) { problems.push(`${s.id}: the first shot has nothing to zoom out of`); return }
+    if (typeof z !== 'string') return
+    const prev = plan.shots[i - 1]
+    if (prev.kind !== 'scene') { problems.push(`${s.id}: zoomInto "${z}" needs the previous shot to be a scene — give a point {x, y} instead`); return }
+    if (!SCENES.find((x) => x.id === prev.scene)?.anchors[z]) problems.push(`${s.id}: zoomInto "${z}" is not a spot of the previous shot (scene ${prev.scene})`)
+  })
   for (const s of plan.shots) {
     if (ids.has(s.id)) problems.push(`${s.id}: duplicate shot id`)
     for (const l of layoutProblems(s as Parameters<typeof layoutProblems>[0])) problems.push(`${s.id}: ${l}`)

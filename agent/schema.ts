@@ -45,7 +45,9 @@ export type SlideShot = { id: string; start: Cue; kind: 'slide'; slide: string; 
 export type VignetteShot = { id: string; start: Cue; kind: 'vignette'; vignette: string; heading?: string; kicker?: string; source?: string; data: Record<string, unknown>; at: Cue[] }
 export type ChapterShot = { id: string; start: Cue; kind: 'chapter'; n: number; title: string }
 export type BrandShot = { id: string; start: Cue; kind: 'brand' }
-export type Shot = SceneShot | SlideShot | VignetteShot | ChapterShot | BrandShot
+// # enter.zoomInto (living film): this shot grows out of a spot of the previous scene shot, or a screen point
+export type Enter = { enter?: { zoomInto: string | { x: number; y: number } } }
+export type Shot = (SceneShot | SlideShot | VignetteShot | ChapterShot | BrandShot) & Enter
 export type PlanDoc = { shots: Shot[]; sfx?: { at: Cue; name: string; volume?: number }[] }
 
 // ------------------------------------------------------------ metadata.json (Publisher)

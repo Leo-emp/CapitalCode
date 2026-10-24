@@ -19,8 +19,9 @@ import { Lockup } from '../logo/LogoReveal'
 import { expressionAt, GIVE_FRAMES, heldBy } from '../motion/acting'
 import { actedPose } from '../motion/life'
 import { walkAt, walkPose } from '../motion/walk'
-import { cameraAt, camKeys } from '../motion/camera'
-import { cameraFor } from '../scenes/kit'
+import { type Cam, cameraAt, camKeys, DEPTH, framed, layerCam } from '../motion/camera'
+import { ZOOM_INTO, zoomIntoAt } from '../motion/transition'
+import { cameraFor, OVERSCAN } from '../scenes/kit'
 import { getProp } from '../props/registry'
 import { Actor, holdsInHand, propBox } from '../rig/Actor'
 import { mixPose, type Pose, type PoseId, POSES } from '../rig/pose'
@@ -38,7 +39,7 @@ type RScene = { id: string; kind: 'scene'; start: number; scene: string; time?: 
 type RSlide = { id: string; kind: 'slide'; start: number; slide: string; heading?: string; kicker?: string; source?: string; data: any; at: number[] }
 type RChapter = { id: string; kind: 'chapter'; start: number; n: number; title: string }
 type RBrand = { id: string; kind: 'brand'; start: number }
-export type RShot = RScene | RSlide | RVignette | RChapter | RBrand
+export type RShot = (RScene | RSlide | RVignette | RChapter | RBrand) & { enter?: { zoomInto: string | { x: number; y: number } } }
 export type EpisodeTimeline = { fps: number; durationInFrames: number; shots: { shot: RShot; from: number; to: number }[]; sfx: { name: string; t: number; volume: number }[]; speech?: [number, number][] }
 export type EpisodeProps = { timeline: EpisodeTimeline; voice?: string; width?: number; height?: number }
 
@@ -64,6 +65,30 @@ export const slamLayers = (f: number, slamAt: number | undefined) => {
   const k = interpolate(f, [slamAt - 3, slamAt + 3], [0, 1], clamp)
   return { dim: 0.86 * k, band: 0.96 * k, props: false }
 }
+// # The camera of a scene shot (living film): the opening framing, then glides to what the plan names on
+// # its cue words; with no moves planned it follows a walker; it always drifts a little
+export const sceneCamera = (s: RScene, f: number, from: number, walker?: { x: number; y: number; scale: number }): Cam => {
+  const a = getScene(s.scene).anchors
+  const fc = cameraFor(s.framing ?? 'wide', a.focus ?? a.prop1 ?? { x: 960, y: 540 })
+  const base = { x: (960 - fc.tx) / fc.k, y: (540 - fc.ty) / fc.k, zoom: fc.k }
+  const seed = [...s.id].reduce((n, c) => n + c.charCodeAt(0), 0)
+  return s.camera?.length ? cameraAt(f, camKeys(from, base, s.camera, a), seed)
+    : walker ? cameraAt(f, [{ at: from, x: walker.x, y: walker.y - 300 * walker.scale, zoom: Math.max(base.zoom, 1.2) }], seed)
+    : cameraAt(f, [{ at: from, ...base }], seed)
+}
+
+// # Where on screen the next shot grows out of: a point as given, or a spot of the previous scene seen
+// # through that shot's camera at the moment of the cut
+export const enterPoint = (prev: { shot: RShot; from: number }, z: string | { x: number; y: number }, at: number): { x: number; y: number } => {
+  if (typeof z !== 'string') return z
+  if (prev.shot.kind !== 'scene') return { x: 960, y: 540 }
+  const anc = getScene(prev.shot.scene).anchors[z]
+  if (!anc) return { x: 960, y: 540 }
+  const cam = sceneCamera(prev.shot, at, prev.from)
+  const v = framed(layerCam({ ...cam, zoom: cam.zoom * OVERSCAN }, DEPTH[anc.layer]))
+  return { x: anc.x * v.k + v.tx, y: anc.y * v.k + v.ty }
+}
+
 const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number; speech?: [number, number][] }> = ({ s, f, from, to, speech = [] }) => {
   const Scene = getScene(s.scene)
   const a = Scene.anchors
@@ -133,15 +158,7 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number; 
 
   // # slow push-in keeps every scene alive; a slam darkens the scene and hits the words
   const push = interpolate(f, [from, to], [1.0, 1.05], clamp)
-  // # the camera (living film): the opening framing, then glides to what the plan names on its cue words;
-  // # with no moves planned it follows a walker; it always drifts a little
-  const fc = cameraFor(s.framing ?? 'wide', a.focus ?? a.prop1 ?? { x: 960, y: 540 })
-  const base = { x: (960 - fc.tx) / fc.k, y: (540 - fc.ty) / fc.k, zoom: fc.k }
-  const seed = [...s.id].reduce((n, c) => n + c.charCodeAt(0), 0)
-  const w0 = walkers[0]
-  const camera = s.camera?.length ? cameraAt(f, camKeys(from, base, s.camera, a), seed)
-    : w0 ? cameraAt(f, [{ at: from, x: w0.x, y: w0.y - 300 * w0.scale, zoom: Math.max(base.zoom, 1.2) }], seed)
-    : cameraAt(f, [{ at: from, ...base }], seed)
+  const camera = sceneCamera(s, f, from, walkers[0])
   return (
     <AbsoluteFill>
       <AbsoluteFill style={{ transform: `scale(${push})` }}>
@@ -202,7 +219,8 @@ const VignetteShotView: React.FC<{ s: RVignette; f: number; from: number }> = ({
 }
 
 // ---------------------------------------------------------------- one shot, with its transition in/out
-const ShotView: React.FC<{ s: RShot; f: number; from: number; to: number; speech?: [number, number][] }> = ({ s, f, from, to, speech }) => {
+// # enterAt / exitAt: zoom-into points when this shot grows out of the previous one / the next one grows out of it
+const ShotView: React.FC<{ s: RShot; f: number; from: number; to: number; speech?: [number, number][]; enterAt?: { x: number; y: number }; exitAt?: { x: number; y: number } }> = ({ s, f, from, to, speech, enterAt, exitAt }) => {
   const inP = interpolate(f, [from, from + TRANSITION], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) })
   const outP = interpolate(f, [to, to + TRANSITION], [0, 1], { ...clamp, easing: Easing.in(Easing.cubic) })
   const scale = (1.06 - 0.06 * inP) * (1 + 0.08 * outP)
@@ -212,19 +230,42 @@ const ShotView: React.FC<{ s: RShot; f: number; from: number; to: number; speech
     : s.kind === 'vignette' ? <VignetteShotView s={s} f={f} from={from} />
     : s.kind === 'chapter' ? <ChapterCard frame={f} n={s.n} title={s.title} cue={from} />
     : <Lockup f={f - from} />
-  return <AbsoluteFill style={{ opacity: from === 0 ? 1 : inP, transform: `scale(${from === 0 ? 1 + 0.08 * outP : scale})` }}>{body}</AbsoluteFill>
+  // # zoom-into: fly into the point (outgoing) / grow out of it as a widening circle (incoming)
+  if (enterAt && f < from + ZOOM_INTO) {
+    const z = zoomIntoAt((f - from) / ZOOM_INTO, enterAt).incoming
+    return (
+      <AbsoluteFill style={{ clipPath: `circle(${z.r}px at ${z.cx}px ${z.cy}px)` }}>
+        <AbsoluteFill style={{ transformOrigin: '0 0', transform: `translate(${z.tx}px, ${z.ty}px) scale(${z.k})` }}>{body}</AbsoluteFill>
+      </AbsoluteFill>
+    )
+  }
+  if (exitAt && f >= to) {
+    const z = zoomIntoAt((f - to) / ZOOM_INTO, exitAt).outgoing
+    return <AbsoluteFill style={{ transformOrigin: '0 0', transform: `translate(${z.tx}px, ${z.ty}px) scale(${z.k})` }}>{body}</AbsoluteFill>
+  }
+  return <AbsoluteFill style={{ opacity: from === 0 || enterAt ? 1 : inP, transform: `scale(${from === 0 || enterAt ? 1 + 0.08 * outP : scale})` }}>{body}</AbsoluteFill>
 }
 
 // # Shots visible at frame f: the current one, plus the previous one while it zooms out under the new one
-export const visibleShots = (tl: EpisodeTimeline, f: number) => tl.shots.filter((x) => f >= x.from && f < x.to + TRANSITION)
+// # (for TRANSITION frames, or ZOOM_INTO frames when the next shot grows out of it)
+export const visibleShots = (tl: EpisodeTimeline, f: number) =>
+  tl.shots.filter((x, i) => f >= x.from && f < x.to + (tl.shots[i + 1]?.shot.enter ? ZOOM_INTO : TRANSITION))
 
 // # Small brand emblem top-left on every shot except the brand card (channel identity, like Alux)
 export const cornerLogo = (kind: string) => kind !== 'brand'
 
 // # The picture of a timeline at frame f — every visible shot with its transitions (Episode and Short share it)
-export const EpisodeFrame: React.FC<{ timeline: EpisodeTimeline; f: number }> = ({ timeline, f }) => (
-  <>{visibleShots(timeline, f).map((x) => <ShotView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} speech={timeline.speech} />)}</>
-)
+export const EpisodeFrame: React.FC<{ timeline: EpisodeTimeline; f: number }> = ({ timeline, f }) => {
+  const sh = timeline.shots
+  const pointOf = (i: number) => {
+    const z = sh[i]?.shot.enter?.zoomInto
+    return z !== undefined && i > 0 ? enterPoint(sh[i - 1], z, sh[i].from) : undefined
+  }
+  return <>{visibleShots(timeline, f).map((x) => {
+    const i = sh.indexOf(x)
+    return <ShotView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} speech={timeline.speech} enterAt={pointOf(i)} exitAt={pointOf(i + 1)} />
+  })}</>
+}
 
 export const Episode: React.FC<EpisodeProps> = ({ timeline, voice }) => {
   const f = useCurrentFrame()

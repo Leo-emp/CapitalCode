@@ -22,3 +22,16 @@ test('the corner logo shows on every shot except the brand card', async () => {
   expect(cornerLogo('chapter')).toBe(true)
   expect(cornerLogo('brand')).toBe(false)
 })
+
+test('zoom-into keeps the previous shot on screen for the whole 18-frame fly-in', async () => {
+  const { visibleShots, enterPoint } = await import('../../art/episode/Episode')
+  const sc = (id: string, enter?: unknown) => ({ id, kind: 'scene', start: 0, scene: 'shop-street', ...(enter ? { enter } : {}) })
+  const tl = { fps: 30, durationInFrames: 300, sfx: [], shots: [{ shot: sc('a'), from: 0, to: 100 }, { shot: sc('b', { zoomInto: 'door' }), from: 100, to: 300 }] } as any
+  expect(visibleShots(tl, 115).map((x: any) => x.shot.id)).toEqual(['a', 'b'])
+  expect(visibleShots(tl, 118).map((x: any) => x.shot.id)).toEqual(['b'])
+  // # the named spot is found on screen through the previous shot's camera (inside the frame)
+  const p = enterPoint(tl.shots[0], 'door', 100)
+  expect(p.x).toBeGreaterThan(1200); expect(p.x).toBeLessThanOrEqual(1920)
+  expect(p.y).toBeGreaterThan(600); expect(p.y).toBeLessThanOrEqual(1080)
+  expect(enterPoint(tl.shots[0], { x: 300, y: 200 }, 100)).toEqual({ x: 300, y: 200 })
+})

@@ -313,3 +313,18 @@ describe('camera', () => {
     expect(gatePlan(p, words, opts()).problems).toContain('a: camera target "vault" not in scene shop-street')
   })
 })
+
+describe('zoom-into', () => {
+  test('a shot can grow out of a spot of the scene before it; not the first shot, not an unknown spot', () => {
+    const p = good()
+    ;(p.shots[1] as any).enter = { zoomInto: 'prop1' }
+    expect(gatePlan(p, words, opts()).problems.filter((x) => /zoom/.test(x))).toEqual([])
+    ;(p.shots[1] as any).enter = { zoomInto: 'vault' }
+    expect(gatePlan(p, words, opts()).problems).toContain('b: zoomInto "vault" is not a spot of the previous shot (scene shop-street)')
+    ;(p.shots[0] as any).enter = { zoomInto: { x: 100, y: 100 } }
+    expect(gatePlan(p, words, opts()).problems).toContain('a: the first shot has nothing to zoom out of')
+    ;(p.shots[0] as any).enter = undefined
+    ;(p.shots[2] as any).enter = { zoomInto: 'prop1' } // # previous shot b is a slide: needs a point, not a spot
+    expect(gatePlan(p, words, opts()).problems).toContain('c: zoomInto "prop1" needs the previous shot to be a scene — give a point {x, y} instead')
+  })
+})
