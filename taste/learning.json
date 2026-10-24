@@ -150,6 +150,46 @@
       "strength": 1,
       "added": "2026-10-24T07:28:06.389Z",
       "status": "active"
+    },
+    {
+      "id": "r16",
+      "area": "visual",
+      "rule": "Show every line as a visual metaphor or a small object story (house of cards, money mountain, bank on balloons); text slides only for the key numbers (aim ≤ 25% of runtime)",
+      "source": "reference",
+      "evidence": "kurzgesagt-banking-2026-10-24",
+      "strength": 1,
+      "added": "2026-10-24T12:31:21.046Z",
+      "status": "active"
+    },
+    {
+      "id": "r17",
+      "area": "visual",
+      "rule": "Crowds of small characters on round pedestals holding coin stacks to show who owns what; split-screen grids (4–6 panels) and circles for lists and comparisons",
+      "source": "reference",
+      "evidence": "kurzgesagt-banking-2026-10-24",
+      "strength": 1,
+      "added": "2026-10-24T12:31:31.712Z",
+      "status": "active"
+    },
+    {
+      "id": "r18",
+      "area": "pacing",
+      "rule": "Continuous transitions: zoom into an object and it becomes the next scene — avoid plain cuts",
+      "source": "reference",
+      "evidence": "kurzgesagt-banking-2026-10-24",
+      "strength": 1,
+      "added": "2026-10-24T12:31:42.464Z",
+      "status": "active"
+    },
+    {
+      "id": "r19",
+      "area": "visual",
+      "rule": "Keep CapitalCode's own dark navy + champagne brand (owner, 2026-10-24): adopt Kurzgesagt's editing, never its pastel look",
+      "source": "reference",
+      "evidence": "kurzgesagt-banking-2026-10-24",
+      "strength": 1,
+      "added": "2026-10-24T12:31:53.639Z",
+      "status": "active"
     }
   ],
   "feedback": [
@@ -157,9 +197,19 @@
       "job": "temp/jobs/20261024-1153_your-index-fund-is-less-diversified-than-you-think",
       "note": "Not bad but could be improved a lot. Show more illustrations of what the voiceover is speaking — we don't show enough.",
       "at": "2026-10-24T07:27:32.105Z"
+    },
+    {
+      "note": "I like this style of editing — Kurzgesagt 'Banking Explained' (Downloads/Banking Explained – Money and Credit_1080p.mp4)",
+      "at": "2026-10-24T12:26:58.647Z"
     }
   ],
   "approvals": [],
-  "references": [],
+  "references": [
+    {
+      "ref": "Downloads/Banking Explained – Money and Credit_1080p.mp4 (Kurzgesagt)",
+      "take": "Owner likes this editing (2026-10-24): every line shown as a visual metaphor (house of cards, money mountain in a vault furnace, bank on balloons/springs), almost no on-screen text, many small characters on round pedestals holding coin stacks, split-screen grids of 4–6 panels and circles holding scenes, continuous zoom/morph transitions instead of cuts, bright flat pastel look (≈65% brightness)",
+      "at": "2026-10-24T12:26:47.016Z"
+    }
+  ],
   "results": []
 }

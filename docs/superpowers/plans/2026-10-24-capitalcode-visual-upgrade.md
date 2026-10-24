@@ -52,3 +52,13 @@ icons were most of the scene-shot "events"; 11 slams; slides heading-only for se
 - [ ] E4 New props: oil barrel, pill bottle, router/server (sector shorthand for company names).
 - [ ] E5 Vignettes still planned: crowd-vs-giant, ladder/stairs, era skyline; desk-top prop placement.
 - [ ] E6 Scene variety: fewer "hero standing beside a set" shots — more two-person moments and full-frame vignettes.
+
+## Part F — Kurzgesagt-style editing in our own brand (owner, 2026-10-24: "I like this style of editing")
+Reference: Downloads/Banking Explained – Money and Credit_1080p.mp4 (studied: ~0 hard cuts in 5 min, ≈65% brightness,
+almost no on-screen text, metaphors, crowds on pedestals, grids, circles). Owner chose: editing only, keep dark navy + champagne.
+- [ ] F1 `crowd` vignette: small characters on round pedestals, each with a coin stack sized to its share (who owns what).
+- [ ] F2 `grid` vignette: 4–6 panels, each a prop/mini-scene with a short label, filling in one by one (lists, comparisons).
+- [ ] F3 `circles` vignette: 3–5 circles each holding a scene/prop, drawing in on cues.
+- [ ] F4 Metaphor props/vignettes: house of cards (fragile), money mountain, bank on balloons (floating on hope), springs (bouncy).
+- [ ] F5 Continuous transitions: "zoom-into" — the next shot grows out of a point of the current one (object becomes the scene).
+- [ ] F6 Plan gate: slide share target ≤ 25% (vignettes/scenes carry the story), metaphor-first in the skill.
