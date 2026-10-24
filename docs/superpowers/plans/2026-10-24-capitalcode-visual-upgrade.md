@@ -32,14 +32,14 @@ icons were most of the scene-shot "events"; 11 slams; slides heading-only for se
 - [x] B2 Vignette library (`art/vignettes/`): data-driven animated mini-scenes, each a shot kind
       `vignette` with cue-able steps: money-flow (dollars into N big vs many small), bubble (swell/pop),
       leaderboard (rows swap ranks), pie-slice, baskets (same items in several baskets), lottery (tickets
-      grey out, few glow), scale (tips), crowd-vs-giant, ladder/stairs, timeline-city (era skyline).
+      grey out, few glow), scale (tips). BUILT: these 7. NOT YET: crowd-vs-giant, ladder/stairs, timeline-city.
 - [x] B3 Catalog + skill + plan gate know vignettes (data checks, layout budgets, cues per step).
 
 ## Part C — characters inside brighter scenes
 - [x] C1 Brightness pass: scene palette/lighting lifted toward the reference (mean ~15%), measured by A5.
 - [x] C2 Acting: actors can sit at desk anchors, hold a prop in hand (prop follows the hand), and
       two-actor moments (handshake/talk) at paired anchors.
-- [x] C3 Props placed on surfaces (`on: 'desk' | 'floor' | 'hand'`), no floating icons in scenes.
+- [x] C3 Props in the hand or on the floor (scene ground line); effects may float. NOT YET: desk-top placement.
 
 ## Part D — re-render the first video
 - [x] D1 Re-plan "Your Index Fund…" with beats + vignettes + acting; hook opens on the $100 split vignette.
