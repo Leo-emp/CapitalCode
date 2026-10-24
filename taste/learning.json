@@ -120,9 +120,45 @@
       "strength": 1,
       "added": "2026-10-24T06:00:39.175Z",
       "status": "active"
+    },
+    {
+      "id": "r13",
+      "area": "visual",
+      "rule": "Illustrate what the voice says: every sentence gets at least one visual that depicts its words (a vignette, an object, a scene action) — pose changes and generic icons do not count",
+      "source": "feedback",
+      "evidence": "owner-2026-10-24",
+      "strength": 1,
+      "added": "2026-10-24T07:27:43.583Z",
+      "status": "active"
+    },
+    {
+      "id": "r14",
+      "area": "visual",
+      "rule": "Characters act inside scenes (sit, hold, interact, two-person moments) instead of standing beside them; props rest on surfaces or in hands, never float; frames as bright as the Alux reference (~15%)",
+      "source": "feedback",
+      "evidence": "owner-2026-10-24-review",
+      "strength": 1,
+      "added": "2026-10-24T07:27:55.026Z",
+      "status": "active"
+    },
+    {
+      "id": "r15",
+      "area": "visual",
+      "rule": "At most ~3 keyword slams per video, saved for the real payoff lines",
+      "source": "feedback",
+      "evidence": "owner-2026-10-24-review",
+      "strength": 1,
+      "added": "2026-10-24T07:28:06.389Z",
+      "status": "active"
     }
   ],
-  "feedback": [],
+  "feedback": [
+    {
+      "job": "temp/jobs/20261024-1153_your-index-fund-is-less-diversified-than-you-think",
+      "note": "Not bad but could be improved a lot. Show more illustrations of what the voiceover is speaking — we don't show enough.",
+      "at": "2026-10-24T07:27:32.105Z"
+    }
+  ],
   "approvals": [],
   "references": [],
   "results": []
