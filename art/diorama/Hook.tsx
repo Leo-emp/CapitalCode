@@ -15,6 +15,8 @@ import { expressionAt } from '../motion/acting'
 import { Actor } from '../rig/Actor'
 import { poseAt, type PoseId } from '../rig/pose'
 import { fontFaces } from '../tokens'
+import { reader } from './cues'
+import { makePiece, type PieceProps } from './registry'
 import { arc, Bill, Building, Dome, easeInOut, easeOut, FundBox, Hand, lerp, P, Platform, rnd, settle, Sliver, span, Stage, Tower, Vignette, ZigZagWipe } from './kit'
 
 export type HookProps = { cue: Record<string, number>; voice?: string }
@@ -85,23 +87,21 @@ const City: React.FC<{ f: number; c: (k: string) => number; id: string }> = ({ f
   )
 }
 
-export const DioramaHook: React.FC<HookProps> = ({ cue, voice }) => {
-  const f = useCurrentFrame()
-  const c = (k: string) => { const v = cue[k]; if (v === undefined) throw new Error(`hook: no cue ${k}`); return v }
+export const HookBody: React.FC<PieceProps> = ({ f, c }) => {
   const id = 'dh'
   // ---------------------------------------------------------- camera
   const cam = camAt(f, [
     [0, 960, 560, 1.6],
     [c('s2:tiny'), 960, 600, 1.0],
     [c('s3:almost'), 960, 540, 1.25],
-    [c('s4:One'), TOWERS[ONE].x, 470, 1.9],
+    [c('s4:one'), TOWERS[ONE].x, 470, 1.9],
     [c('s5:other'), 960, 620, 1.0],
     [c('s5:average'), SMALL[400].x, SMALL[400].y - 40, 2.0],
     [c('s6:fund'), 960, 610, 0.95],
   ])
   // ---------------------------------------------------------- the fund box: in front at first, then lifts up as the source
   const lift = easeInOut(span(f, c('s2:tiny'), c('s2:tiny') + 36))
-  const box = { x: 960, y: lerp(560, 230, lift), s: lerp(1, 0.6, lift) }
+  const box = { x: lerp(960, 300, lift), y: lerp(560, 210, lift), s: lerp(1, 0.55, lift) }
   const mouth = { x: box.x, y: box.y - 110 * box.s }
   const open = easeOut(span(f, c('s2:tiny') - 6, c('s2:tiny') + 6))
   const bounce = Math.sin(span(f, c('s1:fund'), c('s1:fund') + 12) * Math.PI) * 10
@@ -141,10 +141,7 @@ export const DioramaHook: React.FC<HookProps> = ({ cue, voice }) => {
   const exprKeys = [{ at: 0, pose: 'idle', expression: 'neutral' }, { at: c('s7:not'), pose: 'shrug', expression: 'worried' }, { at: c('s7:bad'), pose: 'idle', expression: 'smiling' }, { at: c('s8:not'), pose: 'think', expression: 'thinking' }]
   const ex = expressionAt(f, exprKeys)
   return (
-    <AbsoluteFill>
-      <style>{fontFaces()}</style>
-      {voice && <Audio src={staticFile(voice)} />}
-      <svg width={1920} height={1080} viewBox="0 0 1920 1080">
+      <g>
         {!covered ? (
           <g>
             <Stage id={id} frame={f} />
@@ -153,6 +150,9 @@ export const DioramaHook: React.FC<HookProps> = ({ cue, voice }) => {
               <Dome id={id} cx={CX} cy={CY - 20} rx={RX * 0.98} ry={560} {...dome} />
               {slivers}
               <g transform={`translate(0 ${-bounce})`}><FundBox id={id} x={box.x} y={box.y} s={box.s} open={open} /></g>
+              {/* # a glint across the box on "S&P", a warm glow as "you just bought" */}
+              <rect x={box.x - 160 * box.s} y={box.y - 100 * box.s} width={320 * box.s} height={216 * box.s} rx={22 * box.s} fill={P.white} opacity={0.18 * Math.max(0, 1 - Math.abs(f - c('s1:sp') - 6) / 8)} />
+              <ellipse cx={box.x} cy={box.y} rx={260 * box.s} ry={190 * box.s} fill={P.gold} opacity={0.16 * Math.max(0, 1 - Math.abs(f - c('s2:bought') - 8) / 14)} />
               {bill && <Bill x={bill.x} y={bill.y} s={0.9} r={-8 + drop * 30} o={bill.o} />}
               {handIn > 0 && handOut < 1 && <Hand x={handX} y={handY} r={8} open={drop} />}
             </g>
@@ -169,10 +169,31 @@ export const DioramaHook: React.FC<HookProps> = ({ cue, voice }) => {
         <ZigZagWipe p={span(f, wipeAt + 14, wipeAt + 30)} color={P.champ} mode="reveal" />
         <Vignette id={covered ? `${id}2` : id} />
         {/* # key numbers only, typed or counted as spoken, always in the same place */}
-        {f < c('s4:One') && <KineticText words="$38 of every $100" style="count" frame={f} at={c('s3:38')} x={960} y={150} size={84} />}
-        {f < c('s4:One') + 10 ? null : f < c('s5:other') ? <KineticText words="$7.50" style="count" frame={f} at={c('s4:7')} x={960} y={150} size={96} /> : null}
+        {f < c('s4:one') && <KineticText words="$38 of every $100" style="count" frame={f} at={c('s3:38')} x={960} y={150} size={84} />}
+        {f < c('s4:one') + 10 ? null : f < c('s5:other') ? <KineticText words="$7.50" style="count" frame={f} at={c('s4:7')} x={960} y={150} size={96} /> : null}
         {f < c('s5:13') || f > c('s6:fund') ? null : <KineticText words="13¢" style="count" frame={f} at={c('s5:13')} x={960} y={150} size={96} />}
-      </svg>
+      </g>
+  )
+}
+
+// # the proof composition: the hook alone, with the voice
+export const DioramaHook: React.FC<HookProps> = ({ cue, voice }) => {
+  const f = useCurrentFrame()
+  return (
+    <AbsoluteFill>
+      <style>{fontFaces()}</style>
+      {voice && <Audio src={staticFile(voice)} />}
+      <svg width={1920} height={1080} viewBox="0 0 1920 1080"><HookBody f={f} c={reader(cue, 'hook')} from={0} to={1040} /></svg>
     </AbsoluteFill>
   )
 }
+
+export const HOOK = makePiece('hook', 'The $100 splits into 500 companies; 10 giants take most', {
+  beats: ['s1:put', 's1:100', 's1:sp', 's1:index', 's1:fund', 's1:today', 's2:bought', 's2:tiny', 's2:slice', 's2:500', 's2:different', 's2:companies', 's3:almost', 's3:38', 's3:money', 's3:10',
+    's4:one', 's4:company', 's4:takes', 's4:7', 's4:50', 's5:other', 's5:490', 's5:split', 's5:left', 's5:average', 's5:13', 's6:fund', 's6:sold', 's6:safe', 's6:spreadout', 's6:choice',
+    's6:quietly', 's6:concentrated', 's6:bets', 's6:market', 's7', 's7:not', 's7:bad', 's8:not', 's8:think', 's8:own'],
+  sfx: [['s1:put', 'swish', 0.5], ['s1:index', 'flutter', 0.6], ['s1:fund', 'softpop', 0.7], ['s2:tiny', 'riser', 0.5], ['s2:500', 'pop', 0.4], ['s2:companies', 'pop', 0.4],
+    ['s3:38', 'whoosh', 0.5], ['s3:10', 'chime', 0.5], ['s4:takes', 'coin', 0.7], ['s4:7', 'cash', 0.5], ['s5:split', 'coin', 0.5], ['s5:13', 'tick', 0.6],
+    ['s6:safe', 'chime', 0.4], ['s6:quietly', 'riser', 0.4], ['s6:bets', 'crack', 0.7], ['s6:market', 'impact', 0.5], ['s7', 'swish', 0.5]],
+  Component: HookBody,
+})

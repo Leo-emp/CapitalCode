@@ -167,3 +167,19 @@ export const ZigZagWipe: React.FC<{ p: number; color: string; mode: 'cover' | 'r
   const far = mode === 'cover' ? 2400 : -400
   return <path d={`M${x} 0 ${teeth} L${x} 1100 L${far} 1100 L${far} 0 Z`} fill={color} />
 }
+
+// ------------------------------------------------------------ shorthand used by every piece
+// # eased 0→1 from cue frame a over d frames; pop = the same with the small premium overshoot
+export const on = (f: number, a: number, d = 14) => easeOut(span(f, a, a + d))
+export const pop = (f: number, a: number, d = 12) => settle(span(f, a, a + d))
+// # 1 while f is inside [a, b), fading in/out over 8 frames — for things that come and go
+export const between = (f: number, a: number, b: number) => Math.min(easeOut(span(f, a - 2, a + 8)), 1 - easeOut(span(f, b - 8, b)))
+
+// # a round pedestal a small figure or an object stands on
+export const Pedestal: React.FC<{ x: number; y: number; r?: number; color?: string }> = ({ x, y, r = 70, color = P.navy4 }) => (
+  <g>
+    <ellipse cx={x} cy={y + 18} rx={r * 1.05} ry={r * 0.3} fill="#000" opacity={0.2} />
+    <path d={`M${x - r} ${y} L${x - r} ${y + 14} A${r} ${r * 0.28} 0 0 0 ${x + r} ${y + 14} L${x + r} ${y} Z`} fill={P.navy2} />
+    <ellipse cx={x} cy={y} rx={r} ry={r * 0.28} fill={color} />
+  </g>
+)
