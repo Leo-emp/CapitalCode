@@ -93,7 +93,7 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number }
     if (f < p.at - 1 || !layers.props) continue
     const holder = p.on === 'hand' ? actorAt[p.actor ?? 0] : undefined
     if (holder && !holdsInHand(holder.pose)) continue // # hand busy (chin, pointing, pocket): put the prop away
-    const box = propBox(p.on, size, anc, holder ? { pose: holder.pose, flip: holder.flip, actor: holder.anchor } : { occupied: (s.actors ?? []).some((x) => x.anchor === p.anchor) })
+    const box = propBox(p.on, size, anc, holder ? { pose: holder.pose, flip: holder.flip, actor: holder.anchor } : { occupied: (s.actors ?? []).some((x) => x.anchor === p.anchor), ground: a.stand?.y })
     // # several props on one anchor fan out (not for held props)
     const k = p.on === 'hand' ? 0 : (perAnchor[p.anchor] = (perAnchor[p.anchor] ?? -1) + 1)
     const layer = holder ? holder.anchor.layer : anc.layer

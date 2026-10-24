@@ -58,7 +58,7 @@ export const heldPoint = (pose: string | Pose, anchor: At, flip = false): { x: n
 }
 
 // # Prop box (top-left + size): in the hand (follows the pose), standing on the floor, or centred on its anchor
-export const propBox = (on: 'hand' | 'floor' | undefined, size: number, anchor: At, o: { pose?: string | Pose; flip?: boolean; actor?: At; occupied?: boolean } = {}) => {
+export const propBox = (on: 'hand' | 'floor' | undefined, size: number, anchor: At, o: { pose?: string | Pose; flip?: boolean; actor?: At; occupied?: boolean; ground?: number } = {}) => {
   if (on === 'hand') {
     const s = size * 0.62
     const h = heldPoint(o.pose ?? 'hold', o.actor ?? anchor, o.flip)
@@ -70,7 +70,8 @@ export const propBox = (on: 'hand' | 'floor' | undefined, size: number, anchor: 
     const step = size * 0.5 + 130 * anchor.scale
     let x = anchor.x - size / 2 + (o.occupied ? (anchor.x < 960 ? -1 : 1) * step : 0)
     if (o.occupied && (x < 40 || x + size > 1880)) x = anchor.x - size / 2 + (anchor.x < 960 ? 1 : -1) * step
-    return { x: Math.max(40, Math.min(1880 - size, x)), y: anchor.y - size, size }
+    // # ground: the scene's floor line (a prop spot may be mid-air; a floor prop never floats)
+    return { x: Math.max(40, Math.min(1880 - size, x)), y: (o.ground ?? anchor.y) - size, size }
   }
   return { x: anchor.x - size / 2, y: anchor.y - size / 2, size }
 }

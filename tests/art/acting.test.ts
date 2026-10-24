@@ -66,3 +66,11 @@ test('a floor prop never leaves the frame when it steps aside', () => {
   expect(b.x).toBeGreaterThanOrEqual(40)
   expect(b.x + b.size).toBeLessThanOrEqual(1880)
 })
+
+// # Owner rule r14: props never float — "floor" at a mid-air prop spot lands on the scene's ground line
+test('a floor prop at a mid-air spot stands on the given ground line', () => {
+  const air = { x: 1400, y: 380, scale: 1, layer: 'mid' as const }
+  const b = propBox('floor', 170, air, { ground: 900 })
+  expect(b.y + b.size).toBeCloseTo(900, 0)
+  expect(b.x + b.size / 2).toBeCloseTo(1400, 0)
+})
