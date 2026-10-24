@@ -28,7 +28,7 @@ export const newJob = (topic: string, opts: { root?: string; now?: Date; kind?: 
   const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`
   const dir = join(opts.root ?? JOBS_DIR, `${stamp}_${slugify(topic)}`)
   mkdirSync(dir, { recursive: true })
-  writeJson(join(dir, 'job.json'), { topic, kind: opts.kind ?? 'long', created: now.toISOString(), steps: {} } satisfies Job)
+  writeJson(join(dir, 'job.json'), { topic, kind: opts.kind ?? 'long', created: now.toISOString(), steps: { topic: { at: now.toISOString() }, research: { at: now.toISOString() } } } satisfies Job) // # topic + research happen before a job exists
   return dir
 }
 
