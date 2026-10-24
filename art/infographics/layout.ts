@@ -54,3 +54,9 @@ export const slamSize = (words: string[], size: number, maxW = 1700) => {
   const w = words.reduce((a, t) => a + t.length * 0.4 * size, 0) + 40 * (words.length - 1)
   return w <= maxW ? size : Math.floor(size * maxW / w)
 }
+
+// # Slam word entry: rises 60 px into place with ≤ 6% overshoot (never grows over its neighbour)
+export const slamEntry = (g: number) => {
+  const t = Math.max(0, Math.min(1, g))
+  return t >= 1 ? { scale: 1, y: 0, opacity: 1 } : { scale: 1 + 0.06 * Math.sin(Math.PI * t), y: 60 * (1 - t), opacity: Math.min(1, t * 2) }
+}

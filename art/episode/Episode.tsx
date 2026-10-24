@@ -82,7 +82,7 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number }
   // # slow push-in keeps every scene alive; a slam darkens the scene and hits the words
   const push = interpolate(f, [from, to], [1.0, 1.05], clamp)
   const slamAt = s.slam?.at[0]
-  const dim = slamAt === undefined ? 0 : interpolate(f, [slamAt - 3, slamAt + 3], [0, 0.72], clamp)
+  const dim = slamAt === undefined ? 0 : interpolate(f, [slamAt - 3, slamAt + 3], [0, 0.86], clamp) // # dark enough that no scene detail reads through the words
   return (
     <AbsoluteFill>
       <AbsoluteFill style={{ transform: `scale(${push})` }}>

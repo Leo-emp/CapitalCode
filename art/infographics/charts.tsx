@@ -24,7 +24,7 @@ export const NumberBuild: React.FC<{ frame: number; value: number; cues: [number
   return (
     <div style={{ position: 'absolute', left: x, top: y, ...rise(a) }}>
       <div style={{ fontSize: size, fontWeight: 800, color: TONE[tone], lineHeight: 1 }}>{format(v)}</div>
-      {label && <div style={{ fontSize: 24, letterSpacing: 5, color: COLORS.dim, marginTop: 14 }}>{label.toUpperCase()}</div>}
+      {label && <div style={{ fontSize: 36, letterSpacing: 5, color: COLORS.dim, marginTop: 14 }}>{label.toUpperCase()}</div>}
     </div>
   )
 }
@@ -48,7 +48,7 @@ export const Equation: React.FC<{ frame: number; parts: EqPart[]; cues: number[]
       return (
         <div key={i} style={rise(v)}>
           <div style={{ fontSize: 116, fontWeight: 800, color: TONE[p.tone ?? 'blue'], lineHeight: 1 }}>{p.text}</div>
-          {p.label && <div style={{ fontSize: 22, letterSpacing: 5, color: COLORS.dim, marginTop: 12 }}>{p.label.toUpperCase()}</div>}
+          {p.label && <div style={{ fontSize: 32, letterSpacing: 5, color: COLORS.dim, marginTop: 12 }}>{p.label.toUpperCase()}</div>}
         </div>
       )
     })}
@@ -138,8 +138,8 @@ export const StackedBar: React.FC<{ frame: number; segments: { label: string; va
         {segments.map((s, i) => {
           const g = build(frame, cues[Math.min(i, cues.length - 1)])
           return <div key={i} style={{ width: `${(s.value / total) * 100}%`, ...rise(g) }}>
-            <div style={{ fontSize: 34, fontWeight: 800, color: TONE[s.tone ?? 'blue'] }}>{format(s.value)}</div>
-            <div style={{ fontSize: 20, letterSpacing: 3, color: COLORS.dim, marginTop: 6 }}>{s.label.toUpperCase()}</div></div>
+            <div style={{ fontSize: 46, fontWeight: 800, color: TONE[s.tone ?? 'blue'] }}>{format(s.value)}</div>
+            <div style={{ fontSize: 28, letterSpacing: 3, color: COLORS.dim, marginTop: 6 }}>{s.label.toUpperCase()}</div></div>
         })}
       </div>
     </div>

@@ -29,13 +29,13 @@ export const SlideFrame: React.FC<{ frame: number; heading?: string; kicker?: st
       <style>{fontFaces()}</style>
       {heading && (
         <div style={{ position: 'absolute', left: 150, top: 140, ...rise(h) }}>
-          {kicker && <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: 5, color: COLORS.blue, marginBottom: 14 }}>{kicker.toUpperCase()}</div>}
+          {kicker && <div style={{ fontSize: 30, fontWeight: 700, letterSpacing: 5, color: COLORS.blue, marginBottom: 14 }}>{kicker.toUpperCase()}</div>}
           <div style={{ width: 70, height: 3, background: COLORS.champagne, marginBottom: 22, transform: `scaleX(${h})`, transformOrigin: 'left' }} />
           <div style={{ fontSize: 46, fontWeight: 700 }}>{heading}</div>
         </div>
       )}
       {children}
-      {source && <div style={{ position: 'absolute', left: 150, bottom: 56, fontSize: 20, color: COLORS.dim, opacity: interpolate(frame, [headCue, headCue + 12], [0, 0.9], clamp) }}>{source}</div>}
+      {source && <div style={{ position: 'absolute', left: 150, bottom: 56, fontSize: 24, color: COLORS.dim, opacity: interpolate(frame, [headCue, headCue + 12], [0, 0.9], clamp) }}>{source}</div>}
     </AbsoluteFill>
   )
 }

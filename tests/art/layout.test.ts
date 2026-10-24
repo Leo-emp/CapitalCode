@@ -1,6 +1,6 @@
 // # Tests for art/infographics/layout.ts — number formatting + chart maths
 import { describe, expect, test } from 'vitest'
-import { barRows, formatMoney, formatPct, niceTicks, scaleLinear, slamSize } from '../../art/infographics/layout'
+import { barRows, formatMoney, formatPct, niceTicks, scaleLinear, slamEntry, slamSize } from '../../art/infographics/layout'
 
 describe('formatMoney', () => {
   test('compact money like the reference slides', () => {
@@ -62,4 +62,14 @@ describe('fit to frame', () => {
     expect(s).toBeLessThan(200)
     expect(s).toBeGreaterThanOrEqual(110)
   })
+})
+
+// # A slam word must never grow over its neighbour (CHOSEN/ON PURPOSE tore in the first long video)
+test('slam entry overshoot stays under the 40 px word gap', () => {
+  for (let g = 0; g <= 1.0001; g += 0.05) {
+    const e = slamEntry(g)
+    expect(e.scale).toBeLessThanOrEqual(1.06)
+    expect(e.opacity).toBeGreaterThanOrEqual(0)
+  }
+  expect(slamEntry(1)).toEqual({ scale: 1, y: 0, opacity: 1 })
 })

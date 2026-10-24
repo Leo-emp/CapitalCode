@@ -7,7 +7,7 @@ import React from 'react'
 import { AbsoluteFill, interpolate } from 'remotion'
 import { Emblem } from '../logo/Emblem'
 import { COLORS, fontFaces } from '../tokens'
-import { slamSize } from './layout'
+import { slamEntry, slamSize } from './layout'
 import { build, clamp, rise, TONE, type Tone } from './SlideFrame'
 
 // ------------------------------------------------------------
@@ -22,8 +22,8 @@ export const FlowDiagram: React.FC<{ frame: number; nodes: { title: string; sub?
         return (
           <React.Fragment key={i}>
             <div style={{ width: w, padding: '30px 26px', border: `2px solid ${TONE[nd.tone ?? 'blue']}`, borderRadius: 8, background: 'rgba(42,168,242,0.06)', ...rise(g) }}>
-              <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: 3, color: TONE[nd.tone ?? 'blue'] }}>{nd.title.toUpperCase()}</div>
-              {nd.sub && <div style={{ fontSize: 22, color: COLORS.dim, marginTop: 10 }}>{nd.sub}</div>}
+              <div style={{ fontSize: 40, fontWeight: 800, letterSpacing: 2, lineHeight: 1.15, color: TONE[nd.tone ?? 'blue'] }}>{nd.title.toUpperCase()}</div>
+              {nd.sub && <div style={{ fontSize: 32, color: COLORS.dim, marginTop: 12 }}>{nd.sub}</div>}
             </div>
             {i < n - 1 && (
               <svg width={gap} height={30} style={{ position: 'absolute', left: (w + gap) * i + w, top: '50%', marginTop: -15 }}>
@@ -71,9 +71,9 @@ export const CompareCards: React.FC<{ frame: number; cards: { title: string; val
       return (
         <div key={i} style={{ flex: 1, padding: '40px 36px', borderRadius: 10, border: `2px solid ${c.winner ? col : 'rgba(255,255,255,0.12)'}`,
           background: c.winner ? `${col}14` : 'rgba(255,255,255,0.03)', boxShadow: c.winner ? `0 0 50px ${col}33` : 'none', ...rise(g, 40) }}>
-          <div style={{ fontSize: 26, letterSpacing: 4, color: COLORS.dim, fontWeight: 700 }}>{c.title.toUpperCase()}</div>
+          <div style={{ fontSize: 32, letterSpacing: 3, color: COLORS.dim, fontWeight: 700 }}>{c.title.toUpperCase()}</div>
           <div style={{ fontSize: 84, fontWeight: 800, color: col, margin: '16px 0 22px' }}>{c.value}</div>
-          {c.lines.map((l, k) => <div key={k} style={{ fontSize: 26, color: COLORS.text, marginTop: 10, opacity: 0.85 }}>• {l}</div>)}
+          {c.lines.map((l, k) => <div key={k} style={{ fontSize: 34, color: COLORS.text, marginTop: 12, opacity: 0.9 }}>• {l}</div>)}
         </div>
       )
     })}
@@ -156,7 +156,8 @@ export const KeywordSlam: React.FC<{ frame: number; words: { text: string; tone?
       <style>{fontFaces()}</style>
       {words.map((w, i) => {
         const g = build(frame, cues[Math.min(i, cues.length - 1)], false)
-        return <div key={i} style={{ fontSize: fit, color: TONE[w.tone ?? 'text'], transform: `scale(${2.2 - 1.2 * g})`, opacity: Math.min(1, g * 2),
+        const e = slamEntry(g)
+        return <div key={i} style={{ fontSize: fit, color: TONE[w.tone ?? 'text'], transform: `translateY(${e.y}px) scale(${e.scale})`, opacity: e.opacity,
           textShadow: w.tone && w.tone !== 'text' ? `0 0 40px ${TONE[w.tone]}88` : 'none' }}>{w.text}</div>
       })}
     </AbsoluteFill>

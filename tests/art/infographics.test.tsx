@@ -25,3 +25,12 @@ test('every infographic renders before and after its build', () => {
   for (const f of [0, 120])
     for (const el of samples(f)) expect(() => renderToStaticMarkup(<SlideFrame frame={f} heading="Test">{el}</SlideFrame>)).not.toThrow()
 })
+
+// # Phone readability (Critic, first long video): no slide text below 24 px at 1080p
+test('no infographic text is smaller than 24 px', async () => {
+  const { readFileSync, readdirSync } = await import('node:fs')
+  const dir = 'art/infographics'
+  const small = readdirSync(dir).filter((f) => f.endsWith('.tsx')).flatMap((f) =>
+    [...readFileSync(`${dir}/${f}`, 'utf8').matchAll(/fontSize[:=]\s*\{?\s*(\d+)/g)].filter((m) => Number(m[1]) < 24).map((m) => `${f}: ${m[0]}`))
+  expect(small).toEqual([])
+})
