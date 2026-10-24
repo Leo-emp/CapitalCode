@@ -266,3 +266,10 @@ test('a chapter card shows its own opening sentence (its title is the visual)', 
   const msg = gatePlan(p, words, { ...opts(), maxBare: 0 }).problems.find((x) => /nothing on screen/.test(x)) ?? ''
   expect(msg).not.toMatch(/\bs2\b/)
 })
+
+test('a vignette counts half toward slide share (data + illustration in one)', () => {
+  const p = good()
+  const base = gatePlan(p, words, opts()).stats!.slideShare
+  for (const i of [1, 3, 5]) p.shots[i] = { ...(p.shots[i] as any), kind: 'vignette', vignette: 'lottery', data: { tickets: 20, winners: 2 } } as any
+  expect(gatePlan(p, words, opts()).stats!.slideShare).toBeCloseTo(base / 2, 2)
+})

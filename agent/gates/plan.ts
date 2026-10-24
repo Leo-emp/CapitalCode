@@ -133,7 +133,8 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
   const valid = lens.every(Number.isFinite)
   const stats = {
     shots: plan.shots.length,
-    slideShare: valid ? plan.shots.reduce((a, s, i) => a + (s.kind === 'slide' ? lens[i] : 0), 0) / o.duration : NaN,
+    // # a vignette is half data (labels, numbers), half illustration → counts 0.5 toward slide share
+    slideShare: valid ? plan.shots.reduce((a, s, i) => a + (s.kind === 'slide' ? lens[i] : s.kind === 'vignette' ? 0.5 * lens[i] : 0), 0) / o.duration : NaN,
     medianShot: valid ? median(lens) : NaN,
     scenes: [...new Set(plan.shots.flatMap((s) => (s.kind === 'scene' ? [s.scene] : [])))],
     slides: [...new Set(plan.shots.flatMap((s) => (s.kind === 'slide' ? [s.slide] : [])))],
