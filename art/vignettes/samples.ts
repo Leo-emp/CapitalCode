@@ -15,4 +15,10 @@ export const SAMPLES: Record<string, Record<string, unknown>> = {
   crowd: { people: [{ look: 'investor', share: 38, label: 'Top 10' }, ...Array.from({ length: 23 }, (_, i) => ({ look: ['hero', 'buyer', 'owner', 'worker'][i % 4], share: 2.7 }))] },
   grid: { panels: [{ scene: 'shop-street', label: 'Shops' }, { scene: 'bank-interior', label: 'Banks' }, { prop: 'house', label: 'Homes' }, { prop: 'car', label: 'Cars' }] },
   circles: { items: [{ prop: 'coin', label: 'Cash' }, { prop: 'house', label: 'Property' }, { scene: 'stock-exchange', label: 'Stocks' }] },
+  'crowd-giant': { giant: 'investor', crowd: 30, label: 'The top 10' },
+  'slice-grows': { name: 'NVIDIA', from: 1.5, to: 7.5 },
+  tracks: { long: { label: '30 years', years: 30 }, short: { label: '5 years', years: 5 } },
+  'house-of-cards': { label: 'Built on 10 names', collapse: true },
+  'money-mountain': { label: '$15 trillion', burn: false },
+  'see-saw': { left: { label: '10 giants', value: 38 }, right: { label: '490 others', value: 62 } },
 }

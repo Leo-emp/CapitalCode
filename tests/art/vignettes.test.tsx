@@ -93,3 +93,22 @@ test('the mini cast: small people in the cast looks, alive (they blink and breat
   expect(at(10)).toContain('#2B8FE0') // # hero blazer blue
   expect(new Set(Array.from({ length: 60 }, (_, f) => at(f))).size).toBeGreaterThan(5)
 })
+
+// ------------------------------------------------------------ living film: metaphors for the index-fund remake
+test('metaphors exist and refuse bad data with a reason', () => {
+  for (const id of ['crowd-giant', 'slice-grows', 'tracks', 'house-of-cards', 'money-mountain', 'see-saw']) expect(VIGNETTES.some((v) => v.id === id), id).toBe(true)
+  expect(getVignette('crowd-giant').check({ giant: 'nobody', crowd: 10 })).toMatch(/nobody/)
+  expect(getVignette('crowd-giant').check({ giant: 'investor', crowd: 80 })).toMatch(/5–40/)
+  expect(getVignette('slice-grows').check({ name: 'NVIDIA', from: 2, to: 140 })).toMatch(/0 and 100/)
+  expect(getVignette('tracks').check({ long: { label: '30 years', years: 5 }, short: { label: '5 years', years: 30 } })).toMatch(/longer/)
+  expect(getVignette('see-saw').check({ left: { label: 'A' }, right: { label: 'B', value: 1 } })).toMatch(/value/)
+  expect(getVignette('house-of-cards').check({ collapse: 'yes' })).toMatch(/collapse/)
+  expect(getVignette('money-mountain').check({ burn: 1 })).toMatch(/burn/)
+})
+
+test('steps follow the data: collapse / burn add a step', () => {
+  expect(getVignette('house-of-cards').items({})).toBe(2)
+  expect(getVignette('house-of-cards').items({ collapse: true })).toBe(3)
+  expect(getVignette('money-mountain').items({ burn: true })).toBe(3)
+  expect(getVignette('slice-grows').items(SAMPLES['slice-grows'])).toBe(2)
+})
