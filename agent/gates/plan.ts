@@ -13,6 +13,7 @@ import { POSE_IDS } from '../../art/rig/pose'
 import { PROPS } from '../../art/props/registry'
 import { type Anchor, cameraFor, type SceneFraming } from '../../art/scenes/kit'
 import { SCENES } from '../../art/scenes/registry'
+import { VIGNETTES } from '../../art/vignettes/registry'
 import { PUBLIC_DIR } from '../paths'
 import type { Cue, PlanDoc, TimedWord } from '../schema'
 import { DECOR_FIGURES, layoutProblems, SLIDE_KINDS, SLIDE_SPECS } from '../slides'
@@ -93,6 +94,15 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
       }
       if (s.data?.icon && !PROPS.some((x) => x.id === s.data.icon)) problems.push(`${s.id}: unknown icon prop "${String(s.data.icon)}"`)
       for (const c of s.at ?? []) cue(s.id, c)
+    } else if (s.kind === 'vignette') {
+      const v = VIGNETTES.find((x) => x.id === s.vignette)
+      if (!v) problems.push(`${s.id}: unknown vignette "${s.vignette}" (vignettes: ${VIGNETTES.map((x) => x.id).join(', ')})`)
+      else {
+        const bad = v.check(s.data)
+        if (bad) problems.push(`${s.id}: ${s.vignette} ${bad}`)
+        else if ((s.at ?? []).length > v.items(s.data)) problems.push(`${s.id}: more cues than ${s.vignette} steps (${v.items(s.data)})`)
+      }
+      for (const c of s.at ?? []) cue(s.id, c)
     } else if (s.kind === 'chapter') {
       if (!s.title) problems.push(`${s.id}: chapter needs a title`)
     } else if (s.kind !== 'brand') problems.push(`${(s as { id: string }).id}: unknown shot kind "${(s as { kind: string }).kind}"`)
@@ -130,7 +140,7 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
   }
   // # a slide shows its first item within `firstVisual` s of the cut (no heading-only seconds)
   plan.shots.forEach((s, i) => {
-    if (s.kind !== 'slide' || !s.at?.length || !Number.isFinite(starts[i])) return
+    if ((s.kind !== 'slide' && s.kind !== 'vignette') || !s.at?.length || !Number.isFinite(starts[i])) return
     let first: number
     try { first = resolveCue(words, s.at[0]) } catch { return }
     const gap = first - starts[i]

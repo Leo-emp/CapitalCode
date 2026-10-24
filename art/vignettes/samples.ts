@@ -1,0 +1,14 @@
+// ============================================================
+// VIGNETTE SAMPLES — one valid data example per vignette (tests,
+// style-bible stills, and worked examples for the director).
+// ============================================================
+// # One valid sample per vignette — the same data shape the Visual Director writes in plan.json
+export const SAMPLES: Record<string, Record<string, unknown>> = {
+  'money-flow': { groups: [{ label: '10 giants', share: 37.9, count: 10 }, { label: '490 others', share: 62.1, count: 490 }] },
+  bubble: { label: 'Dot-com', items: ['Cisco', 'Intel', 'GE'], pop: true },
+  leaderboard: { before: ['GE', 'Exxon', 'Pfizer', 'Cisco', 'Citigroup'], after: ['NVIDIA', 'Apple', 'Alphabet', 'Microsoft', 'Amazon'] },
+  pie: { slices: [{ label: 'Top 10', value: 37.9, tone: 'champagne' }, { label: 'Other 490', value: 62.1 }] },
+  baskets: { baskets: ['S&P 500 fund', 'Tech fund', 'Growth fund'], items: ['NVIDIA', 'Apple', 'Microsoft'] },
+  lottery: { tickets: 48, winners: 2, label: 'a few huge winners' },
+  scale: { left: { label: 'Price paid', value: 40 }, right: { label: 'Profits', value: 27 } },
+}

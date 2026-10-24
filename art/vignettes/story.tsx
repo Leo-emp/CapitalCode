@@ -1,0 +1,143 @@
+// ============================================================
+// STORY VIGNETTES — things that happen over time:
+//   bubble       swells with names inside, then (optionally) pops
+//   leaderboard  a ranking reshuffles: old leaders slide out, new rise in
+//   lottery      many tickets, most lose, a few win big
+// ============================================================
+import React from 'react'
+import { interpolate } from 'remotion'
+import { COLORS } from '../tokens'
+import { clamp, Glow, hash01, Label, list, makeVignette, num, ramp, settle } from './kit'
+
+// ---------------------------------------------------------------- bubble
+// # data: { label, items?: string[] (≤ 5), pop?: boolean } — steps: appear, swell (+ items), pop
+const Bubble: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame, data, cues }) => {
+  const items = (data.items ?? []) as string[]
+  const appear = settle(frame, cues[0])
+  const swell = settle(frame, cues[1])
+  const pop = data.pop ? ramp(frame, cues[2], 14) : 0
+  const cx = 960, cy = 520
+  const wobble = 1 + 0.015 * Math.sin(frame / 5)
+  const r = (80 + 270 * swell) * appear * wobble * (1 + 0.25 * pop)
+  return (
+    <g>
+      <Glow id="bb-g" x={cx} y={cy} r={r * 1.6 + 1} opacity={0.3 * (1 - pop)} />
+      {pop < 1 && (
+        <g opacity={1 - pop}>
+          <circle cx={cx} cy={cy} r={r} fill={COLORS.blue} fillOpacity={0.1} stroke={COLORS.blueLight} strokeWidth={4} />
+          <ellipse cx={cx - r * 0.35} cy={cy - r * 0.45} rx={r * 0.22} ry={r * 0.1} fill="#fff" opacity={0.35} transform={`rotate(-30 ${cx - r * 0.35} ${cy - r * 0.45})`} />
+          <Label x={cx} y={cy - r * 0.55 + 20} size={50} weight={800} color={COLORS.champagneLight} opacity={swell}>{data.label}</Label>
+        </g>
+      )}
+      {/* # names float inside; when it pops they fall and turn red */}
+      {items.map((it, i) => {
+        const a = (i / Math.max(1, items.length)) * Math.PI * 2 + 0.6
+        const s = settle(frame, (cues[1] ?? 0) + 6 + i * 5)
+        const fall = pop * 120
+        const x = cx + Math.cos(a) * r * 0.45, y = cy + 40 + Math.sin(a) * r * 0.3 + fall
+        return <Label key={i} x={x} y={y} size={40} color={pop > 0.3 ? COLORS.red : COLORS.text} opacity={s * (1 - pop)}>{it}</Label>
+      })}
+      {/* # the pop: a ring and shards flying out */}
+      {pop > 0 && pop < 1 && (
+        <g>
+          <circle cx={cx} cy={cy} r={r * (1 + pop)} fill="none" stroke={COLORS.champagneLight} strokeWidth={6 * (1 - pop)} opacity={1 - pop} />
+          {Array.from({ length: 14 }, (_, k) => {
+            const ang = (k / 14) * Math.PI * 2 + hash01(k) * 0.3, d = r * (0.9 + pop * 1.1)
+            return <line key={k} x1={cx + Math.cos(ang) * d} y1={cy + Math.sin(ang) * d} x2={cx + Math.cos(ang) * (d + 40)} y2={cy + Math.sin(ang) * (d + 40)} stroke={COLORS.blueLight} strokeWidth={5} opacity={1 - pop} />
+          })}
+        </g>
+      )}
+    </g>
+  )
+}
+
+// ---------------------------------------------------------------- leaderboard
+// # data: { title?, before: string[], after: string[] } (≤ 8 each) — steps: old ranking, reshuffle
+const ROW = 86
+const Leaderboard: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame, data, cues }) => {
+  const before = data.before as string[], after = data.after as string[]
+  const show = settle(frame, cues[0])
+  const t = interpolate(frame, [cues[1] ?? Infinity, (cues[1] ?? Infinity) + 36], [0, 1], { ...clamp })
+  const ease = t * t * (3 - 2 * t)
+  const names = [...new Set([...before, ...after])]
+  const y0 = 220, x0 = 600, w = 720
+  const n = Math.max(before.length, after.length)
+  return (
+    <g opacity={show}>
+      <Glow id="lb-g" x={960} y={540} r={620} opacity={0.18} />
+      {Array.from({ length: n }, (_, i) => (
+        <g key={i}>
+          <rect x={x0 - 110} y={y0 + i * ROW} width={w + 110} height={ROW - 12} rx={8} fill={COLORS.bgPanel} stroke={COLORS.lineDim} strokeWidth={2} />
+          <Label x={x0 - 55} y={y0 + i * ROW + 50} size={36} weight={800} color={COLORS.champagne}>{`${i + 1}`}</Label>
+        </g>
+      ))}
+      {names.map((nm) => {
+        const b = before.indexOf(nm), a = after.indexOf(nm)
+        let y: number, x = x0 + 30, op = 1, col: string = COLORS.text
+        if (b >= 0 && a >= 0) { y = interpolate(ease, [0, 1], [b, a]) * ROW + y0 + 50; col = a < b ? COLORS.green : a > b ? COLORS.red : COLORS.text }
+        else if (b >= 0) { const k = Math.min(1, ease * 2); y = b * ROW + y0 + 50; x += k * 560; op = 1 - k; col = k > 0.05 ? COLORS.red : COLORS.text }
+        else { const k = Math.max(0, ease * 2 - 1); y = y0 + a * ROW + 50; x += (1 - k) * 560; op = k; col = COLORS.green }
+        return <Label key={nm} x={x} y={y} anchor="start" size={40} weight={700} color={col} opacity={op}>{nm}</Label>
+      })}
+      {data.title && <Label x={960} y={170} size={38} color={COLORS.dim}>{data.title}</Label>}
+    </g>
+  )
+}
+
+// ---------------------------------------------------------------- lottery
+// # data: { tickets: number (≤ 60), winners: number, label? } — steps: tickets, most lose, winners glow
+const Lottery: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame, data, cues }) => {
+  const n = Math.min(60, data.tickets as number), wins = data.winners as number
+  const cols = Math.min(12, n), rows = Math.ceil(n / cols)
+  const tw = 112, th = 64, gx = 22, gy = 26
+  const W = cols * tw + (cols - 1) * gx, Hh = rows * th + (rows - 1) * gy
+  const ox = 960 - W / 2, oy = 500 - Hh / 2
+  const winners = new Set(Array.from({ length: wins }, (_, k) => Math.floor(((k + 0.5) / wins) * n + hash01(k, 7) * (n / wins / 2)) % n))
+  const lose = ramp(frame, cues[1], 30)
+  const win = settle(frame, cues[2], true)
+  return (
+    <g>
+      <Glow id="lo-g" x={960} y={500} r={700} color={COLORS.warm} opacity={0.12 + 0.2 * win} />
+      {Array.from({ length: n }, (_, i) => {
+        const c = i % cols, r = Math.floor(i / cols)
+        const appear = settle(frame, (cues[0] ?? 0) + Math.floor(i / 3))
+        const isWin = winners.has(i)
+        const fade = isWin ? 0 : Math.min(1, Math.max(0, lose * 1.6 - hash01(i, 2) * 0.6))
+        const s = isWin ? 1 + 0.18 * win : 1
+        const x = ox + c * (tw + gx) + tw / 2, y = oy + r * (th + gy) + th / 2
+        const col = isWin && win > 0.05 ? '#E2B85C' : fade > 0.5 ? '#4A5568' : COLORS.blueLight
+        return (
+          <g key={i} opacity={appear * (1 - fade * 0.5)} transform={`translate(${x} ${y}) scale(${s})`}>
+            <rect x={-tw / 2} y={-th / 2} width={tw} height={th} rx={8} fill={isWin && win > 0.05 ? '#3A2C0C' : '#12233A'} stroke={col} strokeWidth={isWin && win > 0.05 ? 5 : 3} strokeDasharray={isWin ? undefined : '10 6'} />
+            <circle cx={-tw / 2} cy={0} r={10} fill={COLORS.bg} />
+            <circle cx={tw / 2} cy={0} r={10} fill={COLORS.bg} />
+            <line x1={-tw / 2 + 22} x2={tw / 2 - 22} y1={-8} y2={-8} stroke={col} strokeWidth={4} opacity={0.6} />
+            <line x1={-tw / 2 + 22} x2={tw / 2 - 40} y1={10} y2={10} stroke={col} strokeWidth={4} opacity={0.4} />
+          </g>
+        )
+      })}
+      {data.label && <Label x={960} y={oy + Hh + 100} size={44} weight={800} color={COLORS.champagneLight} opacity={win}>{data.label}</Label>}
+    </g>
+  )
+}
+
+export const STORY_VIGNETTES = [
+  makeVignette('bubble', 'A bubble swelling (and popping)', ['bubble', 'mania', 'crash', 'history', 'valuation'], {
+    hint: '{ label, items?: string[] (≤ 5 short names), pop?: boolean } — cues: appear, swell, (pop)',
+    items: (d) => (d?.pop ? 3 : 2),
+    check: (d) => (d?.label ? ((d.items ?? []).length > 5 ? 'at most 5 items' : null) : 'needs a "label"'),
+    Component: Bubble,
+  }),
+  makeVignette('leaderboard', 'A ranking reshuffles: old leaders out, new in', ['ranking', 'change', 'history', 'companies'], {
+    hint: '{ title?, before: string[], after: string[] } (≤ 8 each) — cues: old ranking, reshuffle',
+    items: () => 2,
+    check: (d) => list(d, 'before', 2) ?? list(d, 'after', 2) ?? (d.before.length > 8 || d.after.length > 8 ? 'at most 8 rows' : null),
+    Component: Leaderboard,
+  }),
+  makeVignette('lottery', 'Many tickets, a few huge winners', ['odds', 'winners', 'risk', 'stocks', 'returns'], {
+    hint: '{ tickets: number (≤ 60), winners: number, label? } — cues: tickets, most lose, winners glow',
+    items: () => 3,
+    check: (d) => (num(d?.tickets) && num(d?.winners) ? (d.winners >= 1 && d.winners < d.tickets ? null : 'winners must be ≥ 1 and fewer than tickets') : 'needs numeric "tickets" and "winners"'),
+    Component: Lottery,
+  }),
+]

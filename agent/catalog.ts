@@ -8,6 +8,7 @@ import { EXPRESSIONS } from '../art/rig/faces'
 import { POSE_IDS } from '../art/rig/pose'
 import { PROPS } from '../art/props/registry'
 import { SCENES } from '../art/scenes/registry'
+import { VIGNETTES } from '../art/vignettes/registry'
 import { LAYOUTS, TONES } from './package'
 import { DECOR_FIGURES, SLIDE_KINDS } from './slides'
 export { DECOR_FIGURES }
@@ -34,6 +35,7 @@ export const catalog = (sfx: string[]) => ({
   poses: [...POSE_IDS] as string[],
   expressions: [...EXPRESSIONS] as string[],
   cast: [...CAST],
+  vignettes: VIGNETTES.map((v) => ({ id: v.id, title: v.title, tags: v.tags, data: v.hint })),
   slides: SLIDE_KINDS.map((k) => ({ kind: k, data: SLIDE_HINTS[k] ?? '(see agent/slides.ts)' })),
   sfx,
   thumbnail: { layouts: [...LAYOUTS], tones: [...TONES] },
@@ -48,6 +50,9 @@ export const catalogMarkdown = (c: Catalog) => [
   `**Expressions:** ${c.expressions.map((x) => `\`${x}\``).join(', ')}`,
   `**SFX:** ${c.sfx.map((x) => `\`${x}\``).join(', ') || '(none found)'}`,
   `**Thumbnail layouts:** ${c.thumbnail.layouts.join(', ')} · **tones:** ${c.thumbnail.tones.join(', ')}`,
+  '',
+  '## Vignettes — animated mini-scenes that SHOW what the voice says (shot kind "vignette")',
+  ...c.vignettes.map((v) => `- \`${v.id}\` — ${v.title}. ${v.data}`),
   '',
   '## Slides',
   ...c.slides.map((s) => `- \`${s.kind}\` — ${s.data}`),

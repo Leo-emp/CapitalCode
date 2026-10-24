@@ -20,6 +20,7 @@ import { getProp } from '../props/registry'
 import { Actor } from '../rig/Actor'
 import { type ExpressionId, type PoseId, poseAt } from '../rig/pose'
 import { getScene } from '../scenes/registry'
+import { getVignette } from '../vignettes/registry'
 import { FPS, fontFaces } from '../tokens'
 
 // # Same shapes as agent/timeline.ts, with every cue already a frame number
@@ -31,7 +32,7 @@ type RScene = { id: string; kind: 'scene'; start: number; scene: string; time?: 
 type RSlide = { id: string; kind: 'slide'; start: number; slide: string; heading?: string; kicker?: string; source?: string; data: any; at: number[] }
 type RChapter = { id: string; kind: 'chapter'; start: number; n: number; title: string }
 type RBrand = { id: string; kind: 'brand'; start: number }
-export type RShot = RScene | RSlide | RChapter | RBrand
+export type RShot = RScene | RSlide | RVignette | RChapter | RBrand
 export type EpisodeTimeline = { fps: number; durationInFrames: number; shots: { shot: RShot; from: number; to: number }[]; sfx: { name: string; t: number; volume: number }[] }
 export type EpisodeProps = { timeline: EpisodeTimeline; voice?: string; width?: number; height?: number }
 
@@ -139,6 +140,17 @@ const SlideShotView: React.FC<{ s: RSlide; f: number; from: number }> = ({ s, f,
   )
 }
 
+// ---------------------------------------------------------------- vignette (animated mini-scene)
+type RVignette = { id: string; kind: 'vignette'; start: number; vignette: string; heading?: string; kicker?: string; source?: string; data: any; at: number[] }
+const VignetteShotView: React.FC<{ s: RVignette; f: number; from: number }> = ({ s, f, from }) => {
+  const V = getVignette(s.vignette).Component
+  return (
+    <SlideFrame frame={f} heading={s.heading} kicker={s.kicker} source={s.source} headCue={from + 2}>
+      <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}><V frame={f} data={s.data} cues={s.at} /></svg>
+    </SlideFrame>
+  )
+}
+
 // ---------------------------------------------------------------- one shot, with its transition in/out
 const ShotView: React.FC<{ s: RShot; f: number; from: number; to: number }> = ({ s, f, from, to }) => {
   const inP = interpolate(f, [from, from + TRANSITION], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) })
@@ -147,6 +159,7 @@ const ShotView: React.FC<{ s: RShot; f: number; from: number; to: number }> = ({
   const body =
     s.kind === 'scene' ? <SceneShotView s={s} f={f} from={from} to={to} />
     : s.kind === 'slide' ? <SlideShotView s={s} f={f} from={from} />
+    : s.kind === 'vignette' ? <VignetteShotView s={s} f={f} from={from} />
     : s.kind === 'chapter' ? <ChapterCard frame={f} n={s.n} title={s.title} cue={from} />
     : <Lockup f={f - from} />
   return <AbsoluteFill style={{ opacity: from === 0 ? 1 : inP, transform: `scale(${from === 0 ? 1 + 0.08 * outP : scale})` }}>{body}</AbsoluteFill>

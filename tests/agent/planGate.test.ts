@@ -204,3 +204,23 @@ describe('pace of what is on screen', () => {
     expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/br: brand card at 44\.0 s \(max 25 s\)/)
   })
 })
+
+// # Vignettes: checked like slides, counted as illustration (not slide share)
+describe('vignette shots', () => {
+  const vig = (patch: Record<string, unknown> = {}) => {
+    const p = good()
+    p.shots[1] = { id: 'b', kind: 'vignette', start: { sentence: 's3' }, vignette: 'lottery', data: { tickets: 40, winners: 2 },
+      at: [{ sentence: 's3' }, { sentence: 's3', word: 'money' }], ...patch } as any
+    return gatePlan(p, words, opts())
+  }
+  test('a valid vignette passes and counts as illustration', () => {
+    const r = vig()
+    expect(r.problems.filter((x) => !/slide share/.test(x))).toEqual([])
+    expect(r.stats!.slideShare).toBeLessThan(0.4)
+  })
+  test('unknown vignette, bad data and too many cues are refused', () => {
+    expect(vig({ vignette: 'ufo' }).problems.join('\n')).toMatch(/b: unknown vignette "ufo"/)
+    expect(vig({ data: { tickets: 5, winners: 9 } }).problems.join('\n')).toMatch(/b: lottery winners/)
+    expect(vig({ at: [{ sentence: 's3' }, { sentence: 's3' }, { sentence: 's3' }, { sentence: 's3' }] }).problems.join('\n')).toMatch(/b: more cues than lottery steps/)
+  })
+})

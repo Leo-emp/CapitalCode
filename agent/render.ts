@@ -125,11 +125,11 @@ const hashFiles = (files: Iterable<string>, extra: string[] = []) => {
 
 export const artFingerprint = (entry = join(ROOT, 'art', 'episode', 'Episode.tsx')): ArtFingerprint => {
   const all = reach(resolve(entry))
-  const lib = [...all].filter((f) => /make(Scene|Prop)\('[\w-]+'/.test(readFileSync(f, 'utf8')))
+  const lib = [...all].filter((f) => /make(Scene|Prop|Vignette)\('[\w-]+'/.test(readFileSync(f, 'utf8')))
   const idFile: Record<string, string> = {}
   for (const f of lib) {
     const h = hashFiles(reach(f))
-    for (const [, id] of readFileSync(f, 'utf8').matchAll(/make(?:Scene|Prop)\('([\w-]+)'/g)) idFile[id] = h
+    for (const [, id] of readFileSync(f, 'utf8').matchAll(/make(?:Scene|Prop|Vignette)\('([\w-]+)'/g)) idFile[id] = h
   }
   const base = hashFiles([...all].filter((f) => !lib.includes(f)), [join(PUBLIC_DIR, 'fonts'), join(PUBLIC_DIR, 'textures')])
   return { base, idFile }
@@ -137,8 +137,8 @@ export const artFingerprint = (entry = join(ROOT, 'art', 'episode', 'Episode.tsx
 
 // # Scene + prop ids a shot draws
 const artIds = (s: Timeline['shots'][number]['shot']): string[] => {
-  const x = s as { kind: string; scene?: string; props?: { id: string }[]; data?: { icon?: string } }
-  return [...(x.kind === 'scene' && x.scene ? [x.scene] : []), ...(x.props ?? []).map((p) => p.id), ...(x.data?.icon ? [x.data.icon] : [])]
+  const x = s as { kind: string; scene?: string; vignette?: string; props?: { id: string }[]; data?: { icon?: string } }
+  return [...(x.kind === 'scene' && x.scene ? [x.scene] : []), ...(x.kind === 'vignette' && x.vignette ? [x.vignette] : []), ...(x.props ?? []).map((p) => p.id), ...(x.data?.icon ? [x.data.icon] : [])]
 }
 
 // # A chunk's key: its range + every shot visible in it (incl. the outgoing transition) + the art it uses

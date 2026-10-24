@@ -8,6 +8,7 @@ import { cueFrame } from '../art/timing'
 import { FPS } from '../art/tokens'
 import type { Cue, PlanDoc, Shot, TimedWord } from './schema'
 import { SLIDE_SPECS } from './slides'
+import { VIGNETTES } from '../art/vignettes/registry'
 
 // # Seconds where a cue's word starts — searched only inside its own sentence
 export const resolveCue = (words: TimedWord[], cue: Cue): number => {
@@ -37,8 +38,9 @@ export const buildTimeline = (plan: PlanDoc, words: TimedWord[], duration: numbe
   const starts = plan.shots.map((s, i) => (i === 0 ? 0 : frame(s.start)))
   const shots = plan.shots.map((s, i) => {
     const r = mapCues(s, frame)
-    if (s.kind === 'slide' && SLIDE_SPECS[s.slide]) {
-      const need = SLIDE_SPECS[s.slide].items(s.data)
+    const spec = s.kind === 'slide' ? SLIDE_SPECS[s.slide] : s.kind === 'vignette' ? VIGNETTES.find((v) => v.id === s.vignette) : undefined
+    if ((s.kind === 'slide' || s.kind === 'vignette') && spec) {
+      const need = spec.items(s.data)
       const at: number[] = r.at.length ? r.at : [starts[i]]
       while (at.length < need) at.push(at[at.length - 1] + STAGGER)
       r.at = at

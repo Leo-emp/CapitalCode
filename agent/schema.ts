@@ -36,9 +36,11 @@ export type SceneShot = {
   variant?: string; actors?: ShotActor[]; props?: ShotProp[]; slam?: { words: { text: string; tone?: string }[]; at: Cue[] }
 }
 export type SlideShot = { id: string; start: Cue; kind: 'slide'; slide: string; heading?: string; kicker?: string; source?: string; data: Record<string, unknown>; at: Cue[] }
+// # An animated mini-scene that SHOWS what the voice says (art/vignettes), one cue per step
+export type VignetteShot = { id: string; start: Cue; kind: 'vignette'; vignette: string; heading?: string; kicker?: string; source?: string; data: Record<string, unknown>; at: Cue[] }
 export type ChapterShot = { id: string; start: Cue; kind: 'chapter'; n: number; title: string }
 export type BrandShot = { id: string; start: Cue; kind: 'brand' }
-export type Shot = SceneShot | SlideShot | ChapterShot | BrandShot
+export type Shot = SceneShot | SlideShot | VignetteShot | ChapterShot | BrandShot
 export type PlanDoc = { shots: Shot[]; sfx?: { at: Cue; name: string; volume?: number }[] }
 
 // ------------------------------------------------------------ metadata.json (Publisher)
