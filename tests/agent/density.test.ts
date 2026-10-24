@@ -80,3 +80,10 @@ describe('living film density', () => {
     expect(r.problems.length).toBeGreaterThan(0)
   })
 })
+
+test('every gap over the limit is named (up to 8), so a director can fix them in one pass', () => {
+  const p = dense()
+  for (const k of [0, 2]) (p.shots[k] as any).camera = (p.shots[k] as any).camera.filter((c: any) => !/w8/.test(c.at.word ?? ''))
+  const gaps = gatePlan(p, words, opts).problems.filter((x) => /no illustration/.test(x))
+  expect(gaps.length).toBeGreaterThanOrEqual(3)
+})

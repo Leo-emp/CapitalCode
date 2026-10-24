@@ -229,9 +229,11 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
     if (sids.length && bare.length / sids.length > (o.maxBare ?? 0.1))
       problems.push(`${bare.length} of ${sids.length} sentences have nothing on screen that shows what is said (max ${Math.round((o.maxBare ?? 0.1) * 100)}%): ${bare.slice(0, 12).join(', ')}${bare.length > 12 ? ' …' : ''} — add a vignette step, a slide item or a meaningful prop on each; generic icons and pose changes do not count`)
     const times = events.flatMap((c) => { try { return [resolveCue(words, c)] } catch { return [] } }).concat(marks, [first, o.duration]).sort((a, b) => a - b)
-    let worst = 0, at = 0
-    for (let k = 1; k < times.length; k++) if (times[k] - times[k - 1] > worst) { worst = times[k] - times[k - 1]; at = times[k - 1] }
-    if (worst > (o.maxGap ?? 6)) problems.push(`no illustration for ${worst.toFixed(1)} s from ${at.toFixed(1)} s (max ${o.maxGap ?? 6} s) — show what is being said there`)
+    // # every gap over the limit, longest first (up to 8), so the director can fix them in one pass
+    const gaps: [number, number][] = []
+    for (let k = 1; k < times.length; k++) if (times[k] - times[k - 1] > (o.maxGap ?? 6)) gaps.push([times[k] - times[k - 1], times[k - 1]])
+    for (const [len, at] of gaps.sort((a, b) => b[0] - a[0]).slice(0, 8))
+      problems.push(`no illustration for ${len.toFixed(1)} s from ${at.toFixed(1)} s (max ${o.maxGap ?? 6} s) — show what is being said there`)
   }
   const slams = plan.shots.filter((s) => (s.kind === 'scene' && s.slam) || (s.kind === 'slide' && s.slide === 'slam')).length
   if (slams > (o.maxSlams ?? 3)) problems.push(`${slams} slams (max ${o.maxSlams ?? 3}) — keep them for the real payoff lines`)
