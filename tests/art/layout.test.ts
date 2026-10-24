@@ -1,6 +1,6 @@
 // # Tests for art/infographics/layout.ts — number formatting + chart maths
 import { describe, expect, test } from 'vitest'
-import { barRows, formatMoney, formatPct, labelRows, niceTicks, scaleLinear, slamEntry, slamSize } from '../../art/infographics/layout'
+import { barRows, formatMoney, formatPct, labelRows, niceTicks, pctFormat, scaleLinear, slamEntry, slamSize } from '../../art/infographics/layout'
 
 describe('formatMoney', () => {
   test('compact money like the reference slides', () => {
@@ -54,7 +54,8 @@ describe('fit to frame', () => {
   test('10 bars shrink so every row fits above the source line', () => {
     const r = barRows(10)
     expect(10 * r.height + 9 * r.gap).toBeLessThanOrEqual(600)
-    expect(r.font).toBeGreaterThanOrEqual(22)
+    expect(r.font).toBeGreaterThanOrEqual(30) // # phone-readable (owner rule r10)
+    expect(r.value).toBeGreaterThanOrEqual(30)
   })
   test('a short slam keeps its size; a long one shrinks to fit 1,700 px', () => {
     expect(slamSize(['BUYERS', "DON'T."], 200)).toBe(200)
@@ -79,4 +80,12 @@ test('labels closer than 16% of the bar alternate rows', () => {
   expect(labelRows([7.52, 30.38, 62.1])).toEqual([0, 1, 0])
   expect(labelRows([40, 30, 30])).toEqual([0, 0, 0])
   expect(labelRows([5, 5, 5, 85])).toEqual([0, 1, 0, 1])
+})
+
+// # One rounding per chart: 7.5% next to "2%" read as inconsistent (Critic round 2)
+test('pctFormat uses the same decimals for every value of a chart', () => {
+  const f = pctFormat([7.52, 6.59, 2.02, 1.47])
+  expect([7.52, 2.02, 1.47].map(f)).toEqual(['7.5%', '2.0%', '1.5%'])
+  const g = pctFormat([40, 27])
+  expect([40, 27].map(g)).toEqual(['40%', '27%'])
 })

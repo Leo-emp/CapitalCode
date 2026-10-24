@@ -141,7 +141,7 @@ export const StackedBar: React.FC<{ frame: number; segments: { label: string; va
           const left = segments.slice(0, i).reduce((a, x) => a + x.value, 0) / total * 100
           return <div key={i} style={{ position: 'absolute', left: `${left}%`, top: rows[i] * 100, whiteSpace: 'nowrap', ...rise(g) }}>
             <div style={{ fontSize: 46, fontWeight: 800, color: TONE[s.tone ?? 'blue'] }}>{format(s.value)}</div>
-            <div style={{ fontSize: 28, letterSpacing: 3, color: COLORS.dim, marginTop: 6 }}>{s.label.toUpperCase()}</div></div>
+            <div style={{ fontSize: 30, color: COLORS.dim, marginTop: 6 }}>{s.label}</div></div>
         })}
       </div>
     </div>

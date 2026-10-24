@@ -12,7 +12,7 @@ import { AbsoluteFill, Audio, Easing, interpolate, staticFile, useCurrentFrame }
 import { GrainOverlay } from '../GrainOverlay'
 import { ChapterCard, CompareCards, FlowDiagram, KeywordSlam, MapHighlight, QuoteCard, Timeline as TimelineCard } from '../infographics/cards'
 import { BarChart, Equation, LineChart, NumberBuild, StackedBar } from '../infographics/charts'
-import { formatMoney } from '../infographics/layout'
+import { formatMoney, pctFormat } from '../infographics/layout'
 import { clamp, SlideFrame } from '../infographics/SlideFrame'
 import { Lockup } from '../logo/LogoReveal'
 import { getProp } from '../props/registry'
@@ -49,6 +49,13 @@ const FORMATS: Record<string, (v: number) => string> = {
 const fmt = (name?: string) => FORMATS[name ?? ''] ?? FORMATS.plain
 
 // ---------------------------------------------------------------- scene shot
+// # A slam darkens the scene, lays a near-solid band behind the words and hides the props,
+// # so no sign, prop or screen text reads through the slam (Critic, first long video)
+export const slamLayers = (f: number, slamAt: number | undefined) => {
+  if (slamAt === undefined || f < slamAt - 3) return { dim: 0, band: 0, props: true }
+  const k = interpolate(f, [slamAt - 3, slamAt + 3], [0, 1], clamp)
+  return { dim: 0.86 * k, band: 0.96 * k, props: false }
+}
 const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number }> = ({ s, f, from, to }) => {
   const Scene = getScene(s.scene)
   const a = Scene.anchors
@@ -69,20 +76,20 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number }
       </g>,
     )
   }
+  const slamAt = s.slam?.at[0]
+  const layers = slamLayers(f, slamAt)
   const perAnchor: Record<string, number> = {}
   for (const [i, p] of (s.props ?? []).entries()) {
     const anc = a[p.anchor]
     const Prop = getProp(p.id).Component
     const size = (p.size ?? 170) * anc.scale
     const k = (perAnchor[p.anchor] = (perAnchor[p.anchor] ?? -1) + 1)
-    if (f < p.at - 1) continue
+    if (f < p.at - 1 || !layers.props) continue
     slots[anc.layer].push(<Prop key={`p${i}`} size={size} x={anc.x - size / 2 + k * size * 0.72} y={anc.y - size / 2 - k * 8} frame={f} enter={p.at} />)
   }
 
   // # slow push-in keeps every scene alive; a slam darkens the scene and hits the words
   const push = interpolate(f, [from, to], [1.0, 1.05], clamp)
-  const slamAt = s.slam?.at[0]
-  const dim = slamAt === undefined ? 0 : interpolate(f, [slamAt - 3, slamAt + 3], [0, 0.86], clamp) // # dark enough that no scene detail reads through the words
   return (
     <AbsoluteFill>
       <AbsoluteFill style={{ transform: `scale(${push})` }}>
@@ -91,7 +98,10 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number }
       </AbsoluteFill>
       {s.slam && slamAt !== undefined && f >= slamAt - 3 && (
         <>
-          <AbsoluteFill style={{ background: '#000', opacity: dim }} />
+          <AbsoluteFill style={{ background: '#000', opacity: layers.dim }} />
+          <AbsoluteFill style={{ justifyContent: 'center' }}>
+            <div style={{ height: 380, background: 'linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%)', opacity: layers.band }} />
+          </AbsoluteFill>
           <KeywordSlam frame={f} words={s.slam.words} cues={s.slam.at} />
         </>
       )}
@@ -105,10 +115,10 @@ const SlideBody: React.FC<{ s: RSlide; f: number }> = ({ s, f }) => {
   switch (s.slide) {
     case 'number': return <NumberBuild frame={f} value={d.value} cues={[at[0], Math.max(at[1], at[0] + 20)]} label={d.label} tone={d.tone} format={fmt(d.format ?? 'money')} />
     case 'equation': return <Equation frame={f} parts={d.parts} cues={at} />
-    case 'bars': return <BarChart frame={f} bars={d.bars} cues={at} max={d.max} format={fmt(d.format)} />
+    case 'bars': return <BarChart frame={f} bars={d.bars} cues={at} max={d.max} format={d.format === 'pct' ? pctFormat(d.bars.map((b: { value: number }) => b.value)) : fmt(d.format)} />
     case 'line': return <LineChart frame={f} values={d.values} cues={[at[0], Math.max(at[1], at[0] + 30)]} area={d.area} tone={d.tone}
       annotate={d.annotate ? { ...d.annotate, cue: at[2] } : undefined} yFormat={fmt(d.format)} xLabels={d.xLabels} />
-    case 'stacked': return <StackedBar frame={f} segments={d.segments} cues={at} format={fmt(d.format)} />
+    case 'stacked': return <StackedBar frame={f} segments={d.segments} cues={at} format={d.format === 'pct' ? pctFormat(d.segments.map((x: { value: number }) => x.value)) : fmt(d.format)} />
     case 'flow': return <FlowDiagram frame={f} nodes={d.nodes} cues={at} />
     case 'timeline': return <TimelineCard frame={f} points={d.points} cues={at} />
     case 'compare': return <CompareCards frame={f} cards={d.cards} cues={at} />

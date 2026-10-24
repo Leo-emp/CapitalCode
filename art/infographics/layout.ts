@@ -46,7 +46,8 @@ export const scaleLinear = (domain: [number, number], range: [number, number]) =
 export const barRows = (n: number) => {
   const per = Math.min(100, 600 / Math.max(1, n))
   if (per >= 100) return { height: 54, gap: 46, font: 30, value: 38 }
-  return { height: Math.floor(per * 0.54), gap: Math.floor(per * 0.46), font: Math.max(22, Math.round(30 * per / 100)), value: Math.max(26, Math.round(38 * per / 100)) }
+  // # text never drops below 30 px (phone-readable); rows give up gap before height
+  return { height: Math.max(32, Math.floor(per * 0.54)), gap: Math.max(8, Math.floor(per * 0.46)), font: 30, value: Math.max(30, Math.round(38 * per / 100)) }
 }
 
 // # Keyword slam font size that fits ~1,700 px (Bebas Neue ≈ 0.4 em per character + 40 px between words)
@@ -72,4 +73,10 @@ export const labelRows = (values: number[], minGap = 16): number[] => {
     left += (v / total) * 100
   }
   return rows
+}
+
+// # Percent formatter shared by every value of one chart: 1 decimal if any value needs it
+export const pctFormat = (values: number[]) => {
+  const dp = values.some((v) => Math.round(v * 10) % 10 !== 0) ? 1 : 0
+  return (v: number) => `${v.toFixed(dp)}%`
 }
