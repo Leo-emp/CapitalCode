@@ -43,3 +43,17 @@ const tl = buildTimeline(plan, words, 72)
 const mid = tl.shots.map((s) => Math.round(s.from + (s.to - s.from) * 0.7))
 const files = await renderStills('Episode', { timeline: tl }, [...mid, tl.shots[4].from + 4, 360], 'output/episode-fixture', 'shot')
 console.log(`RESULT_JSON: ${JSON.stringify({ ok: true, stills: files.length })}`)
+
+// # --video: the first 20 s as a real chunked render with a test voice (integration check)
+if (process.argv.includes('--video')) {
+  const { mkdirSync, writeFileSync } = await import('node:fs')
+  const { tone } = await import('../agent/audio')
+  const { renderVideo } = await import('../agent/commands/render')
+  const dir = 'temp/fixture-video'
+  mkdirSync(dir, { recursive: true })
+  const short = buildTimeline({ ...plan, shots: plan.shots.slice(0, 4) }, words, 20)
+  writeFileSync(`${dir}/timeline.json`, JSON.stringify(short))
+  await tone(`${dir}/voice.wav`, 20, -22)
+  const v = await renderVideo(dir, short, `${dir}/voice.wav`)
+  console.log(`RESULT_JSON: ${JSON.stringify(v)}`)
+}

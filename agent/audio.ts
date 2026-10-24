@@ -51,7 +51,8 @@ export const normalize = (input: string, out: string, target = -14, extraFilter 
   let level = lufs(input)
   for (let k = 0; k < 4; k++) {
     gain += target - level
-    const chain = [extraFilter, `volume=${gain.toFixed(2)}dB`, 'alimiter=limit=0.89:level=false'].filter(Boolean).join(',')
+    // # limiter at 0.84 (−1.5 dB) keeps the TRUE peak ≤ −1 dBTP after inter-sample overshoot
+    const chain = [extraFilter, `volume=${gain.toFixed(2)}dB`, 'alimiter=limit=0.84:level=false'].filter(Boolean).join(',')
     ff(['-i', input, '-af', chain, '-ar', '48000', out], 'normalize')
     level = lufs(out)
     if (Math.abs(level - target) <= 0.5) break
