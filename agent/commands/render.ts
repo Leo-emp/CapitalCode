@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { register } from '../cli'
 import { isDone, loadJob, markStep, readJson, unmarkFrom } from '../jobs'
-import { artFingerprint, autoSfx, chunkKeys, concatVideos, countFrames, mixAudio, mux, remotionRange, renderChunks, renderStills, splitChunks } from '../render'
+import { artFingerprint, autoSfx, chunkKeys, concatVideos, countFrames, mixAudio, mux, pruneChunks, remotionRange, renderChunks, renderStills, splitChunks } from '../render'
 import { refuse, result } from '../result'
 import type { Timeline } from '../timeline'
 import { fileHash } from './script'
@@ -37,6 +37,9 @@ export const renderVideo = async (dir: string, tl: Timeline, voiceWav: string, o
   const vKey = chunks.map((c) => c.key).join(',')
   if (!stamped(video, vKey)) { concatVideos(files, video); stamp(video, vKey) }
   if (countFrames(video) !== tl.durationInFrames) throw new Error(`video has ${countFrames(video)} frames, expected ${tl.durationInFrames}`)
+  // # the joined video is verified, so chunks from older plan/art versions can go
+  const pruned = pruneChunks(join(dir, 'render'), files)
+  if (pruned.length) log(`pruned ${pruned.length} old chunk(s)`)
 
   // # 4. audio: voice + planned SFX + soft whooshes on cuts, −14 LUFS, 5. mux
   const audio = join(dir, 'render', 'audio.wav')

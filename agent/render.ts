@@ -192,6 +192,14 @@ export const renderChunks = async (chunks: (Range & { key: string })[], dir: str
   return files
 }
 
+// # Delete chunk files (and half-written parts) that the current render no longer uses
+export const pruneChunks = (dir: string, keep: string[]) => {
+  const names = new Set(keep.map((f) => resolve(f)))
+  const old = readdirSync(dir).filter((f) => /^chunk_.*\.mp4$/.test(f) && !names.has(resolve(join(dir, f))))
+  for (const f of old) rmSync(join(dir, f), { force: true })
+  return old
+}
+
 // # Remotion renderer for one frame range of the Episode, video only
 export const remotionRange = async (inputProps: Record<string, unknown>): Promise<RenderRange> => {
   const comp = await composition('Episode', inputProps)

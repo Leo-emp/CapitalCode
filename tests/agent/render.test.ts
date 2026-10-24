@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, test } from 'vitest'
 import { duration, ff, loudness, tone } from '../../agent/audio'
-import { artFingerprint, autoSfx, chunkKeys, concatList, countFrames, freePort, mixAudio, renderChunks, splitChunks } from '../../agent/render'
+import { artFingerprint, autoSfx, chunkKeys, concatList, countFrames, freePort, mixAudio, pruneChunks, renderChunks, splitChunks } from '../../agent/render'
 import { createServer } from 'node:net'
 
 // # A fake renderer: a solid-colour clip with exactly (to - from) frames at 30 fps
@@ -119,4 +119,14 @@ describe('chunk keys follow the art each chunk uses', () => {
     for (const p of PROPS) expect(f.idFile[p.id], p.id).toBeTruthy()
     expect(f.base).toMatch(/^[0-9a-f]{12}$/)
   }, 30_000) // # loads the whole art library; slow under a parallel suite
+})
+
+// # Old chunks from earlier plan/art versions pile up (~1 GB a video); prune keeps only the current ones
+test('pruneChunks deletes chunk files that are not in the current render', async () => {
+  const { writeFileSync } = await import('node:fs')
+  const d = mkdtempSync(join(tmpdir(), 'cc-'))
+  for (const f of ['chunk_000000_000900_aaa.mp4', 'chunk_000000_000900_old.mp4', 'chunk_000900_001800_bbb.mp4', 'audio.wav']) writeFileSync(join(d, f), 'x')
+  const removed = pruneChunks(d, [join(d, 'chunk_000000_000900_aaa.mp4'), join(d, 'chunk_000900_001800_bbb.mp4')])
+  expect(removed).toEqual(['chunk_000000_000900_old.mp4'])
+  expect(readdirSync(d).sort()).toEqual(['audio.wav', 'chunk_000000_000900_aaa.mp4', 'chunk_000900_001800_bbb.mp4'])
 })
