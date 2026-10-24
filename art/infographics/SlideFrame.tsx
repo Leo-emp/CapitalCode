@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { AbsoluteFill, interpolate, spring } from 'remotion'
-import { COLORS, fontFaces, FPS, MOTION } from '../tokens'
+import { COLORS, fontFaces, FPS, MOTION, PANEL_BG } from '../tokens'
 
 export const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const
 
@@ -25,7 +25,7 @@ export const SlideFrame: React.FC<{ frame: number; heading?: string; kicker?: st
 }) => {
   const h = build(frame, headCue)
   return (
-    <AbsoluteFill style={{ background: `linear-gradient(180deg, ${COLORS.bgPanel} 0%, #060A11 100%)`, fontFamily: 'Inter', color: COLORS.text }}>
+    <AbsoluteFill style={{ background: PANEL_BG, fontFamily: 'Inter', color: COLORS.text }}>
       <style>{fontFaces()}</style>
       {heading && (
         <div style={{ position: 'absolute', left: 150, top: 140, ...rise(h) }}>

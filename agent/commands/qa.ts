@@ -72,7 +72,8 @@ register('gate-video', 'gate-video <job>  — duration, loudness, flicker scan, 
   if (!isDone(dir, 'render')) refuse('run render first')
   const tl = readJson<Timeline>(join(dir, 'timeline.json'))
   const file = join(dir, 'final.mp4')
-  const r = gateVideo(file, { expectSeconds: tl.durationInFrames / tl.fps, cuts: plannedMotion(tl) })
+  // # brightness band around the Alux reference (≈ 16%); the first video was 6.9%
+  const r = gateVideo(file, { expectSeconds: tl.durationInFrames / tl.fps, cuts: plannedMotion(tl), brightness: [11, 22] })
   const qa = join(dir, 'qa')
   const sheets = frameSheets(file, qa, loadJob(dir).kind === 'short' ? 3 : 10)
   const flags = flagSheets(file, r.flags, tl.fps, qa)

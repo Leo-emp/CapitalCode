@@ -92,7 +92,7 @@ export const makeScene = (id: string, title: string, tags: string[], anchors: Re
         </g>
         <Weather time={time} frame={frame} u={u} />
         {tone !== 'none' && <rect data-tone={tone} width={1920} height={1080} fill={TONES[tone]} opacity={0.22} style={{ mixBlendMode: 'soft-light' }} />}
-        <defs><radialGradient id={u('vig')} cx="0.5" cy="0.5" r="0.75"><stop offset="55%" stopColor="#000" stopOpacity={0} /><stop offset="100%" stopColor="#000" stopOpacity={0.8} /></radialGradient></defs>
+        <defs><radialGradient id={u('vig')} cx="0.5" cy="0.5" r="0.75"><stop offset="60%" stopColor="#000" stopOpacity={0} /><stop offset="100%" stopColor="#000" stopOpacity={0.5} /></radialGradient></defs>
         <rect width={1920} height={1080} fill={`url(#${u('vig')})`} pointerEvents="none" />
       </svg>
     )

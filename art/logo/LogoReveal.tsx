@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion'
-import { COLORS, fontFaces } from '../tokens'
+import { COLORS, fontFaces, PANEL_BG } from '../tokens'
 import { Emblem } from './Emblem'
 import { Wordmark } from './Wordmark'
 
@@ -19,7 +19,7 @@ export const Lockup: React.FC<{ f: number }> = ({ f }) => {
   const word = interpolate(f, [38, 56], [0, 1], clamp)
   const tag = interpolate(f, [52, 70], [0, 1], clamp)
   return (
-    <AbsoluteFill style={{ background: COLORS.bg, alignItems: 'center', justifyContent: 'center' }}>
+    <AbsoluteFill style={{ background: PANEL_BG, alignItems: 'center', justifyContent: 'center' }}>
       <style>{fontFaces()}</style>
       <div style={{ display: 'flex', alignItems: 'center', gap: 56 }}>
         <svg width={260} height={255} overflow="visible"><Emblem size={260} progress={{ arms, slash, bars }} /></svg>

@@ -5,7 +5,7 @@
 
 import React from 'react'
 import { AbsoluteFill, interpolate } from 'remotion'
-import { COLORS, fontFaces } from '../tokens'
+import { COLORS, fontFaces, PANEL_BG } from '../tokens'
 import { slamEntry, slamSize } from './layout'
 import { build, clamp, rise, TONE, type Tone } from './SlideFrame'
 
@@ -130,7 +130,7 @@ export const QuoteCard: React.FC<{ frame: number; quote: string; who: string; cu
 export const ChapterCard: React.FC<{ frame: number; n: number; title: string; cue?: number }> = ({ frame, n, title, cue = 0 }) => {
   const g = build(frame, cue)
   return (
-    <AbsoluteFill style={{ background: '#060A11', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter' }}>
+    <AbsoluteFill style={{ background: PANEL_BG, alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter' }}>
       <style>{fontFaces()}</style>
       <div style={{ display: 'flex', alignItems: 'center', gap: 60 }}>
         <div style={{ fontSize: 130, fontWeight: 800, color: COLORS.champagne, transform: `translateX(${(1 - g) * -40}px)`, opacity: g }}>{String(n).padStart(2, '0')}</div>
