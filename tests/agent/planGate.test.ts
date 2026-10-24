@@ -67,6 +67,20 @@ describe('gatePlan', () => {
     expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/b: bars/)
   })
 
+  test('a slide icon must be a known prop', () => {
+    const p = good()
+    ;(p.shots[1] as any).data.icon = 'ufo-icon'
+    expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/b: unknown icon prop "ufo-icon"/)
+  })
+
+  test('an actor the camera framing crops out is refused', () => {
+    const p = good()
+    ;(p.shots[4] as any).framing = 'close'
+    expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/e: actor hero at "stand" is out of frame with close framing/)
+    ;(p.shots[4] as any).framing = 'wide'
+    expect(gatePlan(p, words, opts()).problems.join('\n')).not.toMatch(/out of frame/)
+  })
+
   test('the first shot must start on the first sentence; shots must move forward in time', () => {
     const p = good()
     p.shots[0].start = { sentence: 's2' }

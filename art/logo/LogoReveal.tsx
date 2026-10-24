@@ -12,7 +12,7 @@ import { Wordmark } from './Wordmark'
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const
 
-const Lockup: React.FC<{ f: number }> = ({ f }) => {
+export const Lockup: React.FC<{ f: number }> = ({ f }) => {
   const arms = interpolate(f, [0, 12], [0, 1], clamp)
   const bars = interpolate(f, [8, 34], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) })
   const slash = interpolate(f, [30, 40], [0, 1], { ...clamp, easing: Easing.out(Easing.quad) })

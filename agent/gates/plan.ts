@@ -11,6 +11,7 @@ import { CAST } from '../../art/rig/Actor'
 import { EXPRESSIONS } from '../../art/rig/faces'
 import { POSE_IDS } from '../../art/rig/pose'
 import { PROPS } from '../../art/props/registry'
+import { type Anchor, cameraFor, type SceneFraming } from '../../art/scenes/kit'
 import { SCENES } from '../../art/scenes/registry'
 import { PUBLIC_DIR } from '../paths'
 import type { Cue, PlanDoc, TimedWord } from '../schema'
@@ -26,6 +27,13 @@ export type PlanGateOpts = {
 export const sfxAvailable = (): string[] => {
   const d = join(PUBLIC_DIR, 'sfx', 'cc')
   return existsSync(d) ? readdirSync(d).filter((f) => f.endsWith('.wav')).map((f) => f.replace(/\.wav$/, '')) : []
+}
+
+// # Is an anchor (± an actor's half-width) inside what the camera shows for this framing?
+const inFrame = (anchors: Record<string, Anchor>, framing: SceneFraming, p: Anchor) => {
+  const cam = cameraFor(framing, anchors.focus ?? anchors.prop1 ?? { x: 960, y: 540 })
+  const x0 = -cam.tx / cam.k, x1 = (1920 - cam.tx) / cam.k, half = 80 * p.scale
+  return p.x - half >= x0 && p.x + half <= x1
 }
 
 const median = (xs: number[]) => {
@@ -56,6 +64,8 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
       for (const a of s.actors ?? []) {
         if (!CAST.includes(a.who)) problems.push(`${s.id}: unknown actor "${a.who}" (cast: ${CAST.join(', ')})`)
         if (sc && !sc.anchors[a.anchor]) problems.push(`${s.id}: scene ${s.scene} has no anchor "${a.anchor}" (has: ${Object.keys(sc.anchors).join(', ')})`)
+        if (sc && sc.anchors[a.anchor] && !inFrame(sc.anchors, s.framing ?? 'wide', sc.anchors[a.anchor]))
+          problems.push(`${s.id}: actor ${a.who} at "${a.anchor}" is out of frame with ${s.framing} framing — use wide/medium or another anchor`)
         if (!a.track?.length) problems.push(`${s.id}: actor ${a.who} has an empty track`)
         for (const k of a.track ?? []) {
           if (!(POSE_IDS as string[]).includes(k.pose)) problems.push(`${s.id}: unknown pose "${k.pose}"`)
@@ -76,6 +86,7 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
         if (bad) problems.push(`${s.id}: ${s.slide} ${bad}`)
         else if ((s.at ?? []).length > SLIDE_SPECS[s.slide].items(s.data)) problems.push(`${s.id}: more cues than ${s.slide} items`)
       }
+      if (s.data?.icon && !PROPS.some((x) => x.id === s.data.icon)) problems.push(`${s.id}: unknown icon prop "${String(s.data.icon)}"`)
       for (const c of s.at ?? []) cue(s.id, c)
     } else if (s.kind === 'chapter') {
       if (!s.title) problems.push(`${s.id}: chapter needs a title`)
