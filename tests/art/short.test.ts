@@ -25,3 +25,11 @@ test('a slide zooms a little but keeps its heading (x 150) and right edge (x 177
   expect(v.scale).toBeGreaterThan(s.scale)
   expect(1920 * v.scale + 2 * v.x).toBeCloseTo(1080, 5) // # centred
 })
+
+// # diorama pieces are full-width illustrations: in a Short they fit the width, centred (nothing cut off)
+test('a diorama piece fits the full width of the box, centred vertically', () => {
+  const r = reframe({ kind: 'piece' } as any, box)
+  expect(r.scale).toBeCloseTo(box.w / 1920)
+  expect(r.x).toBe(0)
+  expect(r.y).toBeCloseTo((box.h - 1080 * r.scale) / 2)
+})

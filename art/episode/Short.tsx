@@ -36,6 +36,11 @@ export const reframe = (shot: { kind: string; scene?: string; actors?: { anchor:
     const scale = box.h / 1080
     return { scale, x: clampN(box.w / 2 - cx * scale, box.w - 1920 * scale, 0), y: 0 }
   }
+  // # a diorama piece is a full-width illustration: fit the width so nothing is cut off
+  if (shot.kind === 'piece') {
+    const scale = box.w / 1920
+    return { scale, x: 0, y: (box.h - 1080 * scale) / 2 }
+  }
   if (shot.kind === 'vignette' || shot.kind === 'chapter' || shot.kind === 'brand') {
     const scale = 0.75
     return { scale, x: (box.w - 1920 * scale) / 2, y: (box.h - 1080 * scale) / 2 }
