@@ -87,6 +87,9 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
       for (const p of s.props ?? []) {
         if (!PROPS.some((x) => x.id === p.id)) problems.push(`${s.id}: unknown prop "${p.id}"`)
         if (sc && !sc.anchors[p.anchor]) problems.push(`${s.id}: scene ${s.scene} has no anchor "${p.anchor}"`)
+        if (p.on !== undefined && p.on !== 'hand' && p.on !== 'floor') problems.push(`${s.id}: prop ${p.id}: on must be "hand" or "floor"`)
+        const n = (s.actors ?? []).length
+        if (p.on === 'hand' && (p.actor ?? 0) >= n) problems.push(`${s.id}: prop ${p.id} is held by actor ${p.actor ?? 0}, but the shot has ${n} actor${n === 1 ? '' : 's'}`)
         cue(s.id, p.at)
       }
       if (s.slam) { s.slam.at.forEach((c) => cue(s.id, c)); if (!s.slam.words?.length) problems.push(`${s.id}: slam needs words`) }

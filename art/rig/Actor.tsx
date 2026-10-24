@@ -7,7 +7,7 @@
 
 import React from 'react'
 import { CharacterHD, getLookHD, HD_SKELETON, LOOKS_HD } from './hd/CharacterHD'
-import { type ExpressionId, footDrop, getPose, type Pose } from './pose'
+import { type ExpressionId, footDrop, getPose, handPosition, type Pose } from './pose'
 
 // # The approved cast (owner, 2026-10-24)
 export const CAST = Object.keys(LOOKS_HD) as ReadonlyArray<string>
@@ -44,4 +44,26 @@ export const Actor: React.FC<{
       <CharacterHD pose={p} look={look} frame={frame} breathe={breathe} />
     </g>
   )
+}
+
+// ------------------------------------------------------------ acting: props held or set down
+type At = { x: number; y: number; scale: number }
+
+// # Where an actor's right hand is in scene pixels, for a pose at an anchor (mirrored when flipped)
+export const heldPoint = (pose: string | Pose, anchor: At, flip = false): { x: number; y: number } => {
+  const p = typeof pose === 'string' ? getPose(pose) : pose
+  const h = handPosition(p, 'r', HD_SKELETON)
+  const k = BASE * anchor.scale
+  return { x: anchor.x + (flip ? -1 : 1) * h.x * k, y: anchor.y + h.y * k }
+}
+
+// # Prop box (top-left + size): in the hand (follows the pose), standing on the floor, or centred on its anchor
+export const propBox = (on: 'hand' | 'floor' | undefined, size: number, anchor: At, o: { pose?: string | Pose; flip?: boolean; actor?: At } = {}) => {
+  if (on === 'hand') {
+    const s = size * 0.62
+    const h = heldPoint(o.pose ?? 'hold', o.actor ?? anchor, o.flip)
+    return { x: h.x - s / 2, y: h.y - s * 0.75, size: s }
+  }
+  if (on === 'floor') return { x: anchor.x - size / 2, y: anchor.y - size, size }
+  return { x: anchor.x - size / 2, y: anchor.y - size / 2, size }
 }

@@ -72,7 +72,17 @@ export const rnd = (seed: number) => { const x = Math.sin(seed * 127.1 + 311.7) 
 // # Wrap a drawing as a scene: 3 parallax layers with actor slots between them,
 // # vignette on top. No SVG filters (they tore text during camera moves and cost
 // # most of each frame); grain is one static texture overlay over the whole video.
-export const makeScene = (id: string, title: string, tags: string[], anchors: Record<string, Anchor>, draw: SceneDraw): SceneEntry => {
+// # A second standing spot for two-person moments (handshake, talk): 520 px from `stand`, on the
+// # side with more room, same ground line and scale. Scenes may define their own `stand2`.
+export const withStand2 = (anchors: Record<string, Anchor>): Record<string, Anchor> => {
+  if (anchors.stand2 || !anchors.stand) return anchors
+  const s = anchors.stand
+  const x = s.x < 960 ? Math.min(1720, s.x + 520) : Math.max(200, s.x - 520)
+  return { ...anchors, stand2: { ...s, x } }
+}
+
+export const makeScene = (id: string, title: string, tags: string[], rawAnchors: Record<string, Anchor>, draw: SceneDraw): SceneEntry => {
+  const anchors = withStand2(rawAnchors)
   const Component: React.FC<SceneProps> = ({ t = 0, lightsOn = 1, frame = 0, variant, actors = {}, time = 'night', tone = 'none', framing = 'wide' }) => {
     const base = useUid(id)
     const u = (n: string) => `${base}-${n}`

@@ -43,6 +43,9 @@ export const POSES = {
   armsCrossed: { head: -3, lean: 0, bob: 0, expression: 'smug', r: arm(16, 104, 'fist', 0.85, 0.8), l: arm(-16, -104, 'fist', 0.85, 0.8), ...STAND },
   hold: { head: 4, lean: 0, bob: 0, expression: 'neutral', r: arm(-18, -72, 'hold', 0.92, 0.8), l: arm(6, -4, 'rest'), ...STAND },
   pockets: { head: 3, lean: 0, bob: 0, expression: 'smiling', r: arm(-8, 34.6, 'pocket', 1, 0.55), l: arm(8, -34.6, 'pocket', 1, 0.55), rl: leg(-4, 1), ll: leg(5, -1) },
+  // # two-person moments: an arm out to shake hands; an open-hand talking gesture
+  handshake: { head: 4, lean: 3, bob: 0, expression: 'smiling', r: arm(-62, -18, 'open', 1, 0.95), l: arm(6, -4, 'rest'), ...STAND },
+  talk: { head: 5, lean: 1, bob: 0, expression: 'neutral', r: arm(-30, -88, 'open', 0.95, 0.8), l: arm(10, 30, 'rest', 1, 0.8), ...STAND },
   sit: { head: 2, lean: 0, bob: 0, expression: 'neutral', r: arm(4, -40, 'rest', 0.9, 0.75), l: arm(-4, 40, 'rest', 0.9, 0.75), rl: leg(-14, 14, 0.38, 1), ll: leg(14, -14, 0.38, 1) },
 } satisfies Record<string, Pose>
 

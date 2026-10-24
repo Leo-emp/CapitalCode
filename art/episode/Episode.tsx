@@ -17,8 +17,8 @@ import { clamp, SlideFrame } from '../infographics/SlideFrame'
 import { Emblem } from '../logo/Emblem'
 import { Lockup } from '../logo/LogoReveal'
 import { getProp } from '../props/registry'
-import { Actor } from '../rig/Actor'
-import { type ExpressionId, type PoseId, poseAt } from '../rig/pose'
+import { Actor, propBox } from '../rig/Actor'
+import { type ExpressionId, type Pose, type PoseId, poseAt } from '../rig/pose'
 import { getScene } from '../scenes/registry'
 import { getVignette } from '../vignettes/registry'
 import { FPS, fontFaces } from '../tokens'
@@ -26,7 +26,8 @@ import { FPS, fontFaces } from '../tokens'
 // # Same shapes as agent/timeline.ts, with every cue already a frame number
 type Tone = 'blue' | 'green' | 'red' | 'champagne' | 'text'
 type RActor = { who: string; anchor: string; track: { at: number; pose: string; expression?: string }[]; flip?: boolean }
-type RProp = { id: string; anchor: string; at: number; size?: number }
+// # on: 'hand' = held by actor[actor ?? 0] (follows the pose), 'floor' = stands on the anchor's ground line
+type RProp = { id: string; anchor: string; at: number; size?: number; on?: 'hand' | 'floor'; actor?: number }
 type RScene = { id: string; kind: 'scene'; start: number; scene: string; time?: 'night' | 'dusk' | 'rain' | 'fog'; tone?: 'none' | 'blue' | 'gold' | 'red' | 'green'
   framing?: 'wide' | 'medium' | 'close'; variant?: string; actors?: RActor[]; props?: RProp[]; slam?: { words: { text: string; tone?: Tone }[]; at: number[] } }
 type RSlide = { id: string; kind: 'slide'; start: number; slide: string; heading?: string; kicker?: string; source?: string; data: any; at: number[] }
@@ -64,17 +65,21 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number }
   const t = interpolate(f, [from, to], [0, 1], clamp)
   const slots: Record<'back' | 'mid' | 'front', React.ReactNode[]> = { back: [], mid: [], front: [] }
 
+  const actorAt: { pose: Pose; anchor: typeof a[string]; flip: boolean }[] = []
   for (const [i, act] of (s.actors ?? []).entries()) {
     const anc = a[act.anchor]
+    // # the second spot faces the first (two-person moments) unless the plan says otherwise
+    const flip = act.flip ?? (act.anchor === 'stand2' && a.stand ? anc.x > a.stand.x : false)
     const keys = [...act.track].sort((x, y) => x.at - y.at)
     const pose = poseAt(f, FPS, keys.map((k) => [k.at, k.pose as PoseId]))
     const expr = [...keys].reverse().find((k) => k.at <= f && k.expression)?.expression as ExpressionId | undefined
+    actorAt.push({ pose, anchor: anc, flip })
     // # an actor whose first key is after the cut walks in on that cue; otherwise it is there from the start
     const enterAt = keys[0].at > from + 2 ? keys[0].at : -999
     const enter = interpolate(f, [enterAt - 4, enterAt + 8], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) })
     slots[anc.layer].push(
-      <g key={`a${i}`} opacity={enter} transform={`translate(${(1 - enter) * (act.flip ? 60 : -60)} 0)`}>
-        <Actor who={act.who} pose={pose} expression={expr} x={anc.x} y={anc.y} scale={anc.scale} frame={f} flip={act.flip} />
+      <g key={`a${i}`} opacity={enter} transform={`translate(${(1 - enter) * (flip ? 60 : -60)} 0)`}>
+        <Actor who={act.who} pose={pose} expression={expr} x={anc.x} y={anc.y} scale={anc.scale} frame={f} flip={flip} />
       </g>,
     )
   }
@@ -85,9 +90,13 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number }
     const anc = a[p.anchor]
     const Prop = getProp(p.id).Component
     const size = (p.size ?? 170) * anc.scale
-    const k = (perAnchor[p.anchor] = (perAnchor[p.anchor] ?? -1) + 1)
     if (f < p.at - 1 || !layers.props) continue
-    slots[anc.layer].push(<Prop key={`p${i}`} size={size} x={anc.x - size / 2 + k * size * 0.72} y={anc.y - size / 2 - k * 8} frame={f} enter={p.at} />)
+    const holder = p.on === 'hand' ? actorAt[p.actor ?? 0] : undefined
+    const box = propBox(p.on, size, anc, holder ? { pose: holder.pose, flip: holder.flip, actor: holder.anchor } : {})
+    // # several props on one anchor fan out (not for held props)
+    const k = p.on === 'hand' ? 0 : (perAnchor[p.anchor] = (perAnchor[p.anchor] ?? -1) + 1)
+    const layer = holder ? holder.anchor.layer : anc.layer
+    slots[layer].push(<Prop key={`p${i}`} size={box.size} x={box.x + k * size * 0.72} y={box.y - k * 8} frame={f} enter={p.at} />)
   }
 
   // # slow push-in keeps every scene alive; a slam darkens the scene and hits the words

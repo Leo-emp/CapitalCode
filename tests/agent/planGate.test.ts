@@ -244,3 +244,16 @@ describe('show what is said', () => {
     expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/no illustration for \d+\.\d s/)
   })
 })
+
+// # Acting: held props need an actor to hold them; floor/hand are the only placements
+describe('props in hands or on the floor', () => {
+  test('a held prop is fine with an actor, refused without one or with a bad placement', () => {
+    const p = good()
+    ;(p.shots[0] as any).props[0] = { id: 'cash-stack', anchor: 'stand', on: 'hand', at: { sentence: 's1', word: 'money' } }
+    expect(gatePlan(p, words, opts()).problems.join('\n')).not.toMatch(/a: .*hand/)
+    ;(p.shots[0] as any).props[0].actor = 3
+    expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/a: prop cash-stack is held by actor 3, but the shot has 1 actor/)
+    ;(p.shots[0] as any).props[0] = { id: 'cash-stack', anchor: 'prop1', on: 'shelf', at: { sentence: 's1' } }
+    expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/a: prop cash-stack: on must be "hand" or "floor"/)
+  })
+})
