@@ -73,7 +73,9 @@ export const sceneCamera = (s: RScene, f: number, from: number, walker?: { x: nu
   const fc = cameraFor(s.framing ?? 'wide', a.focus ?? a.prop1 ?? { x: 960, y: 540 })
   const base = { x: (960 - fc.tx) / fc.k, y: (540 - fc.ty) / fc.k, zoom: fc.k }
   const seed = [...s.id].reduce((n, c) => n + c.charCodeAt(0), 0)
-  return s.camera?.length ? cameraAt(f, camKeys(from, base, s.camera, a), seed)
+  // # people the camera composes around (walkers are followed instead)
+  const people = (s.actors ?? []).filter((x) => !x.path?.length && a[x.anchor]).map((x) => a[x.anchor])
+  return s.camera?.length ? cameraAt(f, camKeys(from, base, s.camera, a, people), seed)
     : walker ? cameraAt(f, [{ at: from, x: walker.x, y: walker.y - 300 * walker.scale, zoom: Math.max(base.zoom, 1.2) }], seed)
     : cameraAt(f, [{ at: from, ...base }], seed)
 }

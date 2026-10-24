@@ -8,7 +8,7 @@
 import React from 'react'
 import { Emblem } from '../logo/Emblem'
 import type { ArtEntry } from '../registry'
-import { type Cam, DEPTH, framed, layerCam } from '../motion/camera'
+import { type Cam, DEPTH, framed, layerCam, OVERSCAN } from '../motion/camera'
 import { COLORS, WORLDS, type World, type WorldId } from '../tokens'
 import { useUid } from '../uid'
 
@@ -43,8 +43,7 @@ const TONES: Record<Exclude<SceneTone, 'none'>, string> = { blue: '#2A8FE0', gol
 const ZOOM: Record<SceneFraming, number> = { wide: 1, medium: 1.18, close: 1.45 }
 
 // # Camera: zoom toward the focal point, never showing outside the 1920×1080 canvas
-// # Scenes are drawn a little larger than the frame when the camera moves, so its drift never shows an edge
-export const OVERSCAN = 1.04
+export { OVERSCAN } from '../motion/camera'
 
 export const cameraFor = (framing: SceneFraming, focus: { x: number; y: number }) => {
   const k = ZOOM[framing]

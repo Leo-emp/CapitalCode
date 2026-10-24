@@ -76,3 +76,18 @@ test('a close zoom on a person keeps the head in frame (head room first, feet ma
     expect(headTop, `zoom ${zoom}`).toBeGreaterThanOrEqual(30)
   }
 })
+
+test('camera keys compose themselves: nobody is left half in frame, and the named thing stays in view', async () => {
+  const { camKeys, shownFraction, framed, layerCam, DEPTH } = await import('../../art/motion/camera')
+  const anchors = { stand: { x: 420, y: 1011, scale: 1, layer: 'front' as const }, prop1: { x: 1130, y: 150, scale: 1, layer: 'mid' as const }, sign: { x: 1190, y: 494, scale: 1, layer: 'mid' as const } }
+  const people = [anchors.stand]
+  for (const [to, zoom] of [['prop1', 1.35], ['prop1', 1.6], ['sign', 1.3], ['sign', 1.9]] as const) {
+    const k = camKeys(0, { x: 960, y: 540, zoom: 1 }, [{ at: 1, to, zoom }], anchors, people)[1]
+    const s = shownFraction(k, anchors.stand)
+    expect(s <= 0.02 || s >= 0.98, `${to} ${zoom}: ${s}`).toBe(true)
+    // # the target is still on screen
+    const t = anchors[to], v = framed(layerCam({ ...k, zoom: k.zoom * 1.04 }, DEPTH[t.layer]))
+    const sx = t.x * v.k + v.tx
+    expect(sx).toBeGreaterThan(100); expect(sx).toBeLessThan(1820)
+  }
+})
