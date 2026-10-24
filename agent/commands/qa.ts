@@ -1,5 +1,5 @@
 // # CLI: gate-video (QA + critic pack) and critic (accepts the independent Critic's verdict)
-import { existsSync, writeFileSync } from 'node:fs'
+import { existsSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { register } from '../cli'
 import { flagSheets, frameSheets, gateVideo, plannedMotion, shotFrames } from '../gates/video'
@@ -10,6 +10,17 @@ import type { Timeline } from '../timeline'
 export const CRITIC_MIN = 8 // # out of 10 — below this the video goes back for fixes
 export const CRITIC_CHECKS = ['hook', 'thesis', 'accuracy', 'originality', 'visuals', 'sync', 'pacing', 'audio'] as const
 export type CriticDoc = { verdict: 'pass' | 'fix'; score: number; checks: Record<(typeof CRITIC_CHECKS)[number], number>; fixes: string[]; notes?: string }
+
+// # Max 2 Critic rounds (spec §5c). After round 2 a "fix" is accepted only with the director's
+// # written note on what was done; its fixes are kept and shown in the owner's review note.
+export const MAX_CRITIC_ROUNDS = 2
+export type CriticDecision = { accept: true; flagged: string[]; note?: string } | { accept: false; reason: string }
+export const criticDecision = (c: CriticDoc, round: number, final?: string): CriticDecision => {
+  if (c.verdict === 'pass') return { accept: true, flagged: [] }
+  if (round < MAX_CRITIC_ROUNDS) return { accept: false, reason: `critic asked for ${c.fixes.length} fix(es) (score ${c.score}, round ${round}/${MAX_CRITIC_ROUNDS})` }
+  if (!final) return { accept: false, reason: `round ${round}/${MAX_CRITIC_ROUNDS} used: apply the fixes, re-render, check them, then run: critic <job> --final "what was done"` }
+  return { accept: true, flagged: c.fixes, note: final }
+}
 
 // # The Critic's verdict must be complete and consistent before the job can be packaged
 export const checkCritic = (c: CriticDoc): string[] => {
@@ -82,7 +93,11 @@ register('critic', 'critic <job>  — accept critic.json (pass ≥ 8) or list th
   const c = readJson<CriticDoc>(join(dir, 'critic.json'))
   const bad = checkCritic(c)
   if (bad.length) { for (const p of bad) console.log(`  - ${p}`); refuse('critic.json is incomplete') }
-  if (c.verdict === 'fix') { for (const f of c.fixes) console.log(`  - FIX: ${f}`); refuse(`critic asked for ${c.fixes.length} fix(es) (score ${c.score})`) }
-  markStep(dir, 'critic', { score: c.score })
-  result({ ok: true, score: c.score, next: 'package' })
+  // # rounds = archived verdicts (critic_round<N>.json) + this one
+  const round = readdirSync(dir).filter((f) => /^critic_roundd+.json$/.test(f)).length + 1
+  const final = a.find((x) => x.startsWith('--final='))?.slice(8) ?? (a.includes('--final') ? a[a.indexOf('--final') + 1] : undefined)
+  const d = criticDecision(c, round, final)
+  if (!d.accept) { for (const f of c.fixes) console.log(`  - FIX: ${f}`); return refuse(d.reason) }
+  markStep(dir, 'critic', { score: c.score, round, flagged: d.flagged, note: d.note })
+  result({ ok: true, score: c.score, round, flagged: d.flagged.length, next: 'package' })
 })

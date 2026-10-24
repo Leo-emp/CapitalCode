@@ -60,6 +60,10 @@ export const packageJob = async (dir: string, now = new Date()) => {
     `# ${meta.titles[0]}`, '',
     `Thesis: ${script.thesis}`, `Area: ${script.area} · Format: ${script.format}`, '',
     '## Critic', critic ? `Score ${critic.score}/10 — ${critic.notes ?? ''}` : 'not run', '',
+    ...(() => {
+      const st = job.steps.critic as { round?: number; flagged?: string[]; note?: string } | undefined
+      return st?.flagged?.length ? [`Accepted after round ${st.round} without a further Critic pass. Director's note: ${st.note}`, 'Fixes from that round (check them while watching):', ...st.flagged.map((f) => `- [ ] ${f}`), ''] : []
+    })(),
     '## QA', qa ? `${JSON.stringify(qa.stats)} · flicker flags: ${qa.flags.length}` : 'not run', '',
     '## Upload checklist',
     `- [ ] Pick a title (titles.txt) and ${short ? 'post as a Short (≤ 60 s, vertical)' : 'a thumbnail (thumb_1..3.jpg) — A/B test with "Test & compare"'}`,
