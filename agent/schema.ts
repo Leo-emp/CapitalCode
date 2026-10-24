@@ -38,6 +38,8 @@ export type SceneShot = {
   time?: 'night' | 'dusk' | 'rain' | 'fog'; tone?: 'none' | 'blue' | 'gold' | 'red' | 'green'; framing?: 'wide' | 'medium' | 'close'
   // # camera: on a cue, glide to a scene spot (or a point) and zoom — show what is being talked about
   camera?: { at: Cue; to: string | { x: number; y: number }; zoom?: number }[]
+  // # kinetic text: a key word/number animating on near a spot (or top centre), now and then
+  text?: { words: string; at: Cue; style: 'pop' | 'type' | 'stamp' | 'count'; anchor?: string }[]
   variant?: string; world?: 'night' | 'teal'; actors?: ShotActor[]; props?: ShotProp[]; slam?: { words: { text: string; tone?: string }[]; at: Cue[] }
 }
 export type SlideShot = { id: string; start: Cue; kind: 'slide'; slide: string; heading?: string; kicker?: string; source?: string; data: Record<string, unknown>; at: Cue[] }

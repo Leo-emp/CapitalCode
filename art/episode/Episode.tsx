@@ -21,6 +21,7 @@ import { actedPose } from '../motion/life'
 import { walkAt, walkPose } from '../motion/walk'
 import { type Cam, cameraAt, camKeys, DEPTH, framed, layerCam } from '../motion/camera'
 import { ZOOM_INTO, zoomIntoAt } from '../motion/transition'
+import { KineticText } from '../motion/kinetic'
 import { cameraFor, OVERSCAN } from '../scenes/kit'
 import { getProp } from '../props/registry'
 import { Actor, holdsInHand, propBox } from '../rig/Actor'
@@ -35,7 +36,7 @@ type RActor = { who: string; anchor: string; track: { at: number; pose: string; 
 // # on: 'hand' = held by actor[actor ?? 0] (follows the pose), 'floor' = stands on the anchor's ground line
 type RProp = { id: string; anchor: string; at: number; size?: number; on?: 'hand' | 'floor'; actor?: number; give?: { at: number; to: number } }
 type RScene = { id: string; kind: 'scene'; start: number; scene: string; time?: 'night' | 'dusk' | 'rain' | 'fog'; tone?: 'none' | 'blue' | 'gold' | 'red' | 'green'
-  framing?: 'wide' | 'medium' | 'close'; variant?: string; world?: 'night' | 'teal'; camera?: { at: number; to: string | { x: number; y: number }; zoom?: number }[]; actors?: RActor[]; props?: RProp[]; slam?: { words: { text: string; tone?: Tone }[]; at: number[] } }
+  framing?: 'wide' | 'medium' | 'close'; variant?: string; world?: 'night' | 'teal'; camera?: { at: number; to: string | { x: number; y: number }; zoom?: number }[]; text?: { words: string; at: number; style: 'pop' | 'type' | 'stamp' | 'count'; anchor?: string }[]; actors?: RActor[]; props?: RProp[]; slam?: { words: { text: string; tone?: Tone }[]; at: number[] } }
 type RSlide = { id: string; kind: 'slide'; start: number; slide: string; heading?: string; kicker?: string; source?: string; data: any; at: number[] }
 type RChapter = { id: string; kind: 'chapter'; start: number; n: number; title: string }
 type RBrand = { id: string; kind: 'brand'; start: number }
@@ -159,12 +160,22 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number; 
   // # slow push-in keeps every scene alive; a slam darkens the scene and hits the words
   const push = interpolate(f, [from, to], [1.0, 1.05], clamp)
   const camera = sceneCamera(s, f, from, walkers[0])
+  // # kinetic text: at a spot it lives in the scene (the camera carries it) — above a person's head or above
+  // # a thing; with no spot it sits top-centre on screen
+  const free: React.ReactNode[] = []
+  for (const [i, k] of (s.text ?? []).entries()) {
+    const anc = k.anchor ? a[k.anchor] : undefined
+    if (!anc) { free.push(<KineticText key={'k' + i} words={k.words} style={k.style} frame={f} at={k.at} x={960} y={190} size={84} />); continue }
+    const y = /^(stand|sit)/.test(k.anchor!) ? anc.y - 620 * anc.scale : anc.y - 130 * anc.scale
+    slots[anc.layer].push(<KineticText key={'k' + i} words={k.words} style={k.style} frame={f} at={k.at} x={anc.x} y={Math.max(90, y)} size={72} />)
+  }
   return (
     <AbsoluteFill>
       <AbsoluteFill style={{ transform: `scale(${push})` }}>
         <Scene.Component frame={f} t={t} lightsOn={1} time={s.time} tone={s.tone} framing={s.framing} variant={s.variant} world={s.world} camera={camera}
           actors={{ back: slots.back.length ? slots.back : undefined, mid: slots.mid.length ? slots.mid : undefined, front: slots.front.length ? slots.front : undefined }} />
       </AbsoluteFill>
+      {free.length > 0 && <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>{free}</svg>}
       {s.slam && slamAt !== undefined && f >= slamAt - 3 && (
         <>
           <AbsoluteFill style={{ background: '#000', opacity: layers.dim }} />

@@ -328,3 +328,19 @@ describe('zoom-into', () => {
     expect(gatePlan(p, words, opts()).problems).toContain('c: zoomInto "prop1" needs the previous shot to be a scene — give a point {x, y} instead')
   })
 })
+
+describe('kinetic text', () => {
+  test('up to 2 per shot, a known style, and a known spot', () => {
+    const p = good()
+    const a = p.shots[0] as any
+    const t = (style = 'pop', anchor?: string) => ({ words: 'Only 10', at: { sentence: 's1', word: 'money' }, style, ...(anchor ? { anchor } : {}) })
+    a.text = [t(), t('count', 'prop1')]
+    expect(gatePlan(p, words, opts()).problems.filter((x) => /text/.test(x))).toEqual([])
+    a.text = [t(), t(), t()]
+    expect(gatePlan(p, words, opts()).problems).toContain('a: 3 kinetic texts — at most 2 per shot (text is a spice, not the meal)')
+    a.text = [t('wiggle')]
+    expect(gatePlan(p, words, opts()).problems).toContain('a: text style "wiggle" (pop, type, stamp, count)')
+    a.text = [t('pop', 'vault')]
+    expect(gatePlan(p, words, opts()).problems).toContain('a: text anchor "vault" not in scene shop-street')
+  })
+})

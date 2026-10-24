@@ -111,6 +111,13 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
         if (p.on === 'hand' && (p.actor ?? 0) >= n) problems.push(`${s.id}: prop ${p.id} is held by actor ${p.actor ?? 0}, but the shot has ${n} actor${n === 1 ? '' : 's'}`)
         cue(s.id, p.at)
       }
+      // # kinetic text (owner: "occasionally where relevant") — at most 2 per shot
+      if ((s.text ?? []).length > 2) problems.push(`${s.id}: ${s.text!.length} kinetic texts — at most 2 per shot (text is a spice, not the meal)`)
+      for (const k of s.text ?? []) {
+        if (!['pop', 'type', 'stamp', 'count'].includes(k.style)) problems.push(`${s.id}: text style "${k.style}" (pop, type, stamp, count)`)
+        if (k.anchor && sc && !sc.anchors[k.anchor]) problems.push(`${s.id}: text anchor "${k.anchor}" not in scene ${s.scene}`)
+        cue(s.id, k.at)
+      }
       for (const c of s.camera ?? []) {
         if (typeof c.to === 'string' && sc && !sc.anchors[c.to]) problems.push(`${s.id}: camera target "${c.to}" not in scene ${s.scene}`)
         cue(s.id, c.at)
