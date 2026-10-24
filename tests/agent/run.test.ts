@@ -40,3 +40,15 @@ test('missing plan, critic verdict or metadata stop with what the director must 
   expect(nextAction(st({ done: c, gatedScript: 'S', gatedPlan: 'P', files: new Set(['script.json', 'facts.json', 'plan.json', 'critic.json']) })))
     .toEqual({ needs: 'metadata.json (Publisher: 3 titles, description, tags, 3 thumbnails)' })
 })
+
+test('changed art or timeline since the render makes run render again (never review a stale video)', () => {
+  const done = new Set(['gate_script', 'voice', 'gate_plan', 'render', 'gate_video'])
+  const s = st({ done, gatedScript: 'S', gatedPlan: 'P', renderKey: 'old', currentRenderKey: 'new', files: new Set(['script.json', 'facts.json', 'plan.json']) })
+  expect(nextAction(s)).toEqual({ run: 'render' })
+  expect(nextAction({ ...s, currentRenderKey: 'old' })).toEqual({ needs: 'critic.json (dispatch the Critic subagent with qa/critic_pack.md)' })
+})
+
+test('a render without a recorded key counts as stale', () => {
+  const done = new Set(['gate_script', 'voice', 'gate_plan', 'render', 'gate_video'])
+  expect(nextAction(st({ done, gatedScript: 'S', gatedPlan: 'P', currentRenderKey: 'new' }))).toEqual({ run: 'render' })
+})

@@ -5,6 +5,7 @@ import { register } from '../cli'
 import { isDone, loadJob, markStep, readJson, unmarkFrom } from '../jobs'
 import { artFingerprint, autoSfx, chunkKeys, concatVideos, countFrames, mixAudio, mux, pruneChunks, remotionRange, renderChunks, renderStills, splitChunks } from '../render'
 import { refuse, result } from '../result'
+import { renderKeyFor } from '../run'
 import type { Timeline } from '../timeline'
 import { fileHash } from './script'
 
@@ -57,6 +58,6 @@ register('render', 'render <job>  — pre-flight stills, chunked render (resumab
   if (loadJob(dir).steps.gate_plan?.hash !== fileHash(join(dir, 'plan.json'))) refuse('plan.json changed since gate-plan — run gate-plan again')
   const r = await renderVideo(dir, readJson<Timeline>(join(dir, 'timeline.json')), join(dir, 'voice.wav'))
   unmarkFrom(dir, 'render')
-  markStep(dir, 'render', r)
+  markStep(dir, 'render', { ...r, key: renderKeyFor(dir) })
   result({ ok: true, ...r, next: 'gate-video' })
 })
