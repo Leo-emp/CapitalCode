@@ -108,9 +108,9 @@ A **cue** is a spoken word: `{ "sentence": "s12", "word": "million", "nth": 1 }`
 - Numbers read off a chart are labelled "approx., read from chart" in the kicker; plot only
   sourced points (never invent in-between values); show the working of our own maths
   exactly as in facts.json.
-- Avoid scenes whose decoration shows made-up data that could be mistaken for real
-  numbers next to a data claim (e.g. `portfolio-dashboard`) and loud tickers under
-  calm lines (`news-desk`).
+- Scenes whose decoration shows made-up figures (marked ⚠ in the catalog) are refused by
+  the gate unless the shot sets `"decorOk": true` — only when the figures fit the story
+  and cannot pass as real data (e.g. clearly fictional tickers).
 - `cc run <job>` (gate-plan) → fix every problem (it names the nearest real words for a
   bad cue), re-run until ok. It writes `timeline.json`.
 - **New art:** if the story truly needs a scene/prop that is not in the catalog,
@@ -134,8 +134,11 @@ screens), chunked resumable render, SFX mix, `final.mp4`. ~18 min for 8.6 min of
    score honestly, and write `critic.json` in the job folder.
 3. `cc critic <job>`: pass (score ≥ 8, no check < 6) → package. `fix` → apply each fix
    at its source (script → re-gate → re-voice changed chapters; plan → re-gate →
-   re-render), then re-run QA and the Critic. Max 2 fix rounds; after that, package
-   and flag the open issues in the review note.
+   re-render), then re-run QA and the Critic. Before each new round, rename the old
+   verdict to `critic_round<N>.json`. Max 2 rounds: after round 2, apply its fixes,
+   re-render, check every fixed shot yourself (stills), then
+   `cc critic <job> --final "what you did"`; the round-2 fixes are listed in the
+   owner's review note as a checklist.
 
 ## 8. Package (Publisher)
 
