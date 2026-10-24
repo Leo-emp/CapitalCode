@@ -43,3 +43,13 @@ test('leaderboard takes 10 rows and marks the names that survive', () => {
   const html = renderToStaticMarkup(<svg>{React.createElement(v.Component, { frame: 300, data: SAMPLES.leaderboard, cues: [0, 100] })}</svg>)
   expect(html).toMatch(/data-survivor="Microsoft"/)
 })
+
+test('loop nodes sit on a wide oval, clear of the centre label', async () => {
+  const { loopPoint } = await import('../../art/vignettes/story')
+  for (let i = 0; i < 4; i++) {
+    const p = loopPoint(i, 4)
+    const dx = Math.abs(p.x - 960), dy = Math.abs(p.y - 580)
+    // # side nodes far enough out for a 440 px pill + a 360 px centre label; top/bottom clear vertically
+    expect(dx > 400 || dy > 220, `node ${i}`).toBe(true)
+  }
+})

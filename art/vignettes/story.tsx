@@ -35,7 +35,7 @@ const Bubble: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame,
         const a = (i / Math.max(1, items.length)) * Math.PI * 2 + 0.6
         const s = settle(frame, (cues[1] ?? 0) + 6 + i * 5)
         const fall = pop * 120
-        const x = cx + Math.cos(a) * r * 0.5, y = cy + (data.value ? 120 : 40) + Math.sin(a) * r * 0.22 + fall
+        const x = cx + Math.cos(a) * r * 0.55, y = cy + (data.value ? 150 : 40) + Math.sin(a) * r * 0.12 + fall
         return <Label key={i} x={x} y={y} size={40} color={pop > 0.3 ? COLORS.red : COLORS.text} opacity={s * (1 - pop)}>{it}</Label>
       })}
       {/* # the pop: a ring and shards flying out */}
@@ -130,25 +130,30 @@ const Lottery: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame
 }
 
 // ---------------------------------------------------------------- loop
+// # a wide oval: side nodes clear the centre label, top/bottom clear it vertically
+export const LOOP = { cx: 960, cy: 580, rx: 470, ry: 250 }
+export const loopPoint = (i: number, n: number) => { const a = -Math.PI / 2 + (i / n) * Math.PI * 2; return { x: LOOP.cx + Math.cos(a) * LOOP.rx, y: LOOP.cy + Math.sin(a) * LOOP.ry, a } }
 // # data: { steps: string[] (3–4), label? } — a cycle that feeds itself; one step lights per cue, then it spins
 const Loop: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame, data, cues }) => {
   const steps = data.steps as string[]
-  const n = steps.length, cx = 960, cy = 580, R = 270
+  const n = steps.length, cx = LOOP.cx, cy = LOOP.cy, R = LOOP.ry
   const last = cues[n - 1] ?? Infinity
   const spin = frame > last ? ((frame - last) / 90) * Math.PI * 2 : 0
-  const at = (i: number) => { const a = -Math.PI / 2 + (i / n) * Math.PI * 2; return { x: cx + Math.cos(a) * R, y: cy + Math.sin(a) * R, a } }
+  const at = (i: number) => loopPoint(i, n)
   return (
     <g>
       <Glow id="lp-g" x={cx} y={cy} r={520} color={COLORS.warm} opacity={0.12 + (frame > last ? 0.12 : 0)} />
-      <circle cx={cx} cy={cy} r={R} fill="none" stroke={COLORS.lineDim} strokeWidth={3} strokeDasharray="14 12" />
+      <ellipse cx={cx} cy={cy} rx={LOOP.rx} ry={LOOP.ry} fill="none" stroke={COLORS.lineDim} strokeWidth={3} strokeDasharray="14 12" />
       {steps.map((_, i) => {
         // # arrow from step i to step i+1, drawn when step i+1 lights (the last one closes the loop)
         const on = settle(frame, cues[(i + 1) % n === 0 ? n - 1 : i + 1])
         const p = at(i), q = at(i + 1)
         const mid = (p.a + (q.a < p.a ? q.a + Math.PI * 2 : q.a)) / 2
-        const mx = cx + Math.cos(mid) * (R + 24), my = cy + Math.sin(mid) * (R + 24)
+        const mx = cx + Math.cos(mid) * (LOOP.rx + 30), my = cy + Math.sin(mid) * (LOOP.ry + 30)
         return <path key={`a${i}`} d={`M ${p.x} ${p.y} Q ${mx} ${my} ${q.x} ${q.y}`} fill="none" stroke={COLORS.champagne} strokeWidth={6} opacity={on} strokeDasharray="1600" strokeDashoffset={1600 * (1 - on)} />
       })}
+      {/* # a coin running round the loop once it is closed (behind the step pills) */}
+      {frame > last && <circle cx={cx + Math.cos(spin - Math.PI / 2) * LOOP.rx} cy={cy + Math.sin(spin - Math.PI / 2) * LOOP.ry} r={18} fill="#E2B85C" stroke="#FFE3A0" strokeWidth={3} />}
       {steps.map((t, i) => {
         const p = at(i), on = settle(frame, cues[i], true)
         const w = Math.max(280, t.length * 20 + 60)
@@ -159,8 +164,6 @@ const Loop: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame, d
           </g>
         )
       })}
-      {/* # a coin running round the loop once it is closed */}
-      {frame > last && <circle cx={cx + Math.cos(spin - Math.PI / 2) * R} cy={cy + Math.sin(spin - Math.PI / 2) * R} r={18} fill="#E2B85C" stroke="#FFE3A0" strokeWidth={3} />}
       {data.label && <Label x={cx} y={cy + 14} size={46} weight={800} color={COLORS.champagneLight} opacity={settle(frame, last + 10)}>{data.label}</Label>}
     </g>
   )
