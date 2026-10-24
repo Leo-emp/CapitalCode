@@ -7,6 +7,7 @@ import { gateScript } from '../gates/script'
 import { markStep, readJson, unmarkFrom } from '../jobs'
 import { refuse, result } from '../result'
 import type { FactsDoc, ScriptDoc } from '../schema'
+import { bannedPhrases, loadMemory } from '../learning'
 
 export const fileHash = (file: string) => createHash('sha256').update(readFileSync(file)).digest('hex').slice(0, 16)
 
@@ -20,7 +21,7 @@ register('gate-script', 'gate-script <job>  — check script.json + facts.json b
   for (const f of ['script.json', 'facts.json']) if (!existsSync(join(dir, f))) refuse(`${f} missing in ${dir}`)
   const script = readJson<ScriptDoc>(join(dir, 'script.json'))
   const facts = readJson<FactsDoc>(join(dir, 'facts.json'))
-  const r = gateScript(script, facts, { sources: readSources(dir) })
+  const r = gateScript(script, facts, { sources: readSources(dir), banned: bannedPhrases(loadMemory()) })
   if (!r.ok) {
     for (const p of r.problems) console.log(`  - ${p}`)
     refuse(`script gate failed with ${r.problems.length} problem(s)`)

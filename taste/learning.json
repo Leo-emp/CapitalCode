@@ -1,0 +1,89 @@
+{
+  "rules": [
+    {
+      "id": "r1",
+      "area": "voice",
+      "rule": "Plain natural read; never slowed or over-directed; stress at most 1 word per 3-4 sentences",
+      "source": "feedback",
+      "evidence": "spec §2, 2026-10-23",
+      "strength": 1,
+      "added": "2026-10-24T04:45:31.929Z",
+      "status": "active"
+    },
+    {
+      "id": "r2",
+      "area": "visual",
+      "rule": "Characters front-facing only (the approved HD cast); no side or 3/4 views",
+      "source": "feedback",
+      "evidence": "spec §6.2",
+      "strength": 1,
+      "added": "2026-10-24T04:45:35.780Z",
+      "status": "active"
+    },
+    {
+      "id": "r3",
+      "area": "visual",
+      "rule": "Zero visual glitches: no flicker, torn text or jumps between frames",
+      "source": "feedback",
+      "evidence": "2026-10-24 demo review",
+      "strength": 1,
+      "added": "2026-10-24T04:45:39.562Z",
+      "status": "active"
+    },
+    {
+      "id": "r4",
+      "area": "script",
+      "rule": "Every video argues one clear thesis with our own calculation or comparison; never a reworded article",
+      "source": "feedback",
+      "evidence": "spec §5c",
+      "strength": 1,
+      "added": "2026-10-24T04:45:43.356Z",
+      "status": "active"
+    },
+    {
+      "id": "r5",
+      "area": "script",
+      "rule": "Open on the mystery or stake in the first 15 s; never a channel greeting",
+      "source": "feedback",
+      "ban": "welcome back",
+      "evidence": "spec §4",
+      "strength": 1,
+      "added": "2026-10-24T04:45:47.209Z",
+      "status": "active"
+    },
+    {
+      "id": "r6",
+      "area": "topic",
+      "rule": "About 70% evergreen (explainers, lists, guides, comparisons, case studies), 30% trending; news reactions kept rare",
+      "source": "feedback",
+      "evidence": "spec §5",
+      "strength": 1,
+      "added": "2026-10-24T04:45:51.038Z",
+      "status": "active"
+    },
+    {
+      "id": "r7",
+      "area": "thumbnail",
+      "rule": "One big emotional subject, 2-4 huge words that add tension (never repeat the title), readable at phone size",
+      "source": "feedback",
+      "evidence": "spec §10",
+      "strength": 1,
+      "added": "2026-10-24T04:45:54.895Z",
+      "status": "active"
+    },
+    {
+      "id": "r8",
+      "area": "voice",
+      "rule": "No background music; voice plus light SFX, final mix -14 LUFS",
+      "source": "feedback",
+      "evidence": "spec §3",
+      "strength": 1,
+      "added": "2026-10-24T04:45:58.757Z",
+      "status": "active"
+    }
+  ],
+  "feedback": [],
+  "approvals": [],
+  "references": [],
+  "results": []
+}

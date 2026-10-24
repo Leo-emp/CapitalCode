@@ -74,8 +74,8 @@ export const sourcesTxt = (facts: FactsDoc) => {
 
 // ---------------------------------------------------------------- metadata check
 const HYPE = ['guaranteed', 'get rich quick', 'overnight', 'secret they', 'you won\'t believe', 'free money', '100x', 'to the moon']
-const LAYOUTS = ['hero-left', 'object-center', 'split']
-const TONES = ['champagne', 'green', 'red', 'white']
+export const LAYOUTS = ['hero-left', 'object-center', 'split']
+export const TONES = ['champagne', 'green', 'red', 'white']
 
 export const checkMeta = (m: MetaDoc): string[] => {
   const p: string[] = []

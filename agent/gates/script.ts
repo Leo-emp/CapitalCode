@@ -5,7 +5,7 @@
 // ============================================================
 import { allSentences, AREAS, countWords, type FactsDoc, FORMATS, type ScriptDoc } from '../schema'
 
-export type GateOpts = { sources: string[]; minWords?: number; maxWords?: number }
+export type GateOpts = { sources: string[]; minWords?: number; maxWords?: number; banned?: string[] }
 
 const BANNED = ['welcome back', 'in this video', 'smash that like', 'like and subscribe', "don't forget to subscribe", 'without further ado', 'hey guys']
 const GUARDRAILS: [RegExp, string][] = [
@@ -58,6 +58,7 @@ export const gateScript = (script: ScriptDoc, facts: FactsDoc, opts: GateOpts) =
   for (const s of sents) {
     const low = s.text.toLowerCase()
     for (const b of BANNED) if (low.includes(b)) problems.push(`${s.id}: banned phrase "${b}"`)
+    for (const b of opts.banned ?? []) if (low.includes(b)) problems.push(`${s.id}: owner rule bans "${b}"`)
     for (const [re, why] of GUARDRAILS) if (re.test(s.text)) problems.push(`${s.id}: guardrail — ${why}`)
   }
 
