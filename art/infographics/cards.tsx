@@ -7,6 +7,7 @@ import React from 'react'
 import { AbsoluteFill, interpolate } from 'remotion'
 import { Emblem } from '../logo/Emblem'
 import { COLORS, fontFaces } from '../tokens'
+import { slamSize } from './layout'
 import { build, clamp, rise, TONE, type Tone } from './SlideFrame'
 
 // ------------------------------------------------------------
@@ -147,6 +148,7 @@ export const ChapterCard: React.FC<{ frame: number; n: number; title: string; cu
 // ------------------------------------------------------------
 export const KeywordSlam: React.FC<{ frame: number; words: { text: string; tone?: Tone }[]; cues: number[]; size?: number }> = ({ frame, words, cues, size = 200 }) => {
   const last = cues[cues.length - 1]
+  const fit = slamSize(words.map((w) => w.text), size)
   const shake = frame >= last ? Math.max(0, 1 - (frame - last) / 10) : 0
   return (
     <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 40, fontFamily: 'Bebas Neue',
@@ -154,7 +156,7 @@ export const KeywordSlam: React.FC<{ frame: number; words: { text: string; tone?
       <style>{fontFaces()}</style>
       {words.map((w, i) => {
         const g = build(frame, cues[Math.min(i, cues.length - 1)], false)
-        return <div key={i} style={{ fontSize: size, color: TONE[w.tone ?? 'text'], transform: `scale(${2.2 - 1.2 * g})`, opacity: Math.min(1, g * 2),
+        return <div key={i} style={{ fontSize: fit, color: TONE[w.tone ?? 'text'], transform: `scale(${2.2 - 1.2 * g})`, opacity: Math.min(1, g * 2),
           textShadow: w.tone && w.tone !== 'text' ? `0 0 40px ${TONE[w.tone]}88` : 'none' }}>{w.text}</div>
       })}
     </AbsoluteFill>

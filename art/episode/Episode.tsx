@@ -44,6 +44,7 @@ const FORMATS: Record<string, (v: number) => string> = {
   int: (v) => Math.round(v).toLocaleString('en-US'),
   x: (v) => `${Math.round(v * 10) / 10}×`,
   plain: (v) => `${Math.round(v * 100) / 100}`,
+  cents: (v) => `${Math.round(v * 10) / 10}¢`,
 }
 const fmt = (name?: string) => FORMATS[name ?? ''] ?? FORMATS.plain
 

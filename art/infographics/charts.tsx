@@ -8,7 +8,7 @@
 import React from 'react'
 import { Easing, interpolate } from 'remotion'
 import { COLORS } from '../tokens'
-import { formatMoney, niceTicks, scaleLinear } from './layout'
+import { barRows, formatMoney, niceTicks, scaleLinear } from './layout'
 import { build, clamp, rise, TONE, type Tone } from './SlideFrame'
 
 const ease = Easing.bezier(0.16, 1, 0.3, 1)
@@ -63,18 +63,19 @@ export const BarChart: React.FC<{ frame: number; bars: Bar[]; cues: number[]; ma
   frame, bars, cues, max, y = 330, format = (v) => `${Math.round(v)}`,
 }) => {
   const top = max ?? Math.max(...bars.map((b) => b.value)) * 1.1
+  const row = barRows(bars.length)
   return (
-    <div style={{ position: 'absolute', left: 150, right: 150, top: y, display: 'flex', flexDirection: 'column', gap: 46 }}>
+    <div style={{ position: 'absolute', left: 150, right: 150, top: y, display: 'flex', flexDirection: 'column', gap: row.gap }}>
       {bars.map((b, i) => {
         const g = build(frame, cues[Math.min(i, cues.length - 1)], false)
         const w = Math.max(0, Math.min(1.05, g)) * (b.value / top) * 100
         return (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 30, opacity: Math.min(1, g * 3) }}>
-            <div style={{ width: 300, fontSize: 30, color: COLORS.text }}>{b.label}</div>
-            <div style={{ flex: 1, height: 54, background: 'rgba(255,255,255,0.05)', borderRadius: 4, position: 'relative' }}>
+            <div style={{ width: 300, fontSize: row.font, color: COLORS.text }}>{b.label}</div>
+            <div style={{ flex: 1, height: row.height, background: 'rgba(255,255,255,0.05)', borderRadius: 4, position: 'relative' }}>
               <div style={{ width: `${w}%`, height: '100%', borderRadius: 4, background: TONE[b.tone ?? 'blue'], boxShadow: `0 0 30px ${TONE[b.tone ?? 'blue']}55` }} />
             </div>
-            <div style={{ width: 170, textAlign: 'right', fontSize: 38, fontWeight: 800, color: TONE[b.tone ?? 'blue'] }}>{b.display ?? format(b.value * Math.min(1, Math.max(0, g)))}</div>
+            <div style={{ width: 170, textAlign: 'right', fontSize: row.value, fontWeight: 800, color: TONE[b.tone ?? 'blue'] }}>{b.display ?? format(b.value * Math.min(1, Math.max(0, g)))}</div>
           </div>
         )
       })}

@@ -10,7 +10,8 @@ export const formatMoney = (v: number, opts: { compact?: boolean; currency?: str
   const cur = opts.currency ?? '$'
   const sign = v < 0 ? '-' : ''
   const a = Math.abs(v)
-  if (!opts.compact) return `${sign}${cur}${Math.round(a).toLocaleString('en-US')}`
+  // # under $1,000 with cents → show the cents ($37.90), otherwise whole dollars
+  if (!opts.compact) return a < 1000 && !Number.isInteger(a) ? `${sign}${cur}${a.toFixed(2)}` : `${sign}${cur}${Math.round(a).toLocaleString('en-US')}`
   const units: [number, string][] = [[1e12, 'T'], [1e9, 'B'], [1e6, 'm'], [1e3, 'k']]
   for (const [size, u] of units) if (a >= size) return `${sign}${cur}${trim(a / size, 2)}${u}`
   return `${sign}${cur}${trim(a, 2)}`
@@ -38,4 +39,18 @@ export const scaleLinear = (domain: [number, number], range: [number, number]) =
   const [d0, d1] = domain, [r0, r1] = range
   if (d1 === d0) return (r0 + r1) / 2
   return r0 + ((v - d0) / (d1 - d0)) * (r1 - r0)
+}
+
+// # Bar rows that always fit the slide body (~600 px between the heading and the source line):
+// # up to 6 bars keep the roomy default, more bars shrink row, gap and type together.
+export const barRows = (n: number) => {
+  const per = Math.min(100, 600 / Math.max(1, n))
+  if (per >= 100) return { height: 54, gap: 46, font: 30, value: 38 }
+  return { height: Math.floor(per * 0.54), gap: Math.floor(per * 0.46), font: Math.max(22, Math.round(30 * per / 100)), value: Math.max(26, Math.round(38 * per / 100)) }
+}
+
+// # Keyword slam font size that fits ~1,700 px (Bebas Neue ≈ 0.4 em per character + 40 px between words)
+export const slamSize = (words: string[], size: number, maxW = 1700) => {
+  const w = words.reduce((a, t) => a + t.length * 0.4 * size, 0) + 40 * (words.length - 1)
+  return w <= maxW ? size : Math.floor(size * maxW / w)
 }

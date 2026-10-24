@@ -1,6 +1,6 @@
 // # Tests for art/infographics/layout.ts — number formatting + chart maths
 import { describe, expect, test } from 'vitest'
-import { formatMoney, formatPct, niceTicks, scaleLinear } from '../../art/infographics/layout'
+import { barRows, formatMoney, formatPct, niceTicks, scaleLinear, slamSize } from '../../art/infographics/layout'
 
 describe('formatMoney', () => {
   test('compact money like the reference slides', () => {
@@ -13,6 +13,13 @@ describe('formatMoney', () => {
   test('full money with separators and negatives', () => {
     expect(formatMoney(8000000000)).toBe('$8,000,000,000')
     expect(formatMoney(-40000, { compact: true })).toBe('-$40k')
+  })
+  // # small amounts with cents keep them ($37.90 of every $100 must not read "$38")
+  test('full money keeps cents under $1,000', () => {
+    expect(formatMoney(37.9)).toBe('$37.90')
+    expect(formatMoney(7.52)).toBe('$7.52')
+    expect(formatMoney(100)).toBe('$100')
+    expect(formatMoney(1250.4)).toBe('$1,250')
   })
 })
 
@@ -36,4 +43,23 @@ test('scaleLinear maps endpoints exactly and inverts', () => {
   expect(s(0)).toBe(860)
   expect(s(80)).toBe(300)
   expect(s(40)).toBe(580)
+})
+
+// # Charts and slams must always fit the 1920×1080 frame (10 bars overflowed in the first long video)
+describe('fit to frame', () => {
+  test('up to 6 bars keep the roomy default rows', () => {
+    expect(barRows(2)).toEqual({ height: 54, gap: 46, font: 30, value: 38 })
+    expect(barRows(6).height).toBe(54)
+  })
+  test('10 bars shrink so every row fits above the source line', () => {
+    const r = barRows(10)
+    expect(10 * r.height + 9 * r.gap).toBeLessThanOrEqual(600)
+    expect(r.font).toBeGreaterThanOrEqual(22)
+  })
+  test('a short slam keeps its size; a long one shrinks to fit 1,700 px', () => {
+    expect(slamSize(['BUYERS', "DON'T."], 200)).toBe(200)
+    const s = slamSize(['GREAT COMPANY', '≠ GREAT PRICE'], 200)
+    expect(s).toBeLessThan(200)
+    expect(s).toBeGreaterThanOrEqual(110)
+  })
 })
