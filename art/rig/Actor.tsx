@@ -6,6 +6,7 @@
 // ============================================================
 
 import React from 'react'
+import { idleLife } from '../motion/life'
 import { CharacterHD, getLookHD, HD_SKELETON, LOOKS_HD } from './hd/CharacterHD'
 import { type ExpressionId, footDrop, getPose, handPosition, type Pose } from './pose'
 
@@ -35,13 +36,15 @@ export const Actor: React.FC<{
   frame?: number
   breathe?: boolean
   flip?: boolean                   // # face the other way
-}> = ({ who, pose, expression, x, y, scale = 1, frame = 0, breathe = true, flip = false }) => {
+  life?: number                    // # seed: blinks, breathes, glances and sways on its own (living film)
+}> = ({ who, pose, expression, x, y, scale = 1, frame = 0, breathe = true, flip = false, life }) => {
   const look = getLookHD(who)
   const base = typeof pose === 'string' ? getPose(pose) : pose
   const p = expression ? { ...base, expression } : base
+  const l = life === undefined ? undefined : idleLife(frame, life)
   return (
-    <g data-actor={who} transform={`translate(${x} ${y}) scale(${(flip ? -1 : 1) * BASE * scale} ${BASE * scale})`}>
-      <CharacterHD pose={p} look={look} frame={frame} breathe={breathe} />
+    <g data-actor={who} transform={`translate(${x + (l ? l.sway * scale : 0)} ${y}) scale(${(flip ? -1 : 1) * BASE * scale} ${BASE * scale})`}>
+      <CharacterHD pose={p} look={look} frame={frame} breathe={breathe} life={l} />
     </g>
   )
 }

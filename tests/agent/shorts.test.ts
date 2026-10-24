@@ -67,3 +67,8 @@ test('a clip never includes the brand card (wasted seconds in a Short)', () => {
   const clips = pickClips(sents, { n: 3, avoid: brand.map((b) => [b.from / 30, b.to / 30] as [number, number]) })
   for (const c of clips) expect(c.t1 <= 30 || c.t0 >= 34).toBe(true)
 })
+
+test('sliceTimeline shifts and trims the speech ranges (talk gestures in Shorts)', () => {
+  const tl = { fps: 30, durationInFrames: 600, sfx: [], shots: [], speech: [[0, 100], [150, 250], [300, 400]] as [number, number][] }
+  expect(sliceTimeline(tl as any, 6, 12).speech).toEqual([[0, 70], [120, 180]])
+})

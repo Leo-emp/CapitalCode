@@ -58,7 +58,8 @@ export const sliceTimeline = (tl: Timeline, t0: number, t1: number): Timeline =>
     shot: shiftCues(s.shot, f0), from: Math.max(s.from, f0) - f0, to: Math.min(s.to, f1) - f0,
   }))
   const sfx = tl.sfx.filter((x) => x.t >= t0 && x.t < t1).map((x) => ({ ...x, t: +(x.t - t0).toFixed(3) }))
-  return { fps: tl.fps, durationInFrames: f1 - f0, shots, sfx }
+  const speech = (tl.speech ?? []).filter(([s, e]) => e > f0 && s < f1).map(([s, e]): [number, number] => [Math.max(s, f0) - f0, Math.min(e, f1) - f0])
+  return { fps: tl.fps, durationInFrames: f1 - f0, shots, sfx, speech }
 }
 
 export type CaptionWord = { text: string; s: number; e: number }

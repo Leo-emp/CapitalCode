@@ -139,6 +139,14 @@ describe('timeline', () => {
     expect(b.at[1]).toBeGreaterThan(b.at[0])
     expect(t.sfx).toEqual([{ name: 'whoosh', t: 8, volume: 1 }])
   })
+
+  test('buildTimeline lists when the voice is speaking: one frame range per sentence', () => {
+    const t = buildTimeline(good(), words, DUR)
+    const sids = [...new Set(words.map((w) => w.sid))]
+    expect(t.speech!.length).toBe(sids.length)
+    const s2 = words.filter((w) => w.sid === 's2')
+    expect(t.speech![1]).toEqual([Math.round(s2[0].s * 30), Math.round(s2.at(-1)!.e * 30)])
+  })
 })
 
 // # Layout budgets: text and item counts that overflow the 1920×1080 frame are refused at planning time

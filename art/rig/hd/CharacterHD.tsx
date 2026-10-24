@@ -77,10 +77,12 @@ const FACES: Record<ExpressionId, FaceSpec> = {
   angry: { browL: [-126, -114], browR: [-114, -126], browArc: 2, eye: 'squint', look: 0, mouth: 'M-6 -55 Q5 -63 16 -55' },
 }
 
-const Eye: React.FC<{ cx: number; spec: FaceSpec }> = ({ cx, spec }) => {
+const Eye: React.FC<{ cx: number; spec: FaceSpec; blink?: number }> = ({ cx, spec, blink = 0 }) => {
   const cy = -100
+  // # blink (idle life): a mostly-closed eye is a soft lid curve
+  if (blink >= 0.9 && spec.eye !== 'happy') return <path d={`M${cx - 11} ${cy + 1} Q${cx} ${cy + 6} ${cx + 11} ${cy + 1}`} stroke={LINE} strokeWidth={4} fill="none" strokeLinecap="round" />
   if (spec.eye === 'happy') return <path d={`M${cx - 9} ${cy + 2} Q${cx} ${cy - 9} ${cx + 9} ${cy + 2}`} stroke={LINE} strokeWidth={4} fill="none" strokeLinecap="round" />
-  const rx = 11.5, ry = spec.eye === 'wide' ? 15 : spec.eye === 'squint' ? 8 : 13
+  const rx = 11.5, ry = (spec.eye === 'wide' ? 15 : spec.eye === 'squint' ? 8 : 13) * (1 - blink * 0.8)
   const lid = spec.eye === 'lidded' ? 8 : spec.eye === 'squint' ? 4 : 0
   const pr = spec.eye === 'wide' ? 6.5 : 8          // # big dark pupil like the reference
   const px = cx + spec.look, py = cy + 1.5
@@ -97,14 +99,14 @@ const Eye: React.FC<{ cx: number; spec: FaceSpec }> = ({ cx, spec }) => {
   )
 }
 
-export const FaceHD: React.FC<{ expression: ExpressionId; brow?: string }> = ({ expression, brow: browColor = BROW }) => {
+export const FaceHD: React.FC<{ expression: ExpressionId; brow?: string; blink?: number }> = ({ expression, brow: browColor = BROW, blink = 0 }) => {
   const s = FACES[expression]
   const brow = (x1: number, x2: number, y: [number, number]) =>
     <path d={`M${x1} ${y[0]} Q${(x1 + x2) / 2} ${(y[0] + y[1]) / 2 + s.browArc} ${x2} ${y[1]}`} stroke={browColor} strokeWidth={4.5} strokeLinecap="round" fill="none" />
   return (
     <g data-expression={expression}>
       <g transform="translate(0 -3)">{brow(-28, -4, s.browL)}{brow(14, 38, s.browR)}</g>
-      <Eye cx={-15} spec={s} /><Eye cx={25} spec={s} />
+      <Eye cx={-15} spec={s} blink={blink} /><Eye cx={25} spec={s} blink={blink} />
       <path d="M6 -90 Q11 -80 5 -76" stroke="#0E1730" strokeWidth={3} fill="none" strokeLinecap="round" />
       <path d={s.mouth} stroke={s.mouthFill === '#F4F7FC' ? 'none' : LINE} strokeWidth={3.5} fill={s.mouthFill ?? 'none'} strokeLinecap="round" strokeLinejoin="round" />
     </g>
@@ -114,7 +116,7 @@ export const FaceHD: React.FC<{ expression: ExpressionId; brow?: string }> = ({ 
 // ------------------------------------------------------------
 // HEAD — oval with jaw, ears, hair styles, glasses
 // ------------------------------------------------------------
-const Head: React.FC<{ look: LookHD; expression: ExpressionId; tilt: number; u: (n: string) => string }> = ({ look, expression, tilt, u }) => (
+const Head: React.FC<{ look: LookHD; expression: ExpressionId; tilt: number; u: (n: string) => string; blink?: number }> = ({ look, expression, tilt, u, blink }) => (
   <g transform={`rotate(${tilt} 4 -60)`}>
     <defs>
       <linearGradient id={u('face')} x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor={look.skin[0]} /><stop offset="100%" stopColor={look.skin[1]} /></linearGradient>
@@ -158,7 +160,7 @@ const Head: React.FC<{ look: LookHD; expression: ExpressionId; tilt: number; u: 
       <path d="M-24 -160 C0 -172 24 -168 40 -152" stroke={look.hairColor[1]} strokeWidth={3} fill="none" strokeLinecap="round" opacity={0.7} /></g>}
     {look.hair === 'none' && <g>
       <path d="M-50 -110 L-48 -86 L-42 -88 L-42 -112 Z M54 -110 L52 -86 L46 -88 L46 -112 Z" fill={look.hairColor[0]} /></g>}
-    <FaceHD expression={expression} brow={look.brow} />
+    <FaceHD expression={expression} brow={look.brow} blink={blink} />
     {look.glasses && <g fill="rgba(160,215,255,0.07)" stroke="#8FD0FF" strokeWidth={3}>
       <circle cx={-15} cy={-100} r={17} /><circle cx={25} cy={-100} r={17} /><path d="M2 -102 Q5 -106 8 -102" fill="none" />
       <path d="M-32 -102 L-44 -104 M42 -102 L52 -104" fill="none" /></g>}
@@ -282,11 +284,12 @@ const Torso: React.FC<{ look: LookHD }> = ({ look }) => {
 // ------------------------------------------------------------
 // THE HD CHARACTER
 // ------------------------------------------------------------
-export const CharacterHD: React.FC<{ pose: Pose; look?: LookHD; frame?: number; breathe?: boolean }> = ({ pose: p, look = LOOKS_HD.hero, frame: f = 0, breathe = true }) => {
+// # life (optional): blink 0–1, breath −1..1, headTurn degrees — from art/motion/life idleLife()
+export const CharacterHD: React.FC<{ pose: Pose; look?: LookHD; frame?: number; breathe?: boolean; life?: { blink: number; breath: number; headTurn: number } }> = ({ pose: p, look = LOOKS_HD.hero, frame: f = 0, breathe = true, life }) => {
   const base = useUid('chd')
   const u = (n: string) => `${base}-${n}`
   const S = HD_SKELETON
-  const b = breathe ? Math.sin(f / 18) * 0.8 : 0
+  const b = life ? life.breath * 1.4 : breathe ? Math.sin(f / 18) * 0.8 : 0
   const crossed = p.r.hand === 'fist' && p.l.hand === 'fist' && Math.abs(p.r.el) > 80
   return (
     <g transform={`translate(0 ${-footDrop(p, S) + p.bob})`}>
@@ -296,7 +299,7 @@ export const CharacterHD: React.FC<{ pose: Pose; look?: LookHD; frame?: number; 
         {/* # Arms that hang behind the body when crossed are drawn first */}
         <g transform={`translate(0 ${b})`}><Torso look={look} /></g>
         <path d="M-16 -30 L18 -30 L20 14 L-16 14 Z" fill={look.skin[1]} />
-        <g transform="translate(0 26) scale(1.14) translate(0 -4)"><Head look={look} expression={p.expression} tilt={Math.sin(f / 40) * 1.5 + p.head} u={u} /></g>
+        <g transform="translate(0 26) scale(1.14) translate(0 -4)"><Head look={look} expression={p.expression} tilt={(life ? life.headTurn : Math.sin(f / 40) * 1.5) + p.head} u={u} blink={life?.blink} /></g>
         <g transform={`translate(0 ${b})`}>
           <g transform={`translate(${S.shoulderL.x} ${S.shoulderL.y})`}><Arm a={p.l} side={-1} look={look} /></g>
           <g transform={`translate(${S.shoulderR.x} ${S.shoulderR.y})`}><Arm a={p.r} side={1} look={look} /></g>

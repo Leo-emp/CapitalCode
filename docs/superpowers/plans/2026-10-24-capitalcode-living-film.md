@@ -173,6 +173,19 @@
 - [ ] **Step 4: Run** tests — PASS; render every metaphor's still strip and review.
 - [ ] **Step 5: Commit** `feat(art): metaphors for the index-fund remake`.
 
+### Task 9b: Kinetic text, used now and then (owner request 2026-10-24 20:31: "text animation occasionally where relevant")
+
+**Files:**
+- Create: `art/motion/kinetic.tsx`
+- Modify: `agent/schema.ts` (`SceneShot.text?: { words: string; at: Cue; style: 'pop' | 'type' | 'stamp' | 'count'; anchor?: string }[]`), `art/episode/Episode.tsx`, `agent/gates/plan.ts`
+- Test: `tests/art/kinetic.test.tsx`, `tests/agent/planGate.test.ts`
+
+**Interfaces:**
+- Produces: `KineticText: React.FC<{ words: string; style: 'pop' | 'type' | 'stamp' | 'count'; frame: number; at: number; x: number; y: number; size?: number }>` — pop = words spring in one by one (4 frames apart); type = letters write on (1 per frame); stamp = scales 1.6→1 with a small shake; count = the number inside the words rolls up from 0.
+
+- [ ] **Step 1: Failing tests** — nothing drawn before `at`; `type` shows exactly `f - at` letters; `count` on "£1,250 saved" shows £0 at `at` and £1,250 at `at + 20`; text ≥ 44 px; gate: more than 2 kinetic texts in one shot refused; each text counts as a shown event; kinetic text time counts toward the 25% text share (1.5 s each).
+- [ ] **Step 2: Run** — FAIL. **Step 3:** implement (champagne/white Bebas, next to its anchor, never over a face). **Step 4:** PASS. **Step 5: Commit** `feat(art): kinetic text for key words, now and then`.
+
 ### Task 10: Restyle slides and existing vignettes
 
 **Files:**

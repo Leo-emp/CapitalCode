@@ -16,9 +16,10 @@ import { formatMoney, pctFormat } from '../infographics/layout'
 import { clamp, SlideFrame } from '../infographics/SlideFrame'
 import { Emblem } from '../logo/Emblem'
 import { Lockup } from '../logo/LogoReveal'
+import { actedPose } from '../motion/life'
 import { getProp } from '../props/registry'
 import { Actor, holdsInHand, propBox } from '../rig/Actor'
-import { type ExpressionId, type Pose, type PoseId, poseAt } from '../rig/pose'
+import { type ExpressionId, type Pose, type PoseId } from '../rig/pose'
 import { getScene } from '../scenes/registry'
 import { getVignette } from '../vignettes/registry'
 import { FPS, fontFaces } from '../tokens'
@@ -34,7 +35,7 @@ type RSlide = { id: string; kind: 'slide'; start: number; slide: string; heading
 type RChapter = { id: string; kind: 'chapter'; start: number; n: number; title: string }
 type RBrand = { id: string; kind: 'brand'; start: number }
 export type RShot = RScene | RSlide | RVignette | RChapter | RBrand
-export type EpisodeTimeline = { fps: number; durationInFrames: number; shots: { shot: RShot; from: number; to: number }[]; sfx: { name: string; t: number; volume: number }[] }
+export type EpisodeTimeline = { fps: number; durationInFrames: number; shots: { shot: RShot; from: number; to: number }[]; sfx: { name: string; t: number; volume: number }[]; speech?: [number, number][] }
 export type EpisodeProps = { timeline: EpisodeTimeline; voice?: string; width?: number; height?: number }
 
 export const TRANSITION = 8 // # frames of zoom-through between shots
@@ -59,7 +60,7 @@ export const slamLayers = (f: number, slamAt: number | undefined) => {
   const k = interpolate(f, [slamAt - 3, slamAt + 3], [0, 1], clamp)
   return { dim: 0.86 * k, band: 0.96 * k, props: false }
 }
-const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number }> = ({ s, f, from, to }) => {
+const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number; speech?: [number, number][] }> = ({ s, f, from, to, speech = [] }) => {
   const Scene = getScene(s.scene)
   const a = Scene.anchors
   const t = interpolate(f, [from, to], [0, 1], clamp)
@@ -71,7 +72,9 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number }
     // # the second spot faces the first (two-person moments) unless the plan says otherwise
     const flip = act.flip ?? (act.anchor === 'stand2' && a.stand ? anc.x > a.stand.x : false)
     const keys = [...act.track].sort((x, y) => x.at - y.at)
-    const pose = poseAt(f, FPS, keys.map((k) => [k.at, k.pose as PoseId]))
+    // # each actor gets its own seed so two people never blink or gesture in sync
+    const seed = i * 7 + act.who.length * 3 + 1
+    const pose = actedPose(f, keys.map((k) => [k.at, k.pose as PoseId]), speech, seed, FPS)
     const expr = [...keys].reverse().find((k) => k.at <= f && k.expression)?.expression as ExpressionId | undefined
     actorAt.push({ pose, anchor: anc, flip })
     // # an actor whose first key is after the cut walks in on that cue; otherwise it is there from the start
@@ -79,7 +82,7 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number }
     const enter = interpolate(f, [enterAt - 4, enterAt + 8], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) })
     slots[anc.layer].push(
       <g key={`a${i}`} opacity={enter} transform={`translate(${(1 - enter) * (flip ? 60 : -60)} 0)`}>
-        <Actor who={act.who} pose={pose} expression={expr} x={anc.x} y={anc.y} scale={anc.scale} frame={f} flip={flip} />
+        <Actor who={act.who} pose={pose} expression={expr} x={anc.x} y={anc.y} scale={anc.scale} frame={f} flip={flip} life={seed} />
       </g>,
     )
   }
@@ -163,12 +166,12 @@ const VignetteShotView: React.FC<{ s: RVignette; f: number; from: number }> = ({
 }
 
 // ---------------------------------------------------------------- one shot, with its transition in/out
-const ShotView: React.FC<{ s: RShot; f: number; from: number; to: number }> = ({ s, f, from, to }) => {
+const ShotView: React.FC<{ s: RShot; f: number; from: number; to: number; speech?: [number, number][] }> = ({ s, f, from, to, speech }) => {
   const inP = interpolate(f, [from, from + TRANSITION], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) })
   const outP = interpolate(f, [to, to + TRANSITION], [0, 1], { ...clamp, easing: Easing.in(Easing.cubic) })
   const scale = (1.06 - 0.06 * inP) * (1 + 0.08 * outP)
   const body =
-    s.kind === 'scene' ? <SceneShotView s={s} f={f} from={from} to={to} />
+    s.kind === 'scene' ? <SceneShotView s={s} f={f} from={from} to={to} speech={speech} />
     : s.kind === 'slide' ? <SlideShotView s={s} f={f} from={from} />
     : s.kind === 'vignette' ? <VignetteShotView s={s} f={f} from={from} />
     : s.kind === 'chapter' ? <ChapterCard frame={f} n={s.n} title={s.title} cue={from} />
@@ -184,7 +187,7 @@ export const cornerLogo = (kind: string) => kind !== 'brand'
 
 // # The picture of a timeline at frame f — every visible shot with its transitions (Episode and Short share it)
 export const EpisodeFrame: React.FC<{ timeline: EpisodeTimeline; f: number }> = ({ timeline, f }) => (
-  <>{visibleShots(timeline, f).map((x) => <ShotView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} />)}</>
+  <>{visibleShots(timeline, f).map((x) => <ShotView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} speech={timeline.speech} />)}</>
 )
 
 export const Episode: React.FC<EpisodeProps> = ({ timeline, voice }) => {
