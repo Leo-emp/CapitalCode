@@ -108,6 +108,12 @@ A **cue** is a spoken word: `{ "sentence": "s12", "word": "million", "nth": 1 }`
   Short), saved for payoff lines; brand card by 0:25; first shot on s1; median shot 6–14 s, none over 30 s;
   slides 35–65% of runtime; never the same scene twice in a row; vary chart types;
   scene set must not repeat a recent video (> 60% overlap is refused).
+- **Acting, not presenting (owner rule):** characters do things inside the scene. Props go
+  `"on": "hand"` (held by `actors[actor ?? 0]`, follows the pose; shown only while the hand holds:
+  hold/present/talk/idle) or `"on": "floor"` (stands on the scene's ground line; steps aside if
+  someone stands there). Only effects (lightning, fire, cracks, arrows) may float. Every scene has
+  `stand2` for a second actor (faces the first automatically): use `handshake`, `talk`, `sit` (at a
+  `sit` anchor) for real moments between people.
 - Constant small motion: pose changes and props on cue words every few seconds;
   `slam` for the key payoff words; sfx sparingly (cuts get an automatic whoosh).
 - Data on screen = the facts in `facts.json`, with the source line on the slide.

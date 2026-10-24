@@ -19,28 +19,28 @@ icons were most of the scene-shot "events"; 11 slams; slides heading-only for se
 - Every behaviour change ships with a test that failed first; `vitest tests/agent tests/art` green.
 
 ## Part A — engine gates (quick)
-- [ ] A1 First visual within 1 s of every slide cut (first `at` cue − shot start ≤ 1.0 s); refusal names the word to start on.
-- [ ] A2 Slam cap: ≤ 3 slams per long video (scene slams + slam slides), ≤ 1 per Short.
-- [ ] A3 Brand shot starts ≤ 25 s.
-- [ ] A4 Persistent small logo emblem on every frame (top-left, low opacity), not on the brand card.
-- [ ] A5 gate-video measures mean brightness and reports it (target 12–20%, refuses after Part C lands).
+- [x] A1 First visual within 1 s of every slide cut (first `at` cue − shot start ≤ 1.0 s); refusal names the word to start on.
+- [x] A2 Slam cap: ≤ 3 slams per long video (scene slams + slam slides), ≤ 1 per Short.
+- [x] A3 Brand shot starts ≤ 25 s.
+- [x] A4 Persistent small logo emblem on every frame (top-left, low opacity), not on the brand card.
+- [x] A5 gate-video measures mean brightness and reports it (target 12–20%, refuses after Part C lands).
 
 ## Part B — "show what's said"
-- [ ] B1 Plan schema: optional `beats` — per sentence a visual idea; gate requires ≥ 1 *illustrative*
+- [x] B1 Plan schema: optional `beats` — per sentence a visual idea; gate requires ≥ 1 *illustrative*
       event per sentence (slide item, vignette step, held/placed object, slam); pose changes and the
       generic-icon set (question, exclamation, tick, cross, warning, magnifier, clock, calendar) do not count.
-- [ ] B2 Vignette library (`art/vignettes/`): data-driven animated mini-scenes, each a shot kind
+- [x] B2 Vignette library (`art/vignettes/`): data-driven animated mini-scenes, each a shot kind
       `vignette` with cue-able steps: money-flow (dollars into N big vs many small), bubble (swell/pop),
       leaderboard (rows swap ranks), pie-slice, baskets (same items in several baskets), lottery (tickets
       grey out, few glow), scale (tips), crowd-vs-giant, ladder/stairs, timeline-city (era skyline).
-- [ ] B3 Catalog + skill + plan gate know vignettes (data checks, layout budgets, cues per step).
+- [x] B3 Catalog + skill + plan gate know vignettes (data checks, layout budgets, cues per step).
 
 ## Part C — characters inside brighter scenes
-- [ ] C1 Brightness pass: scene palette/lighting lifted toward the reference (mean ~15%), measured by A5.
-- [ ] C2 Acting: actors can sit at desk anchors, hold a prop in hand (prop follows the hand), and
+- [x] C1 Brightness pass: scene palette/lighting lifted toward the reference (mean ~15%), measured by A5.
+- [x] C2 Acting: actors can sit at desk anchors, hold a prop in hand (prop follows the hand), and
       two-actor moments (handshake/talk) at paired anchors.
-- [ ] C3 Props placed on surfaces (`on: 'desk' | 'floor' | 'hand'`), no floating icons in scenes.
+- [x] C3 Props placed on surfaces (`on: 'desk' | 'floor' | 'hand'`), no floating icons in scenes.
 
 ## Part D — re-render the first video
-- [ ] D1 Re-plan "Your Index Fund…" with beats + vignettes + acting; hook opens on the $100 split vignette.
+- [x] D1 Re-plan "Your Index Fund…" with beats + vignettes + acting; hook opens on the $100 split vignette.
 - [ ] D2 Gates, render, Critic, package; side-by-side comparison for the owner.
