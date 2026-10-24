@@ -49,3 +49,20 @@ test('a floor prop on an occupied spot steps aside, away from the centre of the 
   expect(b.x).toBeGreaterThan(right.x + 40)
   expect(propBox('floor', 170, left).x).toBeCloseTo(left.x - 85, 0)   // # free spot: centred as before
 })
+
+// # Stills review: a calculator ended up over the hero's face when he switched to "think" (hand at chin)
+test('a held prop shows only while the hand is holding (not at the chin, pointing or in a pocket)', async () => {
+  const { holdsInHand } = await import('../../art/rig/Actor')
+  expect(holdsInHand(getPose('hold'))).toBe(true)
+  expect(holdsInHand(getPose('present'))).toBe(true)
+  expect(holdsInHand(getPose('think'))).toBe(false)
+  expect(holdsInHand(getPose('point'))).toBe(false)
+  expect(holdsInHand(getPose('pockets'))).toBe(false)
+})
+
+test('a floor prop never leaves the frame when it steps aside', () => {
+  const edge = { x: 230, y: 900, scale: 1, layer: 'mid' as const }
+  const b = propBox('floor', 170, edge, { occupied: true })
+  expect(b.x).toBeGreaterThanOrEqual(40)
+  expect(b.x + b.size).toBeLessThanOrEqual(1880)
+})

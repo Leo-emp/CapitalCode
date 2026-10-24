@@ -13,7 +13,7 @@ import { clamp, Coin, Glow, Ground, hash01, Label, list, makeVignette, num, ramp
 // ---------------------------------------------------------------- money-flow
 // # data: { source?: string, groups: [{ label, share, count, tone? }] } (2–3 groups)
 // # steps: 1) source + skyline appear, then one step per group (its stream + label)
-const GROUND = 900
+const GROUND = 850 // # labels (two lines below) clear the slide's source line
 const MoneyFlow: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame, data, cues }) => {
   const groups = data.groups as { label: string; share: number; count: number; tone?: string }[]
   const appear = settle(frame, cues[0])

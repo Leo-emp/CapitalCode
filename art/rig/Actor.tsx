@@ -65,9 +65,16 @@ export const propBox = (on: 'hand' | 'floor' | undefined, size: number, anchor: 
     return { x: h.x - s / 2, y: h.y - s * 0.75, size: s }
   }
   if (on === 'floor') {
-    // # someone stands on this spot: set the prop down beside their feet, on the side away from the frame centre
-    const dx = o.occupied ? (anchor.x < 960 ? -1 : 1) * (size * 0.5 + 130 * anchor.scale) : 0
-    return { x: anchor.x - size / 2 + dx, y: anchor.y - size, size }
+    // # someone stands on this spot: set the prop down beside their feet, on the side away from the frame
+    // # centre — or the other side if that would leave the frame
+    const step = size * 0.5 + 130 * anchor.scale
+    let x = anchor.x - size / 2 + (o.occupied ? (anchor.x < 960 ? -1 : 1) * step : 0)
+    if (o.occupied && (x < 40 || x + size > 1880)) x = anchor.x - size / 2 + (anchor.x < 960 ? 1 : -1) * step
+    return { x: Math.max(40, Math.min(1880 - size, x)), y: anchor.y - size, size }
   }
   return { x: anchor.x - size / 2, y: anchor.y - size / 2, size }
 }
+
+// # A held prop is drawn only while the right hand is actually holding — a "think" pose (hand at the
+// # chin) would otherwise put the prop over the face; pointing or a hand in a pocket drops it too
+export const holdsInHand = (p: Pose) => p.r.hand === 'hold' || p.r.hand === 'open' || p.r.hand === 'rest'
