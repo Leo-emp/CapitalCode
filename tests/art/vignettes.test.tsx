@@ -61,3 +61,35 @@ test('leaderboard shows which ranking is on screen (e.g. 2000 → 2026)', () => 
   expect(at(50)).toContain('>2000<')
   expect(at(300)).toContain('>2026<')
 })
+
+// ------------------------------------------------------------ living film: crowds, grids, circles
+test('crowd: up to 60 people on pedestals, all inside the frame', async () => {
+  const { crowdLayout } = await import('../../art/vignettes/layouts')
+  for (const n of [1, 5, 12, 30, 60]) {
+    const spots = crowdLayout(n)
+    expect(spots.length).toBe(n)
+    for (const s of spots) {
+      expect(s.x - 60 * s.scale).toBeGreaterThanOrEqual(120); expect(s.x + 60 * s.scale).toBeLessThanOrEqual(1800)
+      expect(s.y - 200 * s.scale).toBeGreaterThanOrEqual(200); expect(s.y + 20 * s.scale).toBeLessThanOrEqual(980)
+    }
+  }
+  expect(getVignette('crowd').check({ people: Array.from({ length: 61 }, () => ({ look: 'hero', share: 1 })) })).toMatch(/60/)
+  expect(getVignette('crowd').check({ people: [{ look: 'ghost', share: 1 }] })).toMatch(/ghost/)
+})
+
+test('grid takes 4–6 panels, circles 3–5', () => {
+  const panel = { prop: 'coin', label: 'A' }
+  expect(getVignette('grid').check({ panels: Array(3).fill(panel) })).toMatch(/4–6/)
+  expect(getVignette('grid').check({ panels: Array(7).fill(panel) })).toMatch(/4–6/)
+  expect(getVignette('grid').check({ panels: Array(4).fill(panel) })).toBeNull()
+  expect(getVignette('grid').check({ panels: [...Array(3).fill(panel), { prop: 'nope', label: 'x' }] })).toMatch(/nope/)
+  expect(getVignette('circles').check({ items: Array(2).fill(panel) })).toMatch(/3–5/)
+  expect(getVignette('circles').check({ items: Array(5).fill(panel) })).toBeNull()
+})
+
+test('the mini cast: small people in the cast looks, alive (they blink and breathe)', async () => {
+  const { Mini } = await import('../../art/rig/Mini')
+  const at = (f: number) => renderToStaticMarkup(<svg><Mini look="hero" x={500} y={800} scale={1} frame={f} seed={3} /></svg>)
+  expect(at(10)).toContain('#2B8FE0') // # hero blazer blue
+  expect(new Set(Array.from({ length: 60 }, (_, f) => at(f))).size).toBeGreaterThan(5)
+})

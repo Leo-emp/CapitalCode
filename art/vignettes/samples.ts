@@ -12,4 +12,7 @@ export const SAMPLES: Record<string, Record<string, unknown>> = {
   baskets: { baskets: ['S&P 500 fund', 'Tech fund', 'Growth fund'], items: ['NVIDIA', 'Apple', 'Microsoft'] },
   lottery: { tickets: 48, winners: 2, label: 'a few huge winners' },
   scale: { left: { label: 'Price paid', value: 40 }, right: { label: 'Profits', value: 27 } },
+  crowd: { people: [{ look: 'investor', share: 38, label: 'Top 10' }, ...Array.from({ length: 23 }, (_, i) => ({ look: ['hero', 'buyer', 'owner', 'worker'][i % 4], share: 2.7 }))] },
+  grid: { panels: [{ scene: 'shop-street', label: 'Shops' }, { scene: 'bank-interior', label: 'Banks' }, { prop: 'house', label: 'Homes' }, { prop: 'car', label: 'Cars' }] },
+  circles: { items: [{ prop: 'coin', label: 'Cash' }, { prop: 'house', label: 'Property' }, { scene: 'stock-exchange', label: 'Stocks' }] },
 }
