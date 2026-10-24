@@ -261,6 +261,6 @@ export const mux = (video: string, audio: string, out: string) =>
   ff(['-i', video, '-i', audio, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-ac', '2', '-shortest', '-movflags', '+faststart', out], 'mux')
 
 // # Browser tabs for one chunk: half the cores at most, and only as many as free memory allows
-// # (≈ 0.45 GB per tab, 2 GB kept for the system) — a render on a busy PC slows down instead of being killed
+// # (≈ 0.7 GB per tab, 3 GB kept for the system — measured: 0.45/2 still got renders killed) — a render on a busy PC slows down instead of being killed
 export const renderConcurrency = (freeGB: number, cores: number) =>
-  Math.max(1, Math.min(Math.max(1, Math.floor(cores / 2)), Math.floor((freeGB - 2) / 0.45)))
+  Math.max(1, Math.min(Math.max(1, Math.floor(cores / 2)), Math.floor((freeGB - 3) / 0.7)))

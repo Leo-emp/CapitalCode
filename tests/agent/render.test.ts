@@ -135,8 +135,10 @@ test('pruneChunks deletes chunk files that are not in the current render', async
 
 // # A render was killed for low memory (2026-10-24): browser tabs scale with free memory, not just cores
 test('render concurrency follows free memory and cores', () => {
-  expect(renderConcurrency(7.0, 16)).toBe(8)      // # plenty: half the cores
-  expect(renderConcurrency(3.5, 16)).toBe(3)      // # tight: fewer tabs, slower but safe
+  // # measured: renders at 7 GB free with 8 tabs were still killed for low memory → ≈ 0.7 GB per tab, 3 GB kept free
+  expect(renderConcurrency(9.0, 16)).toBe(8)      // # plenty: half the cores
+  expect(renderConcurrency(7.0, 16)).toBe(5)
+  expect(renderConcurrency(4.8, 16)).toBe(2)      // # tight: fewer tabs, slower but safe
   expect(renderConcurrency(1.0, 16)).toBe(1)      // # never zero
   expect(renderConcurrency(32, 4)).toBe(2)        // # never more than half the cores
 })
