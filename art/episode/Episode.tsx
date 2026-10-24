@@ -29,7 +29,7 @@ type RActor = { who: string; anchor: string; track: { at: number; pose: string; 
 // # on: 'hand' = held by actor[actor ?? 0] (follows the pose), 'floor' = stands on the anchor's ground line
 type RProp = { id: string; anchor: string; at: number; size?: number; on?: 'hand' | 'floor'; actor?: number }
 type RScene = { id: string; kind: 'scene'; start: number; scene: string; time?: 'night' | 'dusk' | 'rain' | 'fog'; tone?: 'none' | 'blue' | 'gold' | 'red' | 'green'
-  framing?: 'wide' | 'medium' | 'close'; variant?: string; actors?: RActor[]; props?: RProp[]; slam?: { words: { text: string; tone?: Tone }[]; at: number[] } }
+  framing?: 'wide' | 'medium' | 'close'; variant?: string; world?: 'night' | 'teal'; actors?: RActor[]; props?: RProp[]; slam?: { words: { text: string; tone?: Tone }[]; at: number[] } }
 type RSlide = { id: string; kind: 'slide'; start: number; slide: string; heading?: string; kicker?: string; source?: string; data: any; at: number[] }
 type RChapter = { id: string; kind: 'chapter'; start: number; n: number; title: string }
 type RBrand = { id: string; kind: 'brand'; start: number }
@@ -106,7 +106,7 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number }
   return (
     <AbsoluteFill>
       <AbsoluteFill style={{ transform: `scale(${push})` }}>
-        <Scene.Component frame={f} t={t} lightsOn={1} time={s.time} tone={s.tone} framing={s.framing} variant={s.variant}
+        <Scene.Component frame={f} t={t} lightsOn={1} time={s.time} tone={s.tone} framing={s.framing} variant={s.variant} world={s.world}
           actors={{ back: slots.back.length ? slots.back : undefined, mid: slots.mid.length ? slots.mid : undefined, front: slots.front.length ? slots.front : undefined }} />
       </AbsoluteFill>
       {s.slam && slamAt !== undefined && f >= slamAt - 3 && (

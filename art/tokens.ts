@@ -62,3 +62,30 @@ export const TOKENS = { FPS, W, H, COLORS, FONTS, MOTION }
 // # centre so the eye goes to the content (was #0A111C → #060A11, ≈ 6% — owner review 2026-10-24)
 export const PANEL_STOPS = ['#1C3150', '#13243C', '#0C1829'] as const
 export const PANEL_BG = `radial-gradient(ellipse 85% 75% at 50% 42%, ${PANEL_STOPS[0]} 0%, ${PANEL_STOPS[1]} 55%, ${PANEL_STOPS[2]} 100%)`
+
+// ------------------------------------------------------------
+// COLOUR WORLDS — living film (owner 2026-10-24): "Night flat" is the main world (lit deep navy,
+// never near-black, bright solid objects); deep teal is the second world for ~30% of shots.
+// ------------------------------------------------------------
+export type WorldId = 'night' | 'teal'
+export type World = {
+  sky: [string, string]   // # top → horizon gradient
+  wall: string; floor: string // # interiors / ground
+  body: string; bodyShade: string // # buildings, furniture: lit side + shadow side
+  solid: string; solidShade: string // # bright hero objects (champagne cream)
+  glow: string            // # windows, lamps
+  line: string            // # the few outlines we keep
+  shadow: string          // # soft ground shadow under things
+}
+export const WORLDS: Record<WorldId, World> = {
+  night: { sky: ['#14284A', '#1E3A63'], wall: '#1B3358', floor: '#2B4A78', body: '#2E5384', bodyShade: '#223F67',
+    solid: '#E8D9B5', solidShade: '#C9B48A', glow: '#FFD58A', line: '#4A78B0', shadow: '#0E1D33' },
+  teal: { sky: ['#0D4352', '#16687A'], wall: '#11505F', floor: '#0B4352', body: '#1C6B7C', bodyShade: '#145463',
+    solid: '#F2E6CC', solidShade: '#D8C49C', glow: '#FFE3A3', line: '#3C9AAD', shadow: '#07303B' },
+}
+
+// # Perceived brightness of a #RRGGBB colour, 0–100 (Rec. 709 weights)
+export const luma = (hex: string): number => {
+  const n = parseInt(hex.slice(1), 16)
+  return ((0.2126 * (n >> 16) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255) * 100
+}

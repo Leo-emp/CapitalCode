@@ -34,7 +34,7 @@ export type ShotProp = { id: string; anchor: string; at: Cue; size?: number; on?
 export type SceneShot = {
   id: string; start: Cue; kind: 'scene'; scene: string
   time?: 'night' | 'dusk' | 'rain' | 'fog'; tone?: 'none' | 'blue' | 'gold' | 'red' | 'green'; framing?: 'wide' | 'medium' | 'close'
-  variant?: string; actors?: ShotActor[]; props?: ShotProp[]; slam?: { words: { text: string; tone?: string }[]; at: Cue[] }
+  variant?: string; world?: 'night' | 'teal'; actors?: ShotActor[]; props?: ShotProp[]; slam?: { words: { text: string; tone?: string }[]; at: Cue[] }
 }
 export type SlideShot = { id: string; start: Cue; kind: 'slide'; slide: string; heading?: string; kicker?: string; source?: string; data: Record<string, unknown>; at: Cue[] }
 // # An animated mini-scene that SHOWS what the voice says (art/vignettes), one cue per step
