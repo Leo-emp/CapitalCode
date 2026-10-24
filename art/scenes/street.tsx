@@ -66,32 +66,6 @@ export const STREET_SCENES = [
       front: <g><Pavement y={960} u={u} spill={{ cx: 1000, rx: 420, o: lightsOn }} /><StreetLamp x={1850} ground={1000} frame={frame} u={u} /></g>,
     })),
 
-  // ---------------------------------------------------------------- bank interior
-  makeScene('bank-interior', 'Bank hall', ['money', 'bank', 'finance', 'institution', 'personal-finance', 'investing'],
-    { stand: A(560, 1010), counter: A(1300, 760, 0.8), prop1: A(1300, 300), prop2: A(960, 620, 0.8) },
-    ({ u, frame }) => ({
-      back: <g><RoomShell floor={900} panels={false} />{[260, 620, 980, 1340, 1700].map((x) => <g key={x}><rect x={x - 34} y={140} width={68} height={760} fill="none" stroke={L.line} strokeWidth={2} /><rect x={x - 50} y={124} width={100} height={20} fill="none" stroke={L.line} strokeWidth={2} /></g>)}
-        <path d="M120 124 L960 40 L1800 124" stroke={L.line} strokeWidth={2} fill="none" /></g>,
-      mid: <g><LightPool cx={1300} cy={700} rx={420} ry={260} u={u} k="b" />
-        <rect x={980} y={700} width={640} height={200} fill={wc().bodyShade} stroke={COLORS.champagne} strokeWidth={3} />
-        {[1060, 1240, 1420].map((x) => <g key={x}><rect x={x} y={560} width={120} height={140} fill="none" stroke={COLORS.champagne} strokeWidth={2} /><Extra x={x + 60} y={700} s={0.6} c={COLORS.champagne} /></g>)}
-        <text x={1300} y={540} textAnchor="middle" fill={COLORS.champagne} style={{ font: '700 34px Inter', letterSpacing: 8 }}>BANK</text>
-        {[0, 1, 2].map((i) => <Extra key={i} x={300 + i * 160} y={900 - (i % 2) * 6} s={0.7} />)}</g>,
-      front: <rect x={0} y={1000} width={1920} height={80} fill={wc().sky[0]} />,
-    })),
-
-  // ---------------------------------------------------------------- vault
-  makeScene('vault-room', 'Bank vault', ['money', 'bank', 'wealth', 'security', 'investing'],
-    { stand: A(500, 1010), prop1: A(1300, 520, 1.6), prop2: A(1600, 820, 0.9) },
-    ({ u, frame }) => ({
-      back: <g><RoomShell floor={900} /><LightPool cx={1300} cy={520} rx={500} ry={360} u={u} k="v" color={COLORS.champagne} o={0.22} /></g>,
-      mid: <g><circle cx={1300} cy={520} r={330} fill="none" stroke={L.line} strokeWidth={3} /><circle cx={1300} cy={520} r={300} fill={wc().bodyShade} stroke={COLORS.champagne} strokeWidth={4} />
-        <g transform={`rotate(${frame * 0.8} 1300 520)`}>{[0, 60, 120].map((a) => <rect key={a} x={1292} y={330} width={16} height={380} rx={8} fill={COLORS.champagne} opacity={0.8} transform={`rotate(${a} 1300 520)`} />)}</g>
-        <circle cx={1300} cy={520} r={56} fill={COLORS.champagneDark} stroke={L.ink} strokeWidth={6} />
-        {Array.from({ length: 12 }, (_, i) => <circle key={i} cx={1300 + 270 * Math.cos((i / 12) * Math.PI * 2)} cy={520 + 270 * Math.sin((i / 12) * Math.PI * 2)} r={10} fill={COLORS.champagneDark} />)}
-        {[0, 1, 2, 3].map((i) => <rect key={i} x={1560 + (i % 2) * 90} y={830 - Math.floor(i / 2) * 50} width={84} height={44} fill="#E9C25A" stroke="#7A5A12" strokeWidth={3} />)}</g>,
-    })),
-
   // ---------------------------------------------------------------- ATM street
   makeScene('atm-street', 'ATM on a night street', ['money', 'bank', 'cash', 'street', 'personal-finance'],
     { stand: A(760, 1011, 1, 'front'), prop1: A(1260, 330), prop2: A(1260, 640, 0.8) },
@@ -140,17 +114,6 @@ export const STREET_SCENES = [
       back: <g><NightSky u={u} stars={80} /><Skyline frame={frame} ground={980} seed={21} tall={0.8} /></g>,
       mid: <g><Skyline frame={frame} ground={1000} seed={5} tall={1.35} /></g>,
       front: <rect x={0} y={1000} width={1920} height={80} fill={wc().sky[0]} />,
-    })),
-
-  // ---------------------------------------------------------------- living room
-  makeScene('living-room', 'Living room at night', ['money', 'personal', 'home', 'family', 'personal-finance'],
-    { stand: A(500, 1010), sit: A(1150, 900, 0.9), prop1: A(1550, 380), prop2: A(1150, 560, 0.8) },
-    ({ u, frame }) => ({
-      back: <g><RoomShell floor={900} /><BlindsWindow x={1380} y={160} w={360} h={420} city frame={frame} /><Shelf x={180} y={360} w={340} seed={4} /></g>,
-      mid: <g><path d="M880 900 L880 720 Q880 680 920 680 L1420 680 Q1460 680 1460 720 L1460 900" fill={wc().bodyShade} stroke={L.line} strokeWidth={2} />
-        <rect x={860} y={760} width={620} height={90} rx={20} fill="#0E1A2E" stroke={L.line} strokeWidth={2} />
-        <DeskLamp x={1560} y={840} frame={frame} u={u} /><rect x={1500} y={840} width={140} height={60} fill="none" stroke={L.line} strokeWidth={2} />
-        <Plant x={760} y={900} frame={frame} s={1.1} /></g>,
     })),
 
   // ---------------------------------------------------------------- kitchen table bills

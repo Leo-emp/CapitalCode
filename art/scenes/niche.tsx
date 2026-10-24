@@ -113,14 +113,6 @@ export const NICHE_SCENES = [
         <rect x={1120} y={860} width={640} height={40} fill="#3A4558" /><Bear x={1420} y={806} s={1.45} />
         <LightPool cx={500} cy={800} rx={340} ry={200} u={u} k="bl" color={G.green} o={0.18} /><LightPool cx={1400} cy={800} rx={340} ry={200} u={u} k="br" color={G.red} o={0.18} /></g>,
     })),
-  makeScene('chart-wall', 'Giant candlestick chart wall', ['investing', 'markets', 'stocks', 'trading', 'thumbnail'],
-    { stand: A(300, 1011), focus: A(1100, 470), prop1: A(1100, 200), prop2: A(1600, 820, 0.8) },
-    ({ u, frame, variant }) => ({
-      back: <g><RoomShell floor={960} panels={false} /><rect x={480} y={110} width={1340} height={720} rx={10} fill={wc().sky[0]} stroke={L.line} strokeWidth={3} />
-        {[0, 1, 2, 3].map((k) => <line key={k} x1={500} x2={1800} y1={200 + k * 160} y2={200 + k * 160} stroke={L.dim} strokeDasharray="4 10" />)}
-        <Candles x={520} y={150} w={1260} h={640} n={34} seed={variant === 'crash' ? 7 : 3} frame={frame} trend={variant === 'crash' ? -1 : variant === 'boom' ? 1 : 0} /></g>,
-      mid: <LightPool cx={1100} cy={470} rx={760} ry={420} u={u} k="cw" color="#4FB5E8" o={0.12} />,
-    })),
   makeScene('portfolio-dashboard', 'Portfolio dashboard', ['investing', 'portfolio', 'etf', 'personal-finance', 'tech'],
     { stand: A(300, 1011), focus: A(1150, 470), prop1: A(1150, 200), prop2: A(1650, 820, 0.8) },
     ({ u, frame }) => {
@@ -211,15 +203,6 @@ export const NICHE_SCENES = [
         {Array.from({ length: 5 }, (_, i) => <Extra key={i} x={80 + i * 80} y={980} s={0.55} />)}
         <LightPool cx={1200} cy={600} rx={560} ry={280} u={u} k="to" color="#DCEBF7" o={0.15} /></g>,
     })),
-  makeScene('savings-jars', 'Savings jars on a desk', ['personal-finance', 'saving', 'budget', 'thumbnail'],
-    { stand: A(330, 1010), focus: A(1150, 640), prop1: A(1150, 300), prop2: A(1600, 380) },
-    ({ u, frame }) => ({
-      back: <g><RoomShell floor={960} /><BlindsWindow x={1380} y={160} w={380} h={380} city frame={frame} /></g>,
-      mid: <g><Desk x={640} y={780} w={1000} drawers={false} /><DeskLamp x={720} y={780} frame={frame} u={u} />
-        <Jar x={950} y={778} fill={0.8} label="RENT" color={G.blue} /><Jar x={1110} y={778} fill={0.45} label="SAVE" color={G.green} />
-        <Jar x={1270} y={778} fill={0.25} label="FUN" color={G.champagne} /><Jar x={1430} y={778} fill={0.6} label="INVEST" color="#B48CFF" />
-        <LightPool cx={1150} cy={700} rx={600} ry={240} u={u} k="sj" o={0.22} /></g>,
-    })),
   makeScene('apartment-rent', 'Small apartment with rent notice', ['personal-finance', 'housing', 'rent', 'cost-of-living'],
     { stand: A(500, 1010), focus: A(1300, 560), prop1: A(1300, 300), prop2: A(1650, 760, 0.8) },
     ({ u, frame }) => ({
@@ -286,31 +269,6 @@ export const NICHE_SCENES = [
         {Array.from({ length: 4 }, (_, i) => { const x = 600 + ((i * 360 + frame * 4) % 1300); return <g key={i}><rect x={x} y={920} width={110} height={40} rx={8} fill="#3A4558" /><rect x={x + 15} y={870} width={80} height={50} fill="#C9A06B" stroke={wc().bodyShade} strokeWidth={2} /></g> })}
         <LightPool cx={1150} cy={700} rx={760} ry={300} u={u} k="rw" color="#F2A33A" o={0.14} /></g>,
     })),
-  makeScene('coder-desk', 'Coder desk with code screens', ['tech', 'ai', 'software', 'startup', 'work'],
-    { stand: A(330, 1010), sit: A(1000, 1000, 0.95), focus: A(1100, 520), prop1: A(1100, 220), prop2: A(1650, 380) },
-    ({ u, frame }) => ({
-      back: <g><RoomShell floor={960} /><BlindsWindow x={1500} y={170} w={340} h={380} city frame={frame} /></g>,
-      mid: <g><Desk x={560} y={760} w={980} drawers={false} />
-        {[[720, 440], [940, 420], [1160, 440]].map(([x, y], i) => (
-          <g key={i}><rect x={x} y={y} width={200} height={140} rx={6} fill={wc().bodyShade} stroke={L.line} strokeWidth={2} />
-            {Array.from({ length: 7 }, (_, r) => <rect key={r} x={x + 14 + (r % 3) * 12} y={y + 14 + r * 17} width={40 + rnd(r + i * 9 + Math.floor(frame / 12)) * 120} height={8} rx={4} fill={['#7FD6FF', '#B48CFF', G.green, G.champagne][(r + i) % 4]} opacity={0.85} />)}
-            <path d={`M${x + 90} ${y + 140} L${x + 84} ${y + 170} L${x + 116} ${y + 170} L${x + 110} ${y + 140} Z`} fill={wc().bodyShade} stroke={L.line} strokeWidth={1.5} /></g>))}
-        <rect x={880} y={740} width={300} height={16} rx={4} fill="#2A3446" /><OfficeChair x={1040} y={960} />
-        <LightPool cx={1040} cy={560} rx={600} ry={320} u={u} k="cd" color="#4FB5E8" o={0.18} /></g>,
-    })),
-  makeScene('ai-brain', 'AI brain hologram', ['ai', 'tech', 'future', 'thumbnail'],
-    { stand: A(330, 1010), focus: A(1150, 480, 1.2), prop1: A(1150, 480, 1.2), prop2: A(1650, 300) },
-    ({ u, frame }) => ({
-      back: <g><Backdrop u={u} />
-        {Array.from({ length: 40 }, (_, i) => <line key={i} x1={1150} y1={480} x2={1150 + Math.cos(i * 0.47) * (420 + rnd(i) * 300)} y2={480 + Math.sin(i * 0.47) * (300 + rnd(i) * 200)} stroke="#4FB5E8" strokeWidth={1} opacity={0.15 + 0.15 * Math.sin(frame / 10 + i)} />)}</g>,
-      mid: <g>
-        <path d="M1010 480 C980 380 1060 300 1150 320 C1240 300 1320 380 1290 480 C1320 560 1250 640 1150 620 C1050 640 980 560 1010 480 Z" fill="none" stroke="#7FD6FF" strokeWidth={4} />
-        <path d="M1150 320 C1130 400 1170 460 1150 620 M1040 420 C1090 430 1110 470 1100 520 M1260 420 C1210 430 1190 470 1200 520" stroke="#7FD6FF" strokeWidth={3} fill="none" opacity={0.8} />
-        {Array.from({ length: 22 }, (_, i) => <circle key={i} cx={1040 + rnd(i) * 220} cy={360 + rnd(i + 7) * 230} r={4} fill="#BFF0FF" opacity={0.4 + 0.6 * Math.abs(Math.sin(frame / 7 + i))} />)}
-        <ellipse cx={1150} cy={860} rx={260} ry={40} fill="none" stroke="#4FB5E8" strokeWidth={3} /><path d="M930 860 L1060 620 M1370 860 L1240 620" stroke="#4FB5E8" strokeWidth={1.5} opacity={0.4} />
-        <LightPool cx={1150} cy={480} rx={560} ry={460} u={u} k="ab" color="#4FB5E8" o={0.3} /></g>,
-    })),
-
   // ---------------------------------------------------------------- BUSINESS (7)
   makeScene('startup-office', 'Startup open office with whiteboard', ['business', 'startup', 'entrepreneurship', 'work'],
     { stand: A(360, 1010), focus: A(1150, 420), prop1: A(1150, 220), prop2: A(1650, 380), board: A(1150, 420) },
@@ -352,17 +310,6 @@ export const NICHE_SCENES = [
           {[0, 1, 2].map((k) => <path key={k} d={`M${x - 20 + k * 20} 630 Q${x - 30 + k * 20} ${590 - Math.sin(frame / 6 + k + i) * 10} ${x - 10 + k * 20} 560`} stroke="#C8D6E6" strokeWidth={4} fill="none" opacity={0.35} />)}
           <path d={`M${x - 40} 650 Q${x} ${600 - (i === 1 ? Math.abs(Math.sin(frame / 4)) * 20 : 0)} ${x + 40} 650`} fill="#FF7A1F" opacity={0.7} /></g>)}
         <LightPool cx={1150} cy={640} rx={700} ry={260} u={u} k="rk" o={0.22} /></g>,
-    })),
-  makeScene('boardroom', 'Glass boardroom over the city', ['business', 'corporate', 'deal', 'investing'],
-    { stand: A(330, 1010), focus: A(1100, 700), prop1: A(1100, 300), prop2: A(1650, 380) },
-    ({ u, frame }) => ({
-      back: <g><NightSky u={u} /><Skyline frame={frame} ground={700} seed={91} tall={0.8} />
-        {Array.from({ length: 7 }, (_, i) => <line key={i} x1={i * 320} x2={i * 320} y1={0} y2={720} stroke="#7FD6FF" strokeWidth={4} opacity={0.35} />)}
-        <rect x={0} y={0} width={1920} height={720} fill="#7FD6FF" opacity={0.04} /></g>,
-      mid: <g><rect x={0} y={720} width={1920} height={360} fill={wc().sky[0]} />
-        <path d="M520 760 L1680 760 L1800 880 L400 880 Z" fill="#14202E" stroke={L.line} strokeWidth={2} />
-        {[620, 860, 1100, 1340, 1580].map((x) => <g key={x}><OfficeChair x={x} y={760} /></g>)}
-        <LightPool cx={1100} cy={800} rx={760} ry={140} u={u} k="bd" color="#DCEBF7" o={0.14} /></g>,
     })),
   makeScene('pitch-meeting', 'Investor pitch meeting', ['business', 'startup', 'investing', 'fundraising', 'presentation'],
     { stand: A(1500, 1000), focus: A(900, 420), prop1: A(900, 420), prop2: A(1650, 300), board: A(900, 420) },

@@ -40,13 +40,6 @@ const Rack: React.FC<{ x: number; y: number; frame: number; seed: number }> = ({
 )
 
 export const WORLD_SCENES = [
-  makeScene('server-room', 'Server room', ['tech', 'ai', 'data', 'cloud'],
-    { stand: A(960, 1010), prop1: A(960, 220), prop2: A(1600, 300) },
-    ({ u, frame }) => ({
-      back: <g><RoomShell floor={960} panels={false} />{[100, 300, 1470, 1670].map((x, i) => <Rack key={x} x={x} y={400} frame={frame} seed={i * 7} />)}</g>,
-      mid: <g>{[560, 1200].map((x, i) => <Rack key={x} x={x} y={330} frame={frame} seed={i * 3 + 1} />)}<LightPool cx={960} cy={700} rx={700} ry={400} u={u} k="sr" color="#4FB5E8" o={0.18} /></g>,
-    })),
-
   makeScene('mining-room', 'Crypto mining room', ['tech', 'crypto', 'bitcoin', 'energy'],
     { stand: A(380, 1010), prop1: A(1250, 230), prop2: A(1250, 520, 0.8) },
     ({ u, frame }) => ({
@@ -121,27 +114,6 @@ export const WORLD_SCENES = [
           ? <circle key={`${c}-${r}`} cx={530 + c * 26} cy={200 + r * 30} r={8} fill="#1E6FA8" opacity={0.5 + 0.3 * Math.sin(frame / 20 + c * 0.3)} /> : null))}<LightPool cx={1150} cy={500} rx={800} ry={420} u={u} k="mp" color="#1E6FA8" o={0.15} /></g>,
     })),
 
-  makeScene('ai-lab', 'AI lab', ['tech', 'ai', 'research', 'future'],
-    { stand: A(380, 1010), prop1: A(1250, 300, 1.2), prop2: A(1650, 760, 0.8) },
-    ({ u, frame }) => ({
-      back: <g><RoomShell floor={960} panels={false} />{Array.from({ length: 24 }, (_, i) => {
-        const a = (i / 24) * Math.PI * 2, r = 230 + 40 * Math.sin(frame / 20 + i)
-        return <line key={i} x1={1250} y1={420} x2={1250 + r * Math.cos(a)} y2={420 + r * Math.sin(a)} stroke="#4FB5E8" strokeWidth={1.5} opacity={0.35} />
-      })}</g>,
-      mid: <g><circle cx={1250} cy={420} r={150} fill="none" stroke="#4FB5E8" strokeWidth={3} opacity={0.6 + 0.3 * Math.sin(frame / 8)} />
-        <circle cx={1250} cy={420} r={90} fill="#0B2440" stroke="#4FB5E8" strokeWidth={3} />
-        <Desk x={900} y={760} w={700} drawers={false} /><Monitor x={980} y={620} w={180} h={120} frame={frame} trend="up" /><Monitor x={1340} y={620} w={180} h={120} frame={frame + 20} />
-        <LightPool cx={1250} cy={420} rx={500} ry={420} u={u} k="ai" color="#4FB5E8" o={0.2} /></g>,
-    })),
-
-  makeScene('stage', 'Presentation stage', ['work', 'presentation', 'launch', 'thumbnail', 'business'],
-    { stand: A(960, 1000, 1.05), prop1: A(1500, 320), prop2: A(420, 320) },
-    ({ u }) => ({
-      back: <g><Backdrop u={u} /><rect x={260} y={100} width={1400} height={560} fill={wc().bodyShade} stroke={L.line} strokeWidth={2} /></g>,
-      mid: <g><LightPool cx={960} cy={900} rx={520} ry={180} u={u} k="st" color="#FFF1D6" o={0.35} />
-        <path d="M960 0 L700 960 L1220 960 Z" fill="#FFF1D6" opacity={0.06} /><rect x={0} y={960} width={1920} height={120} fill={wc().bodyShade} stroke={L.line} strokeWidth={2} />
-        {Array.from({ length: 14 }, (_, i) => <Extra key={i} x={80 + i * 140} y={1110} s={0.6} c={L.dim} />)}</g>,
-    })),
 ]
 
 

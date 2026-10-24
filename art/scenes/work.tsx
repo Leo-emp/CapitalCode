@@ -12,40 +12,6 @@ import {
 const A = (x: number, y: number, scale = 1, layer: 'back' | 'mid' | 'front' = 'mid') => ({ x, y, scale, layer })
 
 export const WORK_SCENES = [
-  // ---------------------------------------------------------------- office (the Alux desk scene, our version)
-  makeScene('office', 'Office at night', ['work', 'business', 'office', 'desk'],
-    { stand: A(420, 1010), sit: A(960, 1000, 0.95), prop1: A(1460, 300), prop2: A(960, 560, 0.7) },
-    ({ u, frame }) => ({
-      back: <g><RoomShell floor={960} />{[0, 1, 2].map((i) => <BlindsWindow key={i} x={150 + i * 190} y={170} w={170} h={230} />)}
-        <Shelf x={1380} y={300} w={360} seed={7} /><rect x={1380} y={430} width={360} height={300} fill="none" stroke={L.dim} strokeWidth={2} /><line x1={1560} x2={1560} y1={430} y2={730} stroke={L.dim} strokeWidth={2} />
-        <BrandPoster x={1140} y={160} /></g>,
-      mid: <g><DeskLamp x={600} y={750} frame={frame} u={u} /><Desk x={380} y={750} w={1160} /><Monitor x={860} y={600} w={200} h={130} frame={frame} />
-        <Plant x={1270} y={750} frame={frame} /></g>,
-    })),
-
-  // ---------------------------------------------------------------- trading desk
-  makeScene('trading-desk', 'Trading desk with screens', ['work', 'investing', 'stocks', 'markets'],
-    { stand: A(420, 1010), sit: A(960, 1000, 0.95), prop1: A(960, 180), prop2: A(1550, 420) },
-    ({ frame, variant }) => ({
-      back: <g><RoomShell floor={960} /><BlindsWindow x={1500} y={150} w={340} h={420} city frame={frame} /></g>,
-      mid: <g>{[[640, 380], [860, 360], [1080, 380], [750, 540], [970, 540]].map(([x, y], i) => (
-        <Monitor key={i} x={x} y={y} w={200} h={140} frame={frame + i * 9} trend={variant === 'crash' ? 'down' : variant === 'boom' ? 'up' : (['up', 'down', 'mixed', 'up', 'mixed'] as const)[i]} stand={y > 500} />))}
-        <Desk x={520} y={720} w={900} drawers={false} /><OfficeChair x={960} y={960} /></g>,
-    })),
-
-  // ---------------------------------------------------------------- meeting room
-  makeScene('meeting-room', 'Meeting room', ['work', 'business', 'deal', 'boardroom'],
-    { stand: A(330, 1010), board: A(1500, 420, 1), prop1: A(1500, 400), prop2: A(960, 700, 0.7) },
-    ({ u, frame }) => ({
-      back: <g><RoomShell floor={960} /><rect x={1300} y={220} width={420} height={300} fill="#F4F2EC" stroke={L.line} strokeWidth={3} />
-        <path d="M1330 470 L1420 420 L1500 440 L1600 330 L1690 300" stroke={COLORS.green} strokeWidth={6} fill="none" />
-        {[0, 1, 2, 3].map((i) => <rect key={i} x={1350 + i * 80} y={480 - [40, 70, 55, 110][i]} width={40} height={[40, 70, 55, 110][i]} fill={COLORS.blue} opacity={0.5} />)}</g>,
-      mid: <g><LightPool cx={960} cy={760} rx={600} ry={160} u={u} k="mr" />
-        <path d="M560 720 L1360 720 L1460 820 L460 820 Z" fill="#0E1A2E" stroke={L.line} strokeWidth={2} />
-        {[620, 820, 1020, 1220].map((x) => <g key={x}><Extra x={x} y={720} s={0.75} /><rect x={x - 40} y={706} width={80} height={10} fill={L.cream} opacity={0.7} /></g>)}
-        <Plant x={200} y={960} frame={frame} s={1.2} /></g>,
-    })),
-
   // ---------------------------------------------------------------- startup garage
   makeScene('startup-garage', 'Startup garage', ['work', 'startup', 'entrepreneurship', 'tech', 'business'],
     { stand: A(430, 1010), sit: A(1150, 1000, 0.9), prop1: A(1600, 300), prop2: A(1150, 520, 0.7) },
@@ -104,29 +70,6 @@ export const WORK_SCENES = [
         <path d="M560 760 L560 240 L1000 240" stroke="#F7C531" strokeWidth={14} fill="none" /></g>,
     })),
 
-  // ---------------------------------------------------------------- stock exchange floor
-  makeScene('stock-exchange', 'Stock exchange floor', ['work', 'investing', 'stocks', 'markets'],
-    { stand: A(330, 1010), prop1: A(960, 160), prop2: A(1500, 520, 0.8) },
-    ({ u, frame, variant }) => {
-      const down = variant === 'crash'
-      return {
-        back: <g><RoomShell floor={960} panels={false} /><rect x={100} y={90} width={1720} height={120} fill={wc().bodyShade} stroke={L.line} strokeWidth={2} />
-          <g><clipPath id={u('tick')}><rect x={110} y={100} width={1700} height={100} /></clipPath><g clipPath={`url(#${u('tick')})`}>{Array.from({ length: 14 }, (_, i) => { const x = ((i * 330 - frame * 4) % 4620 + 4620) % 4620 - 1450; const up = down ? rnd(i) > 0.8 : rnd(i) > 0.4
-            return <text key={i} x={x} y={162} fill={up ? COLORS.green : COLORS.red} style={{ font: '700 34px "JetBrains Mono"' }}>{['ACME', 'NOVA', 'ORBT', 'KITE', 'ZENO', 'LUMA', 'VOLT'][i % 7]} {up ? '▲' : '▼'}{(rnd(i + 3) * 9).toFixed(1)}%</text> })}</g></g>
-          {[300, 760, 1220].map((x) => <Monitor key={x} x={x} y={300} w={400} h={220} frame={frame} trend={down ? 'down' : 'mixed'} stand={false} />)}</g>,
-        mid: <g>{Array.from({ length: 9 }, (_, i) => <Extra key={i} x={560 + i * 150} y={960 - (i % 2) * 20} s={0.8} />)}<LightPool cx={960} cy={520} rx={900} ry={300} u={u} k="se" color={down ? COLORS.red : '#4FB5E8'} o={0.14} /></g>,
-      }
-    }),
-
-  // ---------------------------------------------------------------- courtroom
-  makeScene('courtroom', 'Courtroom', ['work', 'legal', 'court', 'regulation', 'business'],
-    { stand: A(400, 1010), prop1: A(1300, 260), prop2: A(1300, 560, 0.7) },
-    ({ u }) => ({
-      back: <g><RoomShell floor={960} panels={false} />{[400, 700, 1000, 1300, 1600].map((x) => <rect key={x} x={x - 20} y={80} width={40} height={880} fill="none" stroke={L.line} strokeWidth={2} />)}
-        <circle cx={1300} cy={240} r={90} fill="none" stroke={COLORS.champagne} strokeWidth={4} /><text x={1300} y={258} textAnchor="middle" fill={COLORS.champagne} style={{ font: '700 44px Georgia' }}>⚖</text></g>,
-      mid: <g><LightPool cx={1300} cy={620} rx={500} ry={260} u={u} k="c" /><rect x={1000} y={560} width={600} height={400} fill="#2A1C14" stroke={COLORS.champagne} strokeWidth={3} />
-        <rect x={980} y={540} width={640} height={30} fill="#3A281C" stroke={COLORS.champagne} strokeWidth={3} /><Extra x={1300} y={540} s={0.7} c={COLORS.champagne} /></g>,
-    })),
 ]
 
 
