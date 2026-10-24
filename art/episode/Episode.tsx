@@ -96,7 +96,8 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number }
     const box = propBox(p.on, size, anc, holder ? { pose: holder.pose, flip: holder.flip, actor: holder.anchor } : { occupied: (s.actors ?? []).some((x) => x.anchor === p.anchor), ground: a.stand?.y })
     // # several props on one anchor fan out (not for held props)
     const k = p.on === 'hand' ? 0 : (perAnchor[p.anchor] = (perAnchor[p.anchor] ?? -1) + 1)
-    const layer = holder ? holder.anchor.layer : anc.layer
+    // # floor props share the standing ground, so they share its layer (in front of a foreground pavement)
+    const layer = holder ? holder.anchor.layer : p.on === 'floor' ? (a.stand?.layer ?? anc.layer) : anc.layer
     slots[layer].push(<Prop key={`p${i}`} size={box.size} x={box.x + k * size * 0.72} y={box.y - k * 8} frame={f} enter={p.at} />)
   }
 

@@ -74,3 +74,18 @@ test('a floor prop at a mid-air spot stands on the given ground line', () => {
   expect(b.y + b.size).toBeCloseTo(900, 0)
   expect(b.x + b.size / 2).toBeCloseTo(1400, 0)
 })
+
+// # Critic v3: the hero was cut off at the knees on Wall Street — the pavement is drawn in front of the
+// # mid layer, so in pavement scenes the standing spots must be on the front layer
+test('in scenes with a foreground pavement, people stand on the front layer', async () => {
+  const { readFileSync } = await import('node:fs')
+  const src = ['art/scenes/street.tsx', 'art/scenes/work.tsx', 'art/scenes/world.tsx', 'art/scenes/niche.tsx'].map((f) => readFileSync(f, 'utf8')).join('\n')
+  const blocks = src.split(/makeScene\('/).slice(1)
+  const withPavement = blocks.filter((b) => /front:[^\n]*Pavement/.test(b)).map((b) => b.slice(0, b.indexOf("'")))
+  expect(withPavement.length).toBeGreaterThan(0)
+  for (const id of withPavement) {
+    const s = SCENES.find((x) => x.id === id)!
+    expect(s.anchors.stand.layer, id).toBe('front')
+    expect(s.anchors.stand2.layer, id).toBe('front')
+  }
+})

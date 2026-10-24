@@ -94,7 +94,7 @@ const Jar: React.FC<{ x: number; y: number; fill: number; label: string; color: 
 export const NICHE_SCENES = [
   // ---------------------------------------------------------------- INVESTING (8)
   makeScene('wall-street', 'Wall Street at night', ['investing', 'markets', 'stocks', 'finance', 'street'],
-    { stand: A(330, 1011), focus: A(1180, 520), prop1: A(1180, 230), prop2: A(1600, 700, 0.8) },
+    { stand: A(330, 1011, 1, 'front'), focus: A(1180, 520), prop1: A(1180, 230), prop2: A(1600, 700, 0.8) },
     ({ u, frame }) => ({
       back: <g><NightSky u={u} /><Skyline frame={frame} ground={900} seed={51} tall={1.3} /></g>,
       mid: <g><rect x={700} y={300} width={960} height={600} fill="#1C1914" /><rect x={700} y={300} width={960} height={36} fill="#D9D0C2" />
@@ -239,7 +239,7 @@ export const NICHE_SCENES = [
         <LightPool cx={1150} cy={700} rx={700} ry={300} u={u} k="po" color="#DCEBF7" o={0.12} /></g>,
     })),
   makeScene('pawn-shop', 'Pawn shop', ['personal-finance', 'debt', 'small-business', 'street'],
-    { stand: A(360, 1011), focus: A(1200, 600), prop1: A(1200, 260), prop2: A(1600, 600, 0.8) },
+    { stand: A(360, 1011, 1, 'front'), focus: A(1200, 600), prop1: A(1200, 260), prop2: A(1600, 600, 0.8) },
     ({ u, frame, lightsOn }) => ({
       back: <g><NightSky u={u} /><Skyline frame={frame} x0={-20} x1={600} ground={960} seed={71} /></g>,
       mid: <g><rect x={640} y={300} width={1160} height={660} fill="#3A3A46" /><rect x={700} y={340} width={1040} height={90} fill="#0B1220" stroke={G.champagne} strokeWidth={3} />
@@ -375,7 +375,7 @@ export const NICHE_SCENES = [
         {[420, 640, 860].map((x) => <Extra key={x} x={x} y={860} s={0.7} />)}<LightPool cx={900} cy={420} rx={560} ry={360} u={u} k="pm" color="#4FB5E8" o={0.18} /></g>,
     })),
   makeScene('delivery-street', 'Delivery van street', ['business', 'logistics', 'ecommerce', 'street'],
-    { stand: A(330, 1011), focus: A(1200, 760), prop1: A(1200, 320), prop2: A(1650, 360) },
+    { stand: A(330, 1011, 1, 'front'), focus: A(1200, 760), prop1: A(1200, 320), prop2: A(1650, 360) },
     ({ u, frame }) => ({
       back: <g><NightSky u={u} /><Skyline frame={frame} ground={900} seed={101} /></g>,
       mid: <g transform={`translate(${Math.sin(frame / 40) * 4} 0)`}>

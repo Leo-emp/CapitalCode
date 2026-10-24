@@ -37,7 +37,7 @@ const ShopWindow: React.FC<{ x: number; y: number; w: number; h: number; on: num
 export const STREET_SCENES = [
   // ---------------------------------------------------------------- the approved shop
   makeScene('shop-street', 'Corner shop at night', ['money', 'small-business', 'street', 'retail', 'business', 'personal-finance'],
-    { stand: A(420, 1011), door: A(1470, 960, 0.45), prop1: A(1130, 150, 1), prop2: A(1000, 770, 0.8), sign: A(1190, 494, 1) },
+    { stand: A(420, 1011, 1, 'front'), door: A(1470, 960, 0.45), prop1: A(1130, 150, 1), prop2: A(1000, 770, 0.8), sign: A(1190, 494, 1) },
     ({ u, frame, lightsOn }) => ({
       back: <g><NightSky u={u} /><Skyline frame={frame} x0={-20} x1={640} ground={960} seed={3} /><Skyline frame={frame} x0={1770} x1={1990} ground={960} seed={8} /></g>,
       mid: (
@@ -94,7 +94,7 @@ export const STREET_SCENES = [
 
   // ---------------------------------------------------------------- ATM street
   makeScene('atm-street', 'ATM on a night street', ['money', 'bank', 'cash', 'street', 'personal-finance'],
-    { stand: A(760, 1011), prop1: A(1260, 330), prop2: A(1260, 640, 0.8) },
+    { stand: A(760, 1011, 1, 'front'), prop1: A(1260, 330), prop2: A(1260, 640, 0.8) },
     ({ u, frame }) => ({
       back: <g><NightSky u={u} /><Skyline frame={frame} ground={960} seed={11} tall={1.2} /></g>,
       mid: <g><rect x={1060} y={380} width={400} height={580} fill="#2A3242" stroke={L.line} strokeWidth={3} />
