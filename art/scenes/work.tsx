@@ -5,7 +5,7 @@
 import React from 'react'
 import { COLORS } from '../tokens'
 import {
-  BlindsWindow, BrandPoster, Desk, DeskLamp, Door, Extra, L, LightPool, makeScene, Monitor, NightSky, OfficeChair, Plant, rnd,
+  BlindsWindow, BrandPoster, Desk, DeskLamp, Door, Extra, L, LightPool, makeScene, wc, Monitor, NightSky, OfficeChair, Plant, rnd,
   RoomShell, Shelf, Skyline,
 } from './kit'
 
@@ -90,14 +90,14 @@ export const WORK_SCENES = [
         {[900, 1050, 1200, 1350, 1500].map((x) => <line key={x} x1={x} x2={x} y1={410} y2={960} stroke="#E8792A" strokeWidth={6} />)}
         <rect x={1640} y={140} width={20} height={820} fill="#F7C531" /><rect x={1100} y={140} width={760} height={18} fill="#F7C531" />
         <line x1={1250} x2={1250} y1={158} y2={260 + Math.sin(frame / 25) * 20} stroke="#C9D2DC" strokeWidth={3} /><rect x={1210} y={260 + Math.sin(frame / 25) * 20} width={80} height={40} fill="#7D8B9C" /></g>,
-      front: <rect x={0} y={960} width={1920} height={120} fill="#0A0F18" />,
+      front: <rect x={0} y={960} width={1920} height={120} fill={wc().bodyShade} />,
     })),
 
   // ---------------------------------------------------------------- port / containers
   makeScene('port', 'Container port', ['work', 'trade', 'logistics', 'world', 'business', 'economy'],
     { stand: A(300, 1011), prop1: A(1100, 220), prop2: A(1500, 300) },
     ({ u, frame }) => ({
-      back: <g><NightSky u={u} /><rect x={0} y={760} width={1920} height={320} fill="#06121F" />
+      back: <g><NightSky u={u} /><rect x={0} y={760} width={1920} height={320} fill={wc().bodyShade} />
         {Array.from({ length: 12 }, (_, i) => <line key={i} x1={rnd(i) * 1920} x2={rnd(i) * 1920 + 80} y1={800 + i * 20} y2={800 + i * 20} stroke="#1E6FA8" strokeWidth={2} opacity={0.4 + 0.3 * Math.sin(frame / 15 + i)} />)}</g>,
       mid: <g><path d="M700 760 L1800 760 L1740 860 L760 860 Z" fill="#1A2638" stroke={L.line} strokeWidth={2} />
         {Array.from({ length: 3 }, (_, r) => Array.from({ length: 8 }, (_, i) => <rect key={`${r}${i}`} x={780 + i * 120} y={700 - r * 60} width={112} height={56} fill={['#D9434E', '#2AA8F2', '#3DDC97', '#E8792A', '#F4E9D8'][(r + i) % 5]} stroke={L.ink} strokeWidth={3} />))}
@@ -110,7 +110,7 @@ export const WORK_SCENES = [
     ({ u, frame, variant }) => {
       const down = variant === 'crash'
       return {
-        back: <g><RoomShell floor={960} panels={false} /><rect x={100} y={90} width={1720} height={120} fill="#071526" stroke={L.line} strokeWidth={2} />
+        back: <g><RoomShell floor={960} panels={false} /><rect x={100} y={90} width={1720} height={120} fill={wc().bodyShade} stroke={L.line} strokeWidth={2} />
           <g><clipPath id={u('tick')}><rect x={110} y={100} width={1700} height={100} /></clipPath><g clipPath={`url(#${u('tick')})`}>{Array.from({ length: 14 }, (_, i) => { const x = ((i * 330 - frame * 4) % 4620 + 4620) % 4620 - 1450; const up = down ? rnd(i) > 0.8 : rnd(i) > 0.4
             return <text key={i} x={x} y={162} fill={up ? COLORS.green : COLORS.red} style={{ font: '700 34px "JetBrains Mono"' }}>{['ACME', 'NOVA', 'ORBT', 'KITE', 'ZENO', 'LUMA', 'VOLT'][i % 7]} {up ? '▲' : '▼'}{(rnd(i + 3) * 9).toFixed(1)}%</text> })}</g></g>
           {[300, 760, 1220].map((x) => <Monitor key={x} x={x} y={300} w={400} h={220} frame={frame} trend={down ? 'down' : 'mixed'} stand={false} />)}</g>,

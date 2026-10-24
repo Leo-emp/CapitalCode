@@ -7,7 +7,7 @@
 import React from 'react'
 import { COLORS } from '../tokens'
 import {
-  BlindsWindow, BrandPoster, Desk, DeskLamp, Door, Extra, L, LightPool, makeScene, NightSky, Pavement, Plant, rnd,
+  BlindsWindow, BrandPoster, Desk, DeskLamp, Door, Extra, L, LightPool, Backdrop, makeScene, NightSky, wc, Pavement, Plant, rnd,
   RoomShell, Shelf, Skyline, StreetLamp,
 } from './kit'
 
@@ -24,7 +24,7 @@ const Bricks: React.FC<{ x: number; y: number; w: number; h: number }> = ({ x, y
 const ShopWindow: React.FC<{ x: number; y: number; w: number; h: number; on: number; u: (n: string) => string; k: string }> = ({ x, y, w, h, on, u, k }) => (
   <g>
     <defs><linearGradient id={u(`int${k}`)} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#FFE3A3" /><stop offset="100%" stopColor="#D9913F" /></linearGradient></defs>
-    <rect x={x} y={y} width={w} height={h} fill="#0E1420" />
+    <rect x={x} y={y} width={w} height={h} fill={wc().bodyShade} />
     <rect x={x} y={y} width={w} height={h} fill={`url(#${u(`int${k}`)})`} opacity={on} />
     {[0.25, 0.55, 0.85].map((f, i) => (
       <g key={i} opacity={0.3 + 0.7 * on}><rect x={x + 12} y={y + h * f} width={w - 24} height={7} fill="#8A5A2B" />
@@ -47,16 +47,16 @@ export const STREET_SCENES = [
           <Bricks x={620} y={214} w={1140} h={746} />
           <rect x={600} y={186} width={1180} height={22} fill="#3B1826" />
           {[700, 1050, 1400].map((wx) => (
-            <g key={wx}><rect x={wx} y={250} width={260} height={170} fill="#0B1220" stroke={L.cream} strokeWidth={8} />
+            <g key={wx}><rect x={wx} y={250} width={260} height={170} fill={wc().bodyShade} stroke={L.cream} strokeWidth={8} />
               <line x1={wx + 130} x2={wx + 130} y1={250} y2={420} stroke={L.cream} strokeWidth={6} /><rect x={wx - 10} y={420} width={280} height={14} fill={L.cream} />
               <path d={`M${wx + 10} 262 L${wx + 90} 262 L${wx + 10} 340 Z`} fill="#fff" opacity={0.15} /></g>))}
-          <rect x={690} y={452} width={1000} height={84} rx={6} fill="#0B1220" stroke={COLORS.champagne} strokeWidth={3} />
+          <rect x={690} y={452} width={1000} height={84} rx={6} fill={wc().bodyShade} stroke={COLORS.champagne} strokeWidth={3} />
           <text x={1190} y={512} textAnchor="middle" fill={L.warm} opacity={0.25 + 0.75 * lightsOn} style={{ font: '60px "Bebas Neue"', letterSpacing: 10 }}>CORNER  SHOP</text>
           {Array.from({ length: 16 }, (_, i) => <path key={i} fill={i % 2 ? L.cream : '#D9434E'} d={`M${680 + i * 65} 548 L${745 + i * 65} 548 L${745 + i * 65} 600 Q${712 + i * 65} 626 ${680 + i * 65} 600 Z`} />)}
           <ShopWindow x={700} y={640} w={600} h={260} on={lightsOn} u={u} k="w" />
           <g opacity={lightsOn}><rect x={1150} y={670} width={120} height={46} rx={23} fill="none" stroke="#FF5A8A" strokeWidth={4} />
             <text x={1210} y={703} textAnchor="middle" fill="#FF8AB0" style={{ font: '800 26px Inter' }}>OPEN</text></g>
-          <rect x={1360} y={630} width={220} height={330} fill="#0B1220" stroke={L.cream} strokeWidth={10} />
+          <rect x={1360} y={630} width={220} height={330} fill={wc().bodyShade} stroke={L.cream} strokeWidth={10} />
           <rect x={1384} y={652} width={172} height={170} fill="#FFD58A" opacity={0.25 + 0.65 * lightsOn} />
           {/* # people are never baked into scenes: the engine places cast Actors (e.g. owner at the 'door' anchor) */}
           <circle cx={1540} cy={840} r={7} fill={COLORS.champagne} />
@@ -73,11 +73,11 @@ export const STREET_SCENES = [
       back: <g><RoomShell floor={900} panels={false} />{[260, 620, 980, 1340, 1700].map((x) => <g key={x}><rect x={x - 34} y={140} width={68} height={760} fill="none" stroke={L.line} strokeWidth={2} /><rect x={x - 50} y={124} width={100} height={20} fill="none" stroke={L.line} strokeWidth={2} /></g>)}
         <path d="M120 124 L960 40 L1800 124" stroke={L.line} strokeWidth={2} fill="none" /></g>,
       mid: <g><LightPool cx={1300} cy={700} rx={420} ry={260} u={u} k="b" />
-        <rect x={980} y={700} width={640} height={200} fill={L.ink} stroke={COLORS.champagne} strokeWidth={3} />
+        <rect x={980} y={700} width={640} height={200} fill={wc().bodyShade} stroke={COLORS.champagne} strokeWidth={3} />
         {[1060, 1240, 1420].map((x) => <g key={x}><rect x={x} y={560} width={120} height={140} fill="none" stroke={COLORS.champagne} strokeWidth={2} /><Extra x={x + 60} y={700} s={0.6} c={COLORS.champagne} /></g>)}
         <text x={1300} y={540} textAnchor="middle" fill={COLORS.champagne} style={{ font: '700 34px Inter', letterSpacing: 8 }}>BANK</text>
         {[0, 1, 2].map((i) => <Extra key={i} x={300 + i * 160} y={900 - (i % 2) * 6} s={0.7} />)}</g>,
-      front: <rect x={0} y={1000} width={1920} height={80} fill="#03050A" />,
+      front: <rect x={0} y={1000} width={1920} height={80} fill={wc().sky[0]} />,
     })),
 
   // ---------------------------------------------------------------- vault
@@ -85,7 +85,7 @@ export const STREET_SCENES = [
     { stand: A(500, 1010), prop1: A(1300, 520, 1.6), prop2: A(1600, 820, 0.9) },
     ({ u, frame }) => ({
       back: <g><RoomShell floor={900} /><LightPool cx={1300} cy={520} rx={500} ry={360} u={u} k="v" color={COLORS.champagne} o={0.22} /></g>,
-      mid: <g><circle cx={1300} cy={520} r={330} fill="none" stroke={L.line} strokeWidth={3} /><circle cx={1300} cy={520} r={300} fill="#0B1424" stroke={COLORS.champagne} strokeWidth={4} />
+      mid: <g><circle cx={1300} cy={520} r={330} fill="none" stroke={L.line} strokeWidth={3} /><circle cx={1300} cy={520} r={300} fill={wc().bodyShade} stroke={COLORS.champagne} strokeWidth={4} />
         <g transform={`rotate(${frame * 0.8} 1300 520)`}>{[0, 60, 120].map((a) => <rect key={a} x={1292} y={330} width={16} height={380} rx={8} fill={COLORS.champagne} opacity={0.8} transform={`rotate(${a} 1300 520)`} />)}</g>
         <circle cx={1300} cy={520} r={56} fill={COLORS.champagneDark} stroke={L.ink} strokeWidth={6} />
         {Array.from({ length: 12 }, (_, i) => <circle key={i} cx={1300 + 270 * Math.cos((i / 12) * Math.PI * 2)} cy={520 + 270 * Math.sin((i / 12) * Math.PI * 2)} r={10} fill={COLORS.champagneDark} />)}
@@ -100,7 +100,7 @@ export const STREET_SCENES = [
       mid: <g><rect x={1060} y={380} width={400} height={580} fill="#2A3242" stroke={L.line} strokeWidth={3} />
         <rect x={1140} y={440} width={240} height={150} rx={8} fill="#4FB5E8" opacity={0.85} /><text x={1260} y={530} textAnchor="middle" fill="#0A2A3E" style={{ font: '800 44px Inter' }}>ATM</text>
         {Array.from({ length: 12 }, (_, i) => <rect key={i} x={1170 + (i % 3) * 64} y={620 + Math.floor(i / 3) * 44} width={52} height={32} rx={5} fill="#556275" />)}
-        <rect x={1150} y={810} width={220} height={16} rx={6} fill="#05080F" />
+        <rect x={1150} y={810} width={220} height={16} rx={6} fill={wc().sky[0]} />
         <LightPool cx={1260} cy={700} rx={420} ry={360} u={u} k="atm" color="#4FB5E8" o={0.18} /></g>,
       front: <g><Pavement y={960} u={u} /><StreetLamp x={300} ground={1000} frame={frame} u={u} /></g>,
     })),
@@ -109,7 +109,7 @@ export const STREET_SCENES = [
   makeScene('mansion', 'Mansion at night', ['money', 'wealth', 'property', 'luxury', 'investing', 'personal-finance'],
     { stand: A(300, 1011), prop1: A(1150, 200), prop2: A(1500, 860, 0.8) },
     ({ u, frame, lightsOn }) => ({
-      back: <g><NightSky u={u} stars={70} /><path d="M0 760 Q480 680 960 740 T1920 720 L1920 1080 L0 1080 Z" fill="#06101C" /></g>,
+      back: <g><NightSky u={u} stars={70} /><path d="M0 760 Q480 680 960 740 T1920 720 L1920 1080 L0 1080 Z" fill={wc().bodyShade} /></g>,
       mid: <g>
         <rect x={560} y={420} width={1180} height={460} fill="#E9DED0" /><path d="M520 420 L1150 250 L1780 420 Z" fill="#8A6A5A" />
         {Array.from({ length: 10 }, (_, i) => <g key={i}><rect x={610 + i * 110} y={480} width={70} height={110} fill="#FFD58A" opacity={0.3 + 0.6 * lightsOn * (rnd(i) > 0.3 ? 1 : 0.2)} stroke="#B8A890" strokeWidth={4} />
@@ -117,7 +117,7 @@ export const STREET_SCENES = [
         {[1050, 1250].map((x) => <rect key={x} x={x - 18} y={620} width={36} height={260} fill="#F4EDE2" stroke="#B8A890" strokeWidth={3} />)}
         <rect x={1100} y={760} width={100} height={120} fill="#3A2A2E" />
         <rect x={400} y={880} width={1500} height={60} fill="#4FB5E8" opacity={0.25} /><LightPool cx={1150} cy={650} rx={700} ry={300} u={u} k="m" o={0.15 * lightsOn} /></g>,
-      front: <g><Plant x={480} y={940} frame={frame} s={1.4} /><Plant x={1820} y={940} frame={frame} s={1.4} /><rect x={0} y={940} width={1920} height={140} fill="#050A10" /></g>,
+      front: <g><Plant x={480} y={940} frame={frame} s={1.4} /><Plant x={1820} y={940} frame={frame} s={1.4} /><rect x={0} y={940} width={1920} height={140} fill={wc().sky[0]} /></g>,
     })),
 
   // ---------------------------------------------------------------- supermarket
@@ -127,9 +127,9 @@ export const STREET_SCENES = [
       back: <g><RoomShell floor={900} panels={false} />{Array.from({ length: 6 }, (_, i) => <rect key={i} x={120 + i * 300} y={60} width={200} height={14} fill="#DCEBF7" opacity={0.5} />)}</g>,
       mid: <g>{[[80, 700], [1220, 1840]].map(([x0, x1], s) => (
         <g key={s}>{[0, 1, 2, 3].map((r) => (
-          <g key={r}><rect x={x0} y={300 + r * 150} width={x1 - x0} height={12} fill={L.ink} stroke={L.line} strokeWidth={2} />
+          <g key={r}><rect x={x0} y={300 + r * 150} width={x1 - x0} height={12} fill={wc().bodyShade} stroke={L.line} strokeWidth={2} />
             {Array.from({ length: Math.floor((x1 - x0) / 46) }, (_, i) => { const h = 50 + rnd(s * 99 + r * 13 + i) * 60; return <rect key={i} x={x0 + 8 + i * 46} y={300 + r * 150 - h} width={36} height={h} rx={4} fill={['#D9434E', '#2AA8F2', '#3DDC97', '#F4E9D8', '#E9B949', '#B48CFF'][(i + r + s) % 6]} opacity={0.85} /> })}
-            {rnd(r + s * 5) > 0.4 && <g><rect x={x0 + 140 + r * 60} y={308 + r * 150} width={74} height={30} fill="#F7C531" /><text x={x0 + 177 + r * 60} y={330 + r * 150} textAnchor="middle" fill="#0A111C" style={{ font: '800 18px Inter' }}>${(1 + rnd(r + s) * 8).toFixed(2)}</text></g>}</g>))}</g>))}
+            {rnd(r + s * 5) > 0.4 && <g><rect x={x0 + 140 + r * 60} y={308 + r * 150} width={74} height={30} fill="#F7C531" /><text x={x0 + 177 + r * 60} y={330 + r * 150} textAnchor="middle" fill={wc().bodyShade} style={{ font: '800 18px Inter' }}>${(1 + rnd(r + s) * 8).toFixed(2)}</text></g>}</g>))}</g>))}
         <LightPool cx={960} cy={900} rx={500} ry={120} u={u} k="s" color="#DCEBF7" o={0.15} /></g>,
     })),
 
@@ -139,7 +139,7 @@ export const STREET_SCENES = [
     ({ u, frame }) => ({
       back: <g><NightSky u={u} stars={80} /><Skyline frame={frame} ground={980} seed={21} tall={0.8} /></g>,
       mid: <g><Skyline frame={frame} ground={1000} seed={5} tall={1.35} /></g>,
-      front: <rect x={0} y={1000} width={1920} height={80} fill="#03050A" />,
+      front: <rect x={0} y={1000} width={1920} height={80} fill={wc().sky[0]} />,
     })),
 
   // ---------------------------------------------------------------- living room
@@ -147,7 +147,7 @@ export const STREET_SCENES = [
     { stand: A(500, 1010), sit: A(1150, 900, 0.9), prop1: A(1550, 380), prop2: A(1150, 560, 0.8) },
     ({ u, frame }) => ({
       back: <g><RoomShell floor={900} /><BlindsWindow x={1380} y={160} w={360} h={420} city frame={frame} /><Shelf x={180} y={360} w={340} seed={4} /></g>,
-      mid: <g><path d="M880 900 L880 720 Q880 680 920 680 L1420 680 Q1460 680 1460 720 L1460 900" fill="#0B1424" stroke={L.line} strokeWidth={2} />
+      mid: <g><path d="M880 900 L880 720 Q880 680 920 680 L1420 680 Q1460 680 1460 720 L1460 900" fill={wc().bodyShade} stroke={L.line} strokeWidth={2} />
         <rect x={860} y={760} width={620} height={90} rx={20} fill="#0E1A2E" stroke={L.line} strokeWidth={2} />
         <DeskLamp x={1560} y={840} frame={frame} u={u} /><rect x={1500} y={840} width={140} height={60} fill="none" stroke={L.line} strokeWidth={2} />
         <Plant x={760} y={900} frame={frame} s={1.1} /></g>,
@@ -160,9 +160,9 @@ export const STREET_SCENES = [
       back: <g><RoomShell floor={900} panels={false} />{[0, 1, 2].map((i) => <rect key={i} x={1300 + i * 140} y={180} width={120} height={160} fill="none" stroke={L.line} strokeWidth={2} />)}
         <path d="M200 160 L200 380 L700 380 L700 160" fill="none" stroke={L.line} strokeWidth={2} /></g>,
       mid: <g><LightPool cx={1150} cy={700} rx={420} ry={200} u={u} k="k" />
-        <path d="M1150 120 L1150 360" stroke={L.line} strokeWidth={2} /><path d="M1090 360 L1210 360 L1180 410 L1120 410 Z" fill={L.ink} stroke={L.line} strokeWidth={2} />
-        <rect x={760} y={700} width={800} height={18} fill={L.ink} stroke={L.line} strokeWidth={2} /><path d="M800 718 L800 900 M1520 718 L1520 900" stroke={L.line} strokeWidth={2} />
-        {[0, 1, 2, 3, 4].map((i) => <rect key={i} x={1080 + i * 60} y={672 - (i % 2) * 6} width={90} height={34} fill={L.cream} stroke="#0A111C" strokeWidth={2} transform={`rotate(${(i - 2) * 6} ${1125 + i * 60} 690)`} />)}
+        <path d="M1150 120 L1150 360" stroke={L.line} strokeWidth={2} /><path d="M1090 360 L1210 360 L1180 410 L1120 410 Z" fill={wc().bodyShade} stroke={L.line} strokeWidth={2} />
+        <rect x={760} y={700} width={800} height={18} fill={wc().bodyShade} stroke={L.line} strokeWidth={2} /><path d="M800 718 L800 900 M1520 718 L1520 900" stroke={L.line} strokeWidth={2} />
+        {[0, 1, 2, 3, 4].map((i) => <rect key={i} x={1080 + i * 60} y={672 - (i % 2) * 6} width={90} height={34} fill={L.cream} stroke={wc().bodyShade} strokeWidth={2} transform={`rotate(${(i - 2) * 6} ${1125 + i * 60} 690)`} />)}
         <text x={1240} y={670} fill={COLORS.red} style={{ font: '800 22px Inter' }}>PAST DUE</text></g>,
     })),
 
@@ -170,7 +170,7 @@ export const STREET_SCENES = [
   makeScene('void', 'Empty dark void', ['thumbnail', 'abstract', 'text'],
     { stand: A(560, 1040, 1.2), prop1: A(1300, 480, 1.8), prop2: A(1500, 300) },
     ({ u }) => ({
-      back: <g><rect width={1920} height={1080} fill="#03050A" /><LightPool cx={960} cy={600} rx={900} ry={520} u={u} k="vd" color="#1E6FA8" o={0.18} /></g>,
+      back: <g><Backdrop u={u} /><LightPool cx={960} cy={600} rx={900} ry={520} u={u} k="vd" color="#1E6FA8" o={0.18} /></g>,
     })),
 ]
 

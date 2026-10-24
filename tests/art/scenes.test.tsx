@@ -81,3 +81,15 @@ test('variants change the picture: rain adds streaks, a tone adds its colour was
   expect(renderToStaticMarkup(<C time="rain" />)).toContain('data-weather="rain"')
   expect(renderToStaticMarkup(<C tone="red" />)).toContain('data-tone="red"')
 })
+
+// # Living film §4: the night is lit — solid objects, never near-black fills, in both worlds
+test('every scene is drawn night-flat: solid fills, no near-black', async () => {
+  const { luma } = await import('../../art/tokens')
+  for (const s of SCENES) for (const world of ['night', 'teal'] as const) {
+    const html = renderToStaticMarkup(<s.Component frame={20} world={world} />)
+    const fills = [...html.matchAll(/fill="(#[0-9A-Fa-f]{6})"/g)].map((m) => m[1])
+    expect(fills.length, `${s.id}/${world} solid fills`).toBeGreaterThanOrEqual(6)
+    const black = fills.filter((f) => luma(f) < 4.5)
+    expect(black, `${s.id}/${world} near-black fills`).toEqual([])
+  }
+})

@@ -14,6 +14,10 @@ import { useUid } from '../uid'
 // # The colour world a scene is drawn in (living film): primitives read it with useWorld()
 const WorldCtx = React.createContext<World>(WORLDS.night)
 export const useWorld = () => React.useContext(WorldCtx)
+// # The world while a scene's draw() runs (draw is called before the provider exists). wc() reads it there,
+// # and falls back to the provider inside helper components rendered later under the scene.
+let DRAWING: World | null = null
+export const wc = (): World => DRAWING ?? React.useContext(WorldCtx)
 
 export const L = { line: COLORS.line, dim: COLORS.lineDim, ink: '#0A1220', cream: '#F4E9D8', warm: COLORS.warm }
 
@@ -91,7 +95,9 @@ export const makeScene = (id: string, title: string, tags: string[], rawAnchors:
     const base = useUid(id)
     const u = (n: string) => `${base}-${n}`
     const w = WORLDS[world] ?? WORLDS.night
-    const layers = draw({ u, frame, t, lightsOn, variant, w })
+    DRAWING = w
+    let layers: Layers
+    try { layers = draw({ u, frame, t, lightsOn, variant, w }) } finally { DRAWING = null }
     const focus = anchors.focus ?? anchors.prop1 ?? { x: 960, y: 540 }
     const cam = cameraFor(framing, focus)
     return (
@@ -332,6 +338,23 @@ export const Extra: React.FC<{ x: number; y: number; s?: number; c?: string }> =
       <ellipse cx={0} cy={2} rx={46} ry={8} fill={w.shadow} opacity={0.4} />
       <path d="M-44 0 L-40 -100 Q0 -124 40 -100 L44 0 Z" fill={c ?? w.body} />
       <circle cx={0} cy={-150} r={26} fill={c ?? w.body} />
+    </g>
+  )
+}
+
+// # Abstract backdrop for "screen", "void" and stage-like scenes: lit gradient, big flat shapes for depth,
+// # a floor disc to stand on — so an empty place still reads as a lit world, not a black hole
+export const Backdrop: React.FC<{ u: (n: string) => string; floorY?: number }> = ({ u, floorY = 1000 }) => {
+  const w = useWorld()
+  return (
+    <g>
+      <defs><linearGradient id={u('bd')} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={w.sky[0]} /><stop offset="100%" stopColor={w.sky[1]} /></linearGradient></defs>
+      <rect width={1920} height={1080} fill={`url(#${u('bd')})`} />
+      {[[260, 240, 260], [1720, 180, 220], [1500, 760, 340], [420, 820, 300], [980, 120, 140], [1180, 980, 200]].map(([cx, cy, r], i) => (
+        <circle key={i} cx={cx} cy={cy} r={r} fill={i % 2 ? w.body : w.bodyShade} opacity={0.35} />
+      ))}
+      <ellipse cx={960} cy={floorY + 30} rx={1100} ry={110} fill={w.floor} />
+      <ellipse cx={960} cy={floorY + 20} rx={900} ry={70} fill={w.body} opacity={0.5} />
     </g>
   )
 }
