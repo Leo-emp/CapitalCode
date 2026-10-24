@@ -307,7 +307,7 @@ describe('camera', () => {
   test('a camera move to an unknown spot is refused; a known spot or a point passes', () => {
     const p = good()
     const a = p.shots[0] as any
-    a.camera = [{ at: { sentence: 's1', word: 'money' }, to: 'prop1' }, { at: { sentence: 's2' }, to: { x: 500, y: 400 } }]
+    a.camera = [{ at: { sentence: 's1', word: 'money' }, to: 'stand' }, { at: { sentence: 's2' }, to: { x: 500, y: 400 } }]
     expect(gatePlan(p, words, opts()).problems.filter((x) => /camera/.test(x))).toEqual([])
     a.camera = [{ at: { sentence: 's1', word: 'money' }, to: 'vault' }]
     expect(gatePlan(p, words, opts()).problems).toContain('a: camera target "vault" not in scene shop-street')
@@ -349,4 +349,18 @@ test('a vignette heading is one short line', () => {
   const p = good()
   p.shots[1] = { id: 'b', kind: 'vignette', start: { sentence: 's3' }, vignette: 'pie', heading: 'A heading that is far too long to fit on a single line', data: { slices: [{ label: 'A', value: 1 }, { label: 'B', value: 2 }] }, at: [] } as any
   expect(gatePlan(p, words, opts()).problems).toContain('b: vignette heading is longer than one line (max 36 characters)')
+})
+
+// # Living film stills review (2026-10-24): a camera move to a prop left the hero as a hand at the frame edge
+describe('camera framing', () => {
+  test('a camera move that cuts a person at the frame edge is refused; fully in or fully out passes', () => {
+    const p = good()
+    const a = p.shots[0] as any // # shop-street, hero at stand (x 420)
+    a.camera = [{ at: { sentence: 's1', word: 'money' }, to: 'prop1', zoom: 1.35 }] // # prop1 x 1130: hero only ~27% in on the left
+    expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/a: camera at "money" cuts hero at the frame edge/)
+    a.camera = [{ at: { sentence: 's1', word: 'money' }, to: 'stand', zoom: 1.35 }]
+    expect(gatePlan(p, words, opts()).problems.filter((x) => /cuts/.test(x))).toEqual([])
+    a.camera = [{ at: { sentence: 's1', word: 'money' }, to: 'door', zoom: 2.2 }] // # far right: hero fully out
+    expect(gatePlan(p, words, opts()).problems.filter((x) => /cuts/.test(x))).toEqual([])
+  })
 })

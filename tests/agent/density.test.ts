@@ -16,7 +16,7 @@ const DUR = 60.5
 const SCENES = ['shop-street', 'bank-interior', 'vault-room', 'mansion']
 
 // # A dense plan: one scene per two sentences; each sentence shows a prop on its first word and the camera
-// # goes to named spots on "money" and on word 8
+// # goes to the hero on "money" (1.2×) and on word 8 (1.35×)
 const dense = (): PlanDoc => ({
   shots: Array.from({ length: 8 }, (_, k) => {
     const ss = [2 * k + 1, 2 * k + 2].filter((n) => n <= 15)
@@ -24,7 +24,7 @@ const dense = (): PlanDoc => ({
       id: `sh${k}`, kind: 'scene' as const, start: { sentence: `s${ss[0]}` }, scene: SCENES[k % 4],
       actors: [{ who: 'hero', anchor: 'stand', track: [{ at: { sentence: `s${ss[0]}` }, pose: 'idle' }] }],
       props: ss.map((n) => ({ id: 'cash-stack', anchor: 'prop1', at: { sentence: `s${n}` } })),
-      camera: ss.flatMap((n) => [{ at: { sentence: `s${n}`, word: 'money' }, to: 'prop1' }, { at: { sentence: `s${n}`, word: `s${n}w8` }, to: 'stand' }]),
+      camera: ss.flatMap((n) => [{ at: { sentence: `s${n}`, word: 'money' }, to: 'stand', zoom: 1.2 }, { at: { sentence: `s${n}`, word: `s${n}w8` }, to: 'stand' }]),
     }
   }),
 })

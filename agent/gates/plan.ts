@@ -11,7 +11,8 @@ import { CAST } from '../../art/rig/Actor'
 import { EXPRESSIONS } from '../../art/rig/faces'
 import { POSE_IDS } from '../../art/rig/pose'
 import { PROPS } from '../../art/props/registry'
-import { type Anchor, cameraFor, type SceneFraming } from '../../art/scenes/kit'
+import { camKeys, DEPTH, framed, layerCam } from '../../art/motion/camera'
+import { type Anchor, cameraFor, OVERSCAN, type SceneFraming } from '../../art/scenes/kit'
 import { SCENES } from '../../art/scenes/registry'
 import { VIGNETTES } from '../../art/vignettes/registry'
 import { PUBLIC_DIR } from '../paths'
@@ -29,6 +30,29 @@ export type PlanGateOpts = {
   maxBare?: number; maxGap?: number
   // # living film (spec §12.6): most of the runtime is pictures — text (slides, slams, kinetic text) at most this share
   maxText?: number
+}
+
+// # Living film framing: where each planned camera move lands, every (non-walking) person must be fully in
+// # the frame or fully out of it — never a hand or half a body at the edge, never a head cut off at the top
+const framingCuts = (s: { framing?: SceneFraming; camera?: { at: Cue; to: string | { x: number; y: number }; zoom?: number }[]; actors?: { who: string; anchor: string; path?: unknown[] }[] }, anchors: Record<string, Anchor>): string[] => {
+  const fc = cameraFor(s.framing ?? 'wide', anchors.focus ?? anchors.prop1 ?? { x: 960, y: 540 })
+  const base = { x: (960 - fc.tx) / fc.k, y: (540 - fc.ty) / fc.k, zoom: fc.k }
+  const keys = camKeys(0, base, (s.camera ?? []).map((c, i) => ({ ...c, at: i + 1 })), anchors).slice(1)
+  const out: string[] = []
+  keys.forEach((k, i) => {
+    for (const a of s.actors ?? []) {
+      const p = anchors[a.anchor]
+      if (!p || a.path?.length) continue
+      const v = framed(layerCam({ ...k, zoom: k.zoom * OVERSCAN }, DEPTH[p.layer]))
+      const x0 = (p.x - 100 * p.scale) * v.k + v.tx, x1 = (p.x + 100 * p.scale) * v.k + v.tx
+      const top = (p.y - 580 * p.scale) * v.k + v.ty, foot = p.y * v.k + v.ty
+      const shown = Math.max(0, Math.min(1920, x1) - Math.max(0, x0)) / (x1 - x0)
+      const cue = s.camera![i].at
+      if (shown > 0.05 && shown < 0.95) out.push(`camera at "${cue.word ?? cue.sentence}" cuts ${a.who} at the frame edge (${Math.round(shown * 100)}% in frame) — zoom out, aim between, or let them leave the frame`)
+      else if (shown >= 0.95 && top < 0 && foot > 0) out.push(`camera at "${cue.word ?? cue.sentence}" cuts ${a.who}'s head off — aim lower or zoom out`)
+    }
+  })
+  return out
 }
 
 // # Seconds of on-screen text one scene slam / one kinetic text counts for in the text share
@@ -129,6 +153,7 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
         if (typeof c.to === 'string' && sc && !sc.anchors[c.to]) problems.push(`${s.id}: camera target "${c.to}" not in scene ${s.scene}`)
         cue(s.id, c.at)
       }
+      if (sc && s.camera?.length && s.camera.every((c) => typeof c.to !== 'string' || sc.anchors[c.to])) for (const p of framingCuts(s, sc.anchors)) problems.push(`${s.id}: ${p}`)
       if (s.slam) { s.slam.at.forEach((c) => cue(s.id, c)); if (!s.slam.words?.length) problems.push(`${s.id}: slam needs words`) }
     } else if (s.kind === 'slide') {
       if (!SLIDE_KINDS.includes(s.slide)) problems.push(`${s.id}: unknown slide "${s.slide}" (kinds: ${SLIDE_KINDS.join(', ')})`)
