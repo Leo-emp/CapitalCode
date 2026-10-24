@@ -19,7 +19,7 @@ const CONTRAST = /\b(but|why|how|never|only|nobody|secret|mistake|lost|lose|reco
 export const hookScore = (s: SentenceInfo) =>
   (/\d/.test(s.text) ? 2 : 0) + (/\?/.test(s.text) ? 2 : 0) + (CONTRAST.test(s.text) ? 1.5 : 0) + (s.stress ? 1 : 0)
 
-export const pickClips = (sents: SentenceInfo[], o: { n?: number; min?: number; max?: number; breath?: number } = {}): Clip[] => {
+export const pickClips = (sents: SentenceInfo[], o: { n?: number; min?: number; max?: number; breath?: number; avoid?: [number, number][] } = {}): Clip[] => {
   const n = o.n ?? 3, min = o.min ?? 30, max = o.max ?? 58, breath = o.breath ?? 0.4
   const cands: Clip[] = []
   sents.forEach((first, i) => {
@@ -30,6 +30,8 @@ export const pickClips = (sents: SentenceInfo[], o: { n?: number; min?: number; 
     while (j + 1 < sents.length && sents[j + 1].e + breath - first.s <= max) j++
     const t1 = sents[j].e + breath
     if (t1 - first.s < min) return
+    // # never across the brand card (or any other range to avoid)
+    if ((o.avoid ?? []).some(([a, b]) => first.s < b && t1 > a)) return
     const body = sents.slice(i, j + 1)
     const score = 3 * h + body.reduce((a, s) => a + hookScore(s) + (s.visual === 'vignette' ? 0.5 : 0), 0) / body.length * 4
     cands.push({ first: first.id, last: sents[j].id, ids: body.map((s) => s.id), t0: first.s, t1, score: +score.toFixed(3) })

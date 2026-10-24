@@ -61,3 +61,9 @@ test('the hook line is the opening sentence, cut to fit the big headline', async
   expect(long.length).toBeLessThanOrEqual(42)
   expect(long.endsWith('…')).toBe(true)
 })
+
+test('a clip never includes the brand card (wasted seconds in a Short)', () => {
+  const brand = [{ from: 30 * 30, to: 34 * 30 }] // # brand card 30–34 s
+  const clips = pickClips(sents, { n: 3, avoid: brand.map((b) => [b.from / 30, b.to / 30] as [number, number]) })
+  for (const c of clips) expect(c.t1 <= 30 || c.t0 >= 34).toBe(true)
+})

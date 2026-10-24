@@ -16,9 +16,11 @@ test('a scene fills the box, centred on where its people and props are', () => {
   expect(r.x).toBeGreaterThanOrEqual(1080 - 1920)
 })
 
-test('a slide fits the width (no text cut off); a vignette zooms in a little', () => {
+test('a slide zooms a little but keeps its heading (x 150) and right edge (x 1770) in view; a vignette zooms more', () => {
   const s = reframe({ kind: 'slide' } as any, box)
-  expect(1920 * s.scale).toBeCloseTo(1080, 5)
+  expect(1920 * s.scale).toBeGreaterThan(1080)
+  expect(150 * s.scale + s.x).toBeGreaterThanOrEqual(20)
+  expect(1770 * s.scale + s.x).toBeLessThanOrEqual(1060)
   const v = reframe({ kind: 'vignette' } as any, box)
   expect(v.scale).toBeGreaterThan(s.scale)
   expect(1920 * v.scale + 2 * v.x).toBeCloseTo(1080, 5) // # centred

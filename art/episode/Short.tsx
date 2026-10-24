@@ -40,9 +40,9 @@ export const reframe = (shot: { kind: string; scene?: string; actors?: { anchor:
     const scale = 0.75
     return { scale, x: (box.w - 1920 * scale) / 2, y: (box.h - 1080 * scale) / 2 }
   }
-  // # slides: whole width, never crop a label
-  const scale = box.w / 1920
-  return { scale, x: 0, y: (box.h - 1080 * scale) / 2 }
+  // # slides: a slight zoom that still keeps the heading (x 150) and the right-most card (x 1770) in view
+  const scale = 0.62
+  return { scale, x: (box.w - 1920 * scale) / 2, y: (box.h - 1080 * scale) / 2 }
 }
 
 // # Which caption card is up, and which of its words is being spoken (time in seconds)
@@ -68,7 +68,7 @@ export const Short: React.FC<ShortProps> = ({ timeline, captions, hook, voice, e
       <div style={{ position: 'absolute', left: 60, right: 60, top: 120, height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center',
         fontFamily: 'Bebas Neue', fontSize: 104, lineHeight: 0.95, color: COLORS.champagneLight, opacity: hookIn, transform: `translateY(${(1 - hookIn) * 20}px)` }}>{hook}</div>
       {/* # the long video's shot, reframed into the square box */}
-      <div style={{ position: 'absolute', left: BOX.x, top: BOX.y, width: BOX.w, height: BOX.h, overflow: 'hidden', borderRadius: 24, background: '#05070C' }}>
+      <div style={{ position: 'absolute', left: BOX.x, top: BOX.y, width: BOX.w, height: BOX.h, overflow: 'hidden', borderRadius: 24, background: PANEL_BG }}>
         <div style={{ position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, transformOrigin: '0 0', transform: `translate(${r.x}px, ${r.y}px) scale(${r.scale})` }}>
           <EpisodeFrame timeline={timeline} f={f} />
         </div>

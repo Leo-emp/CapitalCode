@@ -173,6 +173,15 @@ screens), chunked resumable render, SFX mix, `final.mp4`. ~18 min for 8.6 min of
   titles, description with chapters + sources + "not financial advice", captions.srt,
   review_note.md). Open the thumbnails and check them at phone size.
 
+## 8b. Shorts (after the long video is packaged)
+
+`cc shorts <job> --n=3` picks 3–5 hook-first 30–58 s clips (never across the brand card), slices
+the timeline, adds big word-by-word captions and an end card, renders 1080×1920, checks loudness
+and length, and writes `output/shorts/<Title>_…/short_N.mp4` + `captions_for_posting.txt`.
+The automatic hook is the opening sentence; **write better ones**: run it once, edit
+`shorts/clips.json` (`hook` ≤ 42 chars, a promise or a shocking number, e.g. "NVIDIA GETS 59× MORE
+OF YOUR MONEY"; adjust `first`/`last`/`t0`/`t1` to sentence starts/ends), then run it again.
+
 ## 9. Hand-off
 
 Tell the owner, plainly and briefly: the folder path, the topic + thesis, runtime,

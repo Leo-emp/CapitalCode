@@ -32,7 +32,7 @@ register('shorts', 'shorts <job> [--n=3]  — vertical Shorts cut from a finishe
   const plannedFile = join(sdir, 'clips.json')
   const sents = sentenceInfo(script, words, tl)
   const clips: Planned[] = existsSync(plannedFile) ? readJson<Planned[]>(plannedFile)
-    : pickClips(sents, { n }).map((c) => ({ ...c, hook: hookFor(sents.find((s) => s.id === c.first)!.text) }))
+    : pickClips(sents, { n, avoid: tl.shots.filter((x) => x.shot.kind === 'brand').map((x) => [x.from / tl.fps, x.to / tl.fps] as [number, number]) }).map((c) => ({ ...c, hook: hookFor(sents.find((s) => s.id === c.first)!.text) }))
   if (!clips.length) refuse('no 30–58 s clip opens on a hook sentence — write shorts/clips.json by hand')
   writeJson(plannedFile, clips)
 
