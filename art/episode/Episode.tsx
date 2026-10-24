@@ -14,6 +14,7 @@ import { ChapterCard, CompareCards, FlowDiagram, KeywordSlam, MapHighlight, Quot
 import { BarChart, Equation, LineChart, NumberBuild, StackedBar } from '../infographics/charts'
 import { formatMoney, pctFormat } from '../infographics/layout'
 import { clamp, SlideFrame } from '../infographics/SlideFrame'
+import { Emblem } from '../logo/Emblem'
 import { Lockup } from '../logo/LogoReveal'
 import { getProp } from '../props/registry'
 import { Actor } from '../rig/Actor'
@@ -154,13 +155,20 @@ const ShotView: React.FC<{ s: RShot; f: number; from: number; to: number }> = ({
 // # Shots visible at frame f: the current one, plus the previous one while it zooms out under the new one
 export const visibleShots = (tl: EpisodeTimeline, f: number) => tl.shots.filter((x) => f >= x.from && f < x.to + TRANSITION)
 
+// # Small brand emblem top-left on every shot except the brand card (channel identity, like Alux)
+export const cornerLogo = (kind: string) => kind !== 'brand'
+
 export const Episode: React.FC<EpisodeProps> = ({ timeline, voice }) => {
   const f = useCurrentFrame()
+  const current = timeline.shots.find((x) => f >= x.from && f < x.to)
   return (
     <AbsoluteFill style={{ background: '#000' }}>
       <style>{fontFaces()}</style>
       {voice && <Audio src={staticFile(voice)} />}
       {visibleShots(timeline, f).map((x) => <ShotView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} />)}
+      {current && cornerLogo(current.shot.kind) && (
+        <svg width={56} height={56} style={{ position: 'absolute', left: 48, top: 40, opacity: 0.85 }}><Emblem size={56} /></svg>
+      )}
       <GrainOverlay frame={f} />
     </AbsoluteFill>
   )

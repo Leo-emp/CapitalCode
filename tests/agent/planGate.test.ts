@@ -19,7 +19,7 @@ const scene = (id: string, at: number, sceneId: string) => ({
 })
 const slide = (id: string, at: number) => ({
   id, kind: 'slide' as const, start: { sentence: `s${at}` }, slide: 'bars', heading: 'H',
-  data: { bars: [{ label: 'A', value: 1 }, { label: 'B', value: 2 }] }, at: [{ sentence: `s${at}`, word: 'money' }],
+  data: { bars: [{ label: 'A', value: 1 }, { label: 'B', value: 2 }] }, at: [{ sentence: `s${at}` }, { sentence: `s${at}`, word: 'money' }], // # first bar on the cut
 })
 // # shots every 2 sentences (8 s): scene/slide alternate → 50% slides, median 8 s
 const good = (): PlanDoc => ({
@@ -182,5 +182,25 @@ describe('decoration with made-up figures', () => {
     const { DECOR_FIGURES } = await import('../../agent/catalog')
     const { SCENES } = await import('../../art/scenes/registry')
     for (const id of DECOR_FIGURES) expect(SCENES.some((s) => s.id === id), id).toBe(true)
+  })
+})
+
+// # Owner review 2026-10-24: slides sat heading-only for seconds; 11 slams; brand at 0:34
+describe('pace of what is on screen', () => {
+  test('a slide whose first item lands > 1 s after the cut is refused, naming the late word', () => {
+    const p = good()
+    ;(p.shots[1] as any).at = [{ sentence: 's3', word: 'money' }]
+    expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/b: slide is empty for 1\.6 s after the cut/)
+  })
+  test('more than 3 slams in a long video are refused', () => {
+    const p = good()
+    const slam = { words: [{ text: 'X' }], at: [{ sentence: 's1' }] }
+    for (const i of [0, 2, 4, 6]) (p.shots[i] as any).slam = { ...slam, at: [{ sentence: `s${i * 2 + 1}` }] }
+    expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/4 slams \(max 3\)/)
+  })
+  test('the brand card must start by 25 s', () => {
+    const p = good()
+    p.shots.splice(5, 0, { id: 'br', kind: 'brand', start: { sentence: 's12' } } as any)
+    expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/br: brand card at 44\.0 s \(max 25 s\)/)
   })
 })

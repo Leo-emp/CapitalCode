@@ -95,7 +95,9 @@ A **cue** is a spoken word: `{ "sentence": "s12", "word": "million", "nth": 1 }`
   `{ "id": "sh3", "kind": "scene", "start": {"sentence": "s5"}, "scene": "shop-street", "framing": "medium",
      "actors": [{ "who": "hero", "anchor": "stand", "track": [{ "at": {"sentence": "s5"}, "pose": "think", "expression": "thinking" }, { "at": {"sentence": "s6", "word": "million"}, "pose": "point", "expression": "shocked" }] }],
      "props": [{ "id": "cash-stack", "anchor": "prop1", "at": {"sentence": "s6", "word": "million"} }] }`
-- Pace (gate-enforced): first shot on s1; median shot 6–14 s, none over 30 s;
+- Pace (gate-enforced): a slide shows its first item within 1 s of its cut (start the
+  shot ON the word that brings the first item); at most 3 slams per long video (1 per
+  Short), saved for payoff lines; brand card by 0:25; first shot on s1; median shot 6–14 s, none over 30 s;
   slides 35–65% of runtime; never the same scene twice in a row; vary chart types;
   scene set must not repeat a recent video (> 60% overlap is refused).
 - Constant small motion: pose changes and props on cue words every few seconds;

@@ -5,7 +5,6 @@
 
 import React from 'react'
 import { AbsoluteFill, interpolate } from 'remotion'
-import { Emblem } from '../logo/Emblem'
 import { COLORS, fontFaces } from '../tokens'
 import { slamEntry, slamSize } from './layout'
 import { build, clamp, rise, TONE, type Tone } from './SlideFrame'
@@ -137,7 +136,6 @@ export const ChapterCard: React.FC<{ frame: number; n: number; title: string; cu
         <div style={{ fontSize: 130, fontWeight: 800, color: COLORS.champagne, transform: `translateX(${(1 - g) * -40}px)`, opacity: g }}>{String(n).padStart(2, '0')}</div>
         <div style={{ fontSize: 50, fontWeight: 600, color: COLORS.text, clipPath: `inset(0 ${(1 - g) * 100}% 0 0)` }}>{title}</div>
       </div>
-      <svg width={60} height={60} style={{ position: 'absolute', right: 70, bottom: 60, opacity: 0.7 }}><Emblem size={60} /></svg>
     </AbsoluteFill>
   )
 }

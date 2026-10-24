@@ -39,9 +39,17 @@ export const findFlicker = (d: number[], cuts: number[], opts: { transition?: nu
   return flags
 }
 
-export type VideoGate = { ok: boolean; problems: string[]; flags: number[]; stats: { seconds: number; lufs: number; peak: number } }
+export type VideoGate = { ok: boolean; problems: string[]; flags: number[]; stats: { seconds: number; lufs: number; peak: number; brightness: number } }
 
-export const gateVideo = (file: string, o: { expectSeconds: number; cuts: number[]; lufs?: [number, number]; peakMax?: number }): VideoGate => {
+// # Mean picture brightness in % (luma, one frame per second). Alux reference ≈ 16%.
+export const brightness = (file: string): number => {
+  const p = spawnSync('ffmpeg', ['-v', 'error', '-i', file, '-an', '-vf', 'fps=1,scale=320:-2,signalstats,metadata=print:key=lavfi.signalstats.YAVG:file=-', '-f', 'null', '-'], { encoding: 'utf8', maxBuffer: 64 << 20 })
+  const ys = [...p.stdout.matchAll(/YAVG=([\d.]+)/g)].map((m) => Number(m[1]))
+  if (!ys.length) throw new Error(`brightness: no frames measured in ${file}`)
+  return +(ys.reduce((a, b) => a + b, 0) / ys.length / 255 * 100).toFixed(1)
+}
+
+export const gateVideo = (file: string, o: { expectSeconds: number; cuts: number[]; lufs?: [number, number]; peakMax?: number; brightness?: [number, number] }): VideoGate => {
   const problems: string[] = []
   const seconds = duration(file)
   if (Math.abs(seconds - o.expectSeconds) > 0.5) problems.push(`duration ${seconds.toFixed(1)} s, expected ${o.expectSeconds.toFixed(1)} s`)
@@ -50,7 +58,9 @@ export const gateVideo = (file: string, o: { expectSeconds: number; cuts: number
   if (l.lufs < lo || l.lufs > hi) problems.push(`loudness ${l.lufs} LUFS (want ${lo}…${hi})`)
   if (l.peak > (o.peakMax ?? -1)) problems.push(`true peak ${l.peak} dBTP (max ${o.peakMax ?? -1})`)
   const flags = findFlicker(frameDiffs(file), o.cuts)
-  return { ok: problems.length === 0, problems, flags, stats: { seconds: +seconds.toFixed(2), lufs: l.lufs, peak: l.peak } }
+  const b = brightness(file)
+  if (o.brightness && (b < o.brightness[0] || b > o.brightness[1])) problems.push(`brightness ${b}% (want ${o.brightness[0]}–${o.brightness[1]}%)`)
+  return { ok: problems.length === 0, problems, flags, stats: { seconds: +seconds.toFixed(2), lufs: l.lufs, peak: l.peak, brightness: b } }
 }
 
 // # Contact sheets for the Critic: one frame every N seconds, 4×3 per sheet

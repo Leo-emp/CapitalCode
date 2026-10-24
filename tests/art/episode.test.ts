@@ -13,3 +13,12 @@ test('during a slam: dark scene, near-solid band behind the words, props hidden'
   expect(l.band).toBeGreaterThanOrEqual(0.95)
   expect(l.props).toBe(false)
 })
+
+// # Persistent small logo (Alux keeps theirs on every frame); hidden on the brand card itself
+test('the corner logo shows on every shot except the brand card', async () => {
+  const { cornerLogo } = await import('../../art/episode/Episode')
+  expect(cornerLogo('scene')).toBe(true)
+  expect(cornerLogo('slide')).toBe(true)
+  expect(cornerLogo('chapter')).toBe(true)
+  expect(cornerLogo('brand')).toBe(false)
+})

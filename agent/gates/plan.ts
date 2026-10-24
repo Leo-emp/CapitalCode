@@ -22,6 +22,8 @@ export type History = { job: string; scenes: string[]; slides: string[]; area?: 
 export type PlanGateOpts = {
   duration: number; history: History; sfxNames?: string[]
   slideShare?: [number, number]; median?: [number, number]; maxShot?: number; minShot?: number
+  // # owner review 2026-10-24: something on screen fast, few slams, brand early
+  firstVisual?: number; maxSlams?: number; brandBy?: number
 }
 
 export const sfxAvailable = (): string[] => {
@@ -126,6 +128,19 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
     if (stats.slideShare < shareMin || stats.slideShare > shareMax) problems.push(`slide share ${(stats.slideShare * 100).toFixed(0)}% (want ${shareMin * 100}–${shareMax * 100}%)`)
     if (stats.medianShot < medMin || stats.medianShot > medMax) problems.push(`median shot ${stats.medianShot.toFixed(1)} s (want ${medMin}–${medMax} s)`)
   }
+  // # a slide shows its first item within `firstVisual` s of the cut (no heading-only seconds)
+  plan.shots.forEach((s, i) => {
+    if (s.kind !== 'slide' || !s.at?.length || !Number.isFinite(starts[i])) return
+    let first: number
+    try { first = resolveCue(words, s.at[0]) } catch { return }
+    const gap = first - starts[i]
+    if (gap > (o.firstVisual ?? 1.0)) problems.push(`${s.id}: slide is empty for ${gap.toFixed(1)} s after the cut — start the shot on "${s.at[0].word ?? 'its first word'}" (${s.at[0].sentence}) or cue the first item earlier`)
+  })
+  const slams = plan.shots.filter((s) => (s.kind === 'scene' && s.slam) || (s.kind === 'slide' && s.slide === 'slam')).length
+  if (slams > (o.maxSlams ?? 3)) problems.push(`${slams} slams (max ${o.maxSlams ?? 3}) — keep them for the real payoff lines`)
+  plan.shots.forEach((s, i) => {
+    if (s.kind === 'brand' && starts[i] > (o.brandBy ?? 25)) problems.push(`${s.id}: brand card at ${starts[i].toFixed(1)} s (max ${o.brandBy ?? 25} s)`)
+  })
   plan.shots.forEach((s, i) => {
     const prev = plan.shots[i - 1]
     if (i && s.kind === 'scene' && prev.kind === 'scene' && prev.scene === s.scene) problems.push(`${s.id}: same scene twice in a row (${s.scene})`)

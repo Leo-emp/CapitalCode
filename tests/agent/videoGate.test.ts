@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { basename, join } from 'node:path'
 import { expect, test } from 'vitest'
 import { ff } from '../../agent/audio'
-import { findFlicker, frameDiffs, gateVideo, frameSheets, shotFrames } from '../../agent/gates/video'
+import { brightness, findFlicker, frameDiffs, gateVideo, frameSheets, shotFrames } from '../../agent/gates/video'
 
 // # 4 s gray clip, a one-frame white flash at frame 30, a hard cut to blue at frame 75; a −14 LUFS-ish tone
 const clip = (dir: string, flash = true) => {
@@ -58,4 +58,15 @@ test('shotFrames writes one numbered frame per shot', () => {
   const files = shotFrames(file, { fps: 30, shots: [{ from: 0, to: 60 }, { from: 60, to: 120 }] }, join(dir, 'qa', 'shots'))
   expect(files.map((f) => basename(f))).toEqual(['shot_01.jpg', 'shot_02.jpg'])
   expect(files.every((f) => existsSync(f))).toBe(true)
+}, 120_000)
+
+// # Owner review: our video averaged 6.9% brightness vs 16% for the reference — measured, then enforced
+test('brightness is measured and, when a band is given, enforced', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ccqa-'))
+  const file = clip(dir, false)
+  const b = brightness(file)
+  expect(b).toBeGreaterThan(20)
+  const r = gateVideo(file, { expectSeconds: 4, cuts: [75], lufs: [-60, 0], brightness: [12, 20] })
+  expect(r.stats.brightness).toBeCloseTo(b, 0)
+  expect(r.problems.join('\n')).toMatch(/brightness .* \(want 12–20%\)/)
 }, 120_000)
