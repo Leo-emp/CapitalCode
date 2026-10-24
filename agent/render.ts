@@ -201,8 +201,8 @@ export const pruneChunks = (dir: string, keep: string[]) => {
 }
 
 // # Remotion renderer for one frame range of the Episode, video only
-export const remotionRange = async (inputProps: Record<string, unknown>): Promise<RenderRange> => {
-  const comp = await composition('Episode', inputProps)
+export const remotionRange = async (inputProps: Record<string, unknown>, id = 'Episode'): Promise<RenderRange> => {
+  const comp = await composition(id, inputProps)
   return async (from, to, out) => {
     await renderMedia({
       serveUrl: await serveUrl(), composition: comp, inputProps, codec: 'h264', crf: 18, pixelFormat: 'yuv420p', imageFormat: 'jpeg', jpegQuality: 92,

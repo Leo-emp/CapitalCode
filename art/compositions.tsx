@@ -7,6 +7,7 @@ import { Thumbnail } from './thumbnails/Thumbnail'
 import { DEMO_FRAMES, LibraryDemo } from './stylebible/Demo'
 import { FPS, H, W } from './tokens'
 import { Episode, type EpisodeProps, type EpisodeTimeline } from './episode/Episode'
+import { SH, Short, type ShortProps, SW } from './episode/Short'
 
 // # Placeholder until the engine passes a real timeline via --props
 const EMPTY_TIMELINE: EpisodeTimeline = { fps: FPS, durationInFrames: 90, shots: [{ shot: { id: 'logo', kind: 'brand', start: 0 }, from: 0, to: 90 }], sfx: [] }
@@ -36,6 +37,9 @@ export const ArtCompositions: React.FC = () => (
     <Composition id="Episode" component={Episode} durationInFrames={90} fps={FPS} width={W} height={H}
       defaultProps={{ timeline: EMPTY_TIMELINE } as EpisodeProps}
       calculateMetadata={({ props }) => ({ durationInFrames: props.timeline.durationInFrames, width: props.width ?? W, height: props.height ?? H })} />
+    <Composition id="Short" component={Short} durationInFrames={90} fps={FPS} width={SW} height={SH}
+      defaultProps={{ timeline: EMPTY_TIMELINE, captions: [], hook: '' } as ShortProps}
+      calculateMetadata={({ props }) => ({ durationInFrames: props.timeline.durationInFrames })} />
     <Composition id="PoseStrip"component={PoseStrip} durationInFrames={1} fps={FPS} width={W} height={H} />
   </>
 )

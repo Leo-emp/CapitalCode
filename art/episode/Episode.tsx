@@ -182,6 +182,11 @@ export const visibleShots = (tl: EpisodeTimeline, f: number) => tl.shots.filter(
 // # Small brand emblem top-left on every shot except the brand card (channel identity, like Alux)
 export const cornerLogo = (kind: string) => kind !== 'brand'
 
+// # The picture of a timeline at frame f — every visible shot with its transitions (Episode and Short share it)
+export const EpisodeFrame: React.FC<{ timeline: EpisodeTimeline; f: number }> = ({ timeline, f }) => (
+  <>{visibleShots(timeline, f).map((x) => <ShotView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} />)}</>
+)
+
 export const Episode: React.FC<EpisodeProps> = ({ timeline, voice }) => {
   const f = useCurrentFrame()
   const current = timeline.shots.find((x) => f >= x.from && f < x.to)
@@ -189,7 +194,7 @@ export const Episode: React.FC<EpisodeProps> = ({ timeline, voice }) => {
     <AbsoluteFill style={{ background: '#000' }}>
       <style>{fontFaces()}</style>
       {voice && <Audio src={staticFile(voice)} />}
-      {visibleShots(timeline, f).map((x) => <ShotView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} />)}
+      <EpisodeFrame timeline={timeline} f={f} />
       {current && cornerLogo(current.shot.kind) && (
         <svg width={56} height={56} style={{ position: 'absolute', left: 48, top: 40, opacity: 0.85 }}><Emblem size={56} /></svg>
       )}
