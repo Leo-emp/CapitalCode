@@ -18,7 +18,7 @@ import type { Cue, PlanDoc, TimedWord } from '../schema'
 import { SLIDE_KINDS, SLIDE_SPECS } from '../slides'
 import { resolveCue } from '../timeline'
 
-export type History = { job: string; scenes: string[]; slides: string[] }[]
+export type History = { job: string; scenes: string[]; slides: string[]; area?: string; format?: string; kind?: string; title?: string; date?: string }[]
 export type PlanGateOpts = {
   duration: number; history: History; sfxNames?: string[]
   slideShare?: [number, number]; median?: [number, number]; maxShot?: number; minShot?: number

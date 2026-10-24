@@ -37,6 +37,7 @@ const loadCommands = async () => {
   await import('./commands/plan')
   await import('./commands/render')
   await import('./commands/qa')
+  await import('./commands/package')
 }
 
 const main = async () => {
