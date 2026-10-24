@@ -1,6 +1,6 @@
 // # Tests for art/infographics/layout.ts — number formatting + chart maths
 import { describe, expect, test } from 'vitest'
-import { barRows, formatMoney, formatPct, niceTicks, scaleLinear, slamEntry, slamSize } from '../../art/infographics/layout'
+import { barRows, formatMoney, formatPct, labelRows, niceTicks, scaleLinear, slamEntry, slamSize } from '../../art/infographics/layout'
 
 describe('formatMoney', () => {
   test('compact money like the reference slides', () => {
@@ -72,4 +72,11 @@ test('slam entry overshoot stays under the 40 px word gap', () => {
     expect(e.opacity).toBeGreaterThanOrEqual(0)
   }
   expect(slamEntry(1)).toEqual({ scale: 1, y: 0, opacity: 1 })
+})
+
+// # Stacked-bar labels: a narrow segment's label drops to a second row instead of colliding ($7.52$30.38)
+test('labels closer than 16% of the bar alternate rows', () => {
+  expect(labelRows([7.52, 30.38, 62.1])).toEqual([0, 1, 0])
+  expect(labelRows([40, 30, 30])).toEqual([0, 0, 0])
+  expect(labelRows([5, 5, 5, 85])).toEqual([0, 1, 0, 1])
 })

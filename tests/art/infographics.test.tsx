@@ -31,6 +31,8 @@ test('no infographic text is smaller than 24 px', async () => {
   const { readFileSync, readdirSync } = await import('node:fs')
   const dir = 'art/infographics'
   const small = readdirSync(dir).filter((f) => f.endsWith('.tsx')).flatMap((f) =>
-    [...readFileSync(`${dir}/${f}`, 'utf8').matchAll(/fontSize[:=]\s*\{?\s*(\d+)/g)].filter((m) => Number(m[1]) < 24).map((m) => `${f}: ${m[0]}`))
+    // # both style props (fontSize: 26) and SVG font shorthands (font: '700 34px Inter')
+    [...readFileSync(`${dir}/${f}`, 'utf8').matchAll(/fontSize[:=]\s*\{?\s*(\d+)|font: '[^']*?(\d+)px/g)]
+      .filter((m) => Number(m[1] ?? m[2]) < 24).map((m) => `${f}: ${m[0]}`))
   expect(small).toEqual([])
 })

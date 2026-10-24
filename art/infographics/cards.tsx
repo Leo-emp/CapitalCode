@@ -52,8 +52,8 @@ export const Timeline: React.FC<{ frame: number; points: { when: string; what: s
         return (
           <g key={i} opacity={Math.min(1, g * 2)}>
             <circle cx={x} cy={y} r={14 * Math.min(1.2, g)} fill={col} />
-            <text x={x} y={y - 40} textAnchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'} fill={COLORS.text} style={{ font: '700 34px Inter' }}>{p.when}</text>
-            <text x={x} y={y + 60} textAnchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'} fill={COLORS.dim} style={{ font: '24px Inter' }}>{p.what}</text>
+            <text x={x} y={y - 40} textAnchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'} fill={COLORS.text} style={{ font: '700 32px Inter' }}>{p.when}</text>
+            <text x={x} y={y + 78} textAnchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'} fill={col} style={{ font: '800 46px Inter' }}>{p.what}</text>
           </g>
         )
       })}

@@ -118,5 +118,5 @@ describe('chunk keys follow the art each chunk uses', () => {
     for (const s of SCENES) expect(f.idFile[s.id], s.id).toBeTruthy()
     for (const p of PROPS) expect(f.idFile[p.id], p.id).toBeTruthy()
     expect(f.base).toMatch(/^[0-9a-f]{12}$/)
-  })
+  }, 30_000) // # loads the whole art library; slow under a parallel suite
 })

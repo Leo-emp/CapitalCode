@@ -8,7 +8,7 @@
 import React from 'react'
 import { Easing, interpolate } from 'remotion'
 import { COLORS } from '../tokens'
-import { barRows, formatMoney, niceTicks, scaleLinear } from './layout'
+import { barRows, formatMoney, labelRows, niceTicks, scaleLinear } from './layout'
 import { build, clamp, rise, TONE, type Tone } from './SlideFrame'
 
 const ease = Easing.bezier(0.16, 1, 0.3, 1)
@@ -102,8 +102,8 @@ export const LineChart: React.FC<{ frame: number; values: number[]; cues: [numbe
   return (
     <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>
       {ticks.map((v) => <g key={v}><line x1={X0} x2={X1} y1={sy(v)} y2={sy(v)} stroke="rgba(255,255,255,0.07)" strokeDasharray="4 10" />
-        <text x={X0 - 20} y={sy(v) + 8} textAnchor="end" fill={COLORS.dim} style={{ font: '20px "JetBrains Mono"' }}>{yFormat(v)}</text></g>)}
-      {xLabels && xLabels.map((l, k) => <text key={k} x={k ? X1 : X0} y={Y1 + 40} textAnchor={k ? 'end' : 'start'} fill={COLORS.dim} style={{ font: '22px Inter' }}>{l}</text>)}
+        <text x={X0 - 20} y={sy(v) + 8} textAnchor="end" fill={COLORS.dim} style={{ font: '26px "JetBrains Mono"' }}>{yFormat(v)}</text></g>)}
+      {xLabels && xLabels.map((l, k) => <text key={k} x={k ? X1 : X0} y={Y1 + 40} textAnchor={k ? 'end' : 'start'} fill={COLORS.dim} style={{ font: '28px Inter' }}>{l}</text>)}
       {area && <path d={`${d} L${tip[0]} ${Y1} L${X0} ${Y1} Z`} fill={col} opacity={0.14} />}
       <path d={d} stroke={col} strokeWidth={12} fill="none" opacity={0.25} />
       <path d={d} stroke={col} strokeWidth={5} fill="none" strokeLinejoin="round" strokeLinecap="round" />
@@ -126,6 +126,7 @@ export const StackedBar: React.FC<{ frame: number; segments: { label: string; va
   frame, segments, cues, y = 470, format = (v) => formatMoney(v, { compact: true }),
 }) => {
   const total = segments.reduce((s, x) => s + x.value, 0)
+  const rows = labelRows(segments.map((x) => x.value))
   return (
     <div style={{ position: 'absolute', left: 150, right: 150, top: y }}>
       <div style={{ display: 'flex', height: 90, gap: 6 }}>
@@ -134,10 +135,11 @@ export const StackedBar: React.FC<{ frame: number; segments: { label: string; va
           return <div key={i} style={{ width: `${(s.value / total) * 100 * g}%`, background: TONE[s.tone ?? 'blue'], opacity: 0.35 + 0.65 * g, borderRadius: 4 }} />
         })}
       </div>
-      <div style={{ display: 'flex', gap: 6, marginTop: 20 }}>
+      <div style={{ position: 'relative', height: 220, marginTop: 20 }}>
         {segments.map((s, i) => {
           const g = build(frame, cues[Math.min(i, cues.length - 1)])
-          return <div key={i} style={{ width: `${(s.value / total) * 100}%`, ...rise(g) }}>
+          const left = segments.slice(0, i).reduce((a, x) => a + x.value, 0) / total * 100
+          return <div key={i} style={{ position: 'absolute', left: `${left}%`, top: rows[i] * 100, whiteSpace: 'nowrap', ...rise(g) }}>
             <div style={{ fontSize: 46, fontWeight: 800, color: TONE[s.tone ?? 'blue'] }}>{format(s.value)}</div>
             <div style={{ fontSize: 28, letterSpacing: 3, color: COLORS.dim, marginTop: 6 }}>{s.label.toUpperCase()}</div></div>
         })}

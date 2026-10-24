@@ -60,3 +60,16 @@ export const slamEntry = (g: number) => {
   const t = Math.max(0, Math.min(1, g))
   return t >= 1 ? { scale: 1, y: 0, opacity: 1 } : { scale: 1 + 0.06 * Math.sin(Math.PI * t), y: 60 * (1 - t), opacity: Math.min(1, t * 2) }
 }
+
+// # Stacked-bar label rows: a label starting within 16% of the previous one flips to the other row
+export const labelRows = (values: number[], minGap = 16): number[] => {
+  const total = values.reduce((a, v) => a + v, 0) || 1
+  const rows: number[] = []
+  let left = 0, prevLeft = -Infinity
+  for (const [i, v] of values.entries()) {
+    rows.push(i && left - prevLeft < minGap ? 1 - rows[i - 1] : 0)
+    prevLeft = left
+    left += (v / total) * 100
+  }
+  return rows
+}
