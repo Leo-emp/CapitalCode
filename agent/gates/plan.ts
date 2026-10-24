@@ -15,7 +15,7 @@ import { type Anchor, cameraFor, type SceneFraming } from '../../art/scenes/kit'
 import { SCENES } from '../../art/scenes/registry'
 import { PUBLIC_DIR } from '../paths'
 import type { Cue, PlanDoc, TimedWord } from '../schema'
-import { SLIDE_KINDS, SLIDE_SPECS } from '../slides'
+import { layoutProblems, SLIDE_KINDS, SLIDE_SPECS } from '../slides'
 import { resolveCue } from '../timeline'
 
 export type History = { job: string; scenes: string[]; slides: string[]; area?: string; format?: string; kind?: string; title?: string; date?: string }[]
@@ -56,6 +56,7 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
   const starts: number[] = []
   for (const s of plan.shots) {
     if (ids.has(s.id)) problems.push(`${s.id}: duplicate shot id`)
+    for (const l of layoutProblems(s as Parameters<typeof layoutProblems>[0])) problems.push(`${s.id}: ${l}`)
     ids.add(s.id)
     starts.push(cue(s.id, s.start) ?? NaN)
     if (s.kind === 'scene') {

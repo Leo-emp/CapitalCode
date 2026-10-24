@@ -139,3 +139,32 @@ describe('timeline', () => {
     expect(t.sfx).toEqual([{ name: 'whoosh', t: 8, volume: 1 }])
   })
 })
+
+// # Layout budgets: text and item counts that overflow the 1920×1080 frame are refused at planning time
+describe('layout budgets', () => {
+  const withSlide = (patch: Record<string, unknown>) => {
+    const p = good()
+    Object.assign(p.shots[1] as any, patch)
+    return gatePlan(p, words, opts()).problems.join('\n')
+  }
+  test('too many bars, long bar labels, long headings are refused with the limit', () => {
+    const bars = Array.from({ length: 13 }, (_, i) => ({ label: `B${i}`, value: i + 1 }))
+    expect(withSlide({ data: { bars } })).toMatch(/b: .*13 bars.*max 12/)
+    expect(withSlide({ data: { bars: [{ label: 'A very very long company label', value: 1 }] } })).toMatch(/b: .*label.*max 22/)
+    expect(withSlide({ heading: 'A heading that is far too long to sit on one line of the slide' })).toMatch(/b: heading.*max 48/)
+  })
+  test('compare cards: at most 3, short values and lines', () => {
+    const card = { title: 'T', value: '1', lines: ['x'] }
+    expect(withSlide({ slide: 'compare', data: { cards: [card, card, card, card] }, at: [] })).toMatch(/b: .*4 cards.*max 3/)
+    expect(withSlide({ slide: 'compare', data: { cards: [{ ...card, value: '1,234,567,890' }] }, at: [] })).toMatch(/b: .*value.*max 9/)
+  })
+  test('a scene slam longer than 32 characters is refused', () => {
+    const p = good()
+    ;(p.shots[0] as any).slam = { words: [{ text: 'THIS SLAM IS FAR TOO LONG' }, { text: 'TO READ AT A GLANCE' }], at: [{ sentence: 's1' }] }
+    expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/a: slam.*max 32/)
+  })
+  test('the first long video plan stays within budget', () => {
+    expect(withSlide({ heading: 'One slice vs the average slice', slide: 'compare', at: [],
+      data: { cards: [{ title: 'Average of the other 490', value: '0.13%', lines: ['62.1% ÷ 490', 'of your money each'] }, { title: 'Difference', value: '≈ 60×', lines: ['7.52 ÷ 0.13'] }] } })).toBe('')
+  })
+})

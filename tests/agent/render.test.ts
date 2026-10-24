@@ -4,7 +4,8 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, test } from 'vitest'
 import { duration, ff, loudness, tone } from '../../agent/audio'
-import { autoSfx, concatList, countFrames, mixAudio, renderChunks, splitChunks } from '../../agent/render'
+import { artFingerprint, autoSfx, chunkKeys, concatList, countFrames, freePort, mixAudio, renderChunks, splitChunks } from '../../agent/render'
+import { createServer } from 'node:net'
 
 // # A fake renderer: a solid-colour clip with exactly (to - from) frames at 30 fps
 const fakeRender = (calls: string[], opts: { crashAt?: number; shortBy?: number } = {}) =>
@@ -75,4 +76,47 @@ describe('audio', () => {
     expect(Math.abs(l.lufs + 14)).toBeLessThanOrEqual(1)
     expect(l.peak).toBeLessThanOrEqual(-0.9)
   }, 120_000)
+})
+
+// # Two renders (or a render + a thumbnail) at once used to clash on a fixed port
+test('freePort skips a port that is already taken', async () => {
+  const busy = createServer()
+  await new Promise<void>((r) => busy.listen(39177, '127.0.0.1', r))
+  const p = await freePort(39177)
+  expect(p).not.toBe(39177)
+  expect(p).toBeGreaterThan(39177)
+  busy.close()
+})
+
+// # Art-aware cache: fixing one scene's drawing re-renders only the chunks that show it
+describe('chunk keys follow the art each chunk uses', () => {
+  const shot = (from: number, to: number, scene: string, props: string[] = []) =>
+    ({ from, to, shot: { id: `${scene}${from}`, kind: 'scene', scene, start: from, props: props.map((id) => ({ id, anchor: 'prop1', at: from })) } })
+  const tl = { fps: 30, durationInFrames: 600, sfx: [], shots: [shot(0, 300, 'shop-street', ['cash-stack']), shot(300, 600, 'vault-room')] } as any
+  const chunks = [{ from: 0, to: 280 }, { from: 340, to: 600 }] // # past the 0→300 shot's outgoing transition
+  const fp = (over: Record<string, string> = {}, base = 'core1') => ({ base, idFile: { 'shop-street': 'street1', 'vault-room': 'street1', 'cash-stack': 'money1', ...over } })
+
+  test('changing a file only re-keys chunks that use something from it', () => {
+    const a = chunkKeys(tl, chunks, fp())
+    const b = chunkKeys(tl, chunks, fp({ 'cash-stack': 'money2' }))
+    expect(b[0].key).not.toBe(a[0].key)
+    expect(b[1].key).toBe(a[1].key)
+  })
+  test('changing shared core code re-keys everything', () => {
+    const a = chunkKeys(tl, chunks, fp())
+    const b = chunkKeys(tl, chunks, fp({}, 'core2'))
+    expect(b.map((c) => c.key)).not.toEqual(expect.arrayContaining([a[0].key, a[1].key]))
+  })
+  test('an id the fingerprint does not know is refused (never a stale cache)', () => {
+    const t2 = { ...tl, shots: [shot(0, 600, 'mystery-scene')] }
+    expect(() => chunkKeys(t2, [{ from: 0, to: 600 }], fp())).toThrow(/mystery-scene/)
+  })
+  test('the real art library maps every scene and prop id to its file', async () => {
+    const { SCENES } = await import('../../art/scenes/registry')
+    const { PROPS } = await import('../../art/props/registry')
+    const f = artFingerprint()
+    for (const s of SCENES) expect(f.idFile[s.id], s.id).toBeTruthy()
+    for (const p of PROPS) expect(f.idFile[p.id], p.id).toBeTruthy()
+    expect(f.base).toMatch(/^[0-9a-f]{12}$/)
+  })
 })

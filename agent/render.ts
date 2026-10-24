@@ -8,8 +8,9 @@
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { createServer } from 'node:net'
 import { cpus } from 'node:os'
-import { join, resolve } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import { bundle } from '@remotion/bundler'
 import { renderMedia, renderStill, selectComposition } from '@remotion/renderer'
 import { ff, normalize } from './audio'
@@ -17,15 +18,38 @@ import { PUBLIC_DIR, ROOT } from './paths'
 import type { Timeline } from './timeline'
 
 export const TIMEOUT = 120_000
-export const PORT = 3177 // # port 3000 is often taken by a Next dev server
+export const PORT = 3177 // # first port tried (3000 is often taken by a Next dev server)
+
+// # First free local port from `start` up — a second render or a thumbnail job never clashes
+export const freePort = async (start = PORT): Promise<number> => {
+  for (let p = start; p < start + 200; p++) {
+    const ok = await new Promise<boolean>((res) => {
+      const srv = createServer().once("error", () => res(false)).once("listening", () => srv.close(() => res(true)))
+      srv.listen(p, "127.0.0.1")
+    })
+    if (ok) return p
+  }
+  throw new Error(`no free port in ${start}–${start + 199}`)
+}
+let portP: Promise<number> | null = null
+const port = () => (portP ??= freePort())
 export const CHUNK = 900 // # 30 s at 30 fps
 export const TRANSITION = 8 // # must match art/episode/Episode.tsx
 
 let served: Promise<string> | null = null
-export const serveUrl = () => (served ??= bundle({ entryPoint: join(ROOT, 'art', 'index.tsx'), publicDir: PUBLIC_DIR }))
+// # The webpack bundle is cached on disk per art version: later commands (render, stills,
+// # thumbnails) reuse it instead of re-bundling; older bundles are removed.
+export const BUNDLES = join(ROOT, 'temp', 'bundles')
+const cachedBundle = async () => {
+  const dir = join(BUNDLES, artHash())
+  if (existsSync(join(dir, 'index.html'))) return dir
+  if (existsSync(BUNDLES)) for (const old of readdirSync(BUNDLES)) rmSync(join(BUNDLES, old), { recursive: true, force: true })
+  return bundle({ entryPoint: join(ROOT, 'art', 'index.tsx'), publicDir: PUBLIC_DIR, outDir: dir })
+}
+export const serveUrl = () => (served ??= cachedBundle())
 
 export const composition = async (id: string, inputProps: Record<string, unknown>) =>
-  selectComposition({ serveUrl: await serveUrl(), id, inputProps, timeoutInMilliseconds: TIMEOUT, port: PORT })
+  selectComposition({ serveUrl: await serveUrl(), id, inputProps, timeoutInMilliseconds: TIMEOUT, port: await port() })
 
 // # PNG stills of chosen frames (pre-flight, review sheets, thumbnails)
 export const renderStills = async (id: string, inputProps: Record<string, unknown>, frames: number[], outDir: string, prefix = 'f') => {
@@ -34,7 +58,7 @@ export const renderStills = async (id: string, inputProps: Record<string, unknow
   const files: string[] = []
   for (const frame of frames) {
     const output = join(outDir, `${prefix}_${String(frame).padStart(6, '0')}.png`)
-    await renderStill({ serveUrl: await serveUrl(), composition: comp, inputProps, frame, output, timeoutInMilliseconds: TIMEOUT, port: PORT })
+    await renderStill({ serveUrl: await serveUrl(), composition: comp, inputProps, frame, output, timeoutInMilliseconds: TIMEOUT, port: await port() })
     files.push(output)
   }
   return files
@@ -70,12 +94,66 @@ export const artHash = () => {
   return h.digest('hex').slice(0, 12)
 }
 
-// # A chunk's key: its range + every shot visible in it (incl. the outgoing transition) + art version
-export const chunkKeys = (tl: Timeline, chunks: Range[], art: string) =>
-  chunks.map((c) => ({
-    ...c,
-    key: createHash('sha256').update(JSON.stringify({ art, c, w: tl.shots.filter((s) => s.to + TRANSITION > c.from && s.from < c.to) })).digest('hex').slice(0, 12),
-  }))
+// ---------------------------------------------------------------- art fingerprint
+// # Which art a chunk depends on. `base` = every file the Episode imports (plus fonts and
+// # textures) except the scene/prop library files; `idFile` = each scene/prop id → a hash of
+// # the library file that draws it (and everything that file imports). Fixing one drawing
+// # then re-renders only the chunks that show it.
+export type ArtFingerprint = { base: string; idFile: Record<string, string> }
+
+const EXT = ['.tsx', '.ts', '/index.tsx', '/index.ts']
+const importsOf = (file: string): string[] => {
+  const src = readFileSync(file, 'utf8')
+  return [...src.matchAll(/(?:from|import)\s+'(\.{1,2}\/[^']+)'/g)].flatMap(([, rel]) => {
+    const p = resolve(dirname(file), rel)
+    const hit = [p, ...EXT.map((e) => p + e)].find((x) => existsSync(x) && statSync(x).isFile())
+    return hit ? [hit] : []
+  })
+}
+const reach = (entry: string, seen = new Set<string>()) => {
+  if (seen.has(entry)) return seen
+  seen.add(entry)
+  for (const f of importsOf(entry)) reach(f, seen)
+  return seen
+}
+const hashFiles = (files: Iterable<string>, extra: string[] = []) => {
+  const h = createHash('sha256')
+  for (const f of [...files].sort()) { h.update(f.slice(ROOT.length)); h.update(readFileSync(f)) }
+  for (const d of extra) hashTree(d, h)
+  return h.digest('hex').slice(0, 12)
+}
+
+export const artFingerprint = (entry = join(ROOT, 'art', 'episode', 'Episode.tsx')): ArtFingerprint => {
+  const all = reach(resolve(entry))
+  const lib = [...all].filter((f) => /make(Scene|Prop)\('[\w-]+'/.test(readFileSync(f, 'utf8')))
+  const idFile: Record<string, string> = {}
+  for (const f of lib) {
+    const h = hashFiles(reach(f))
+    for (const [, id] of readFileSync(f, 'utf8').matchAll(/make(?:Scene|Prop)\('([\w-]+)'/g)) idFile[id] = h
+  }
+  const base = hashFiles([...all].filter((f) => !lib.includes(f)), [join(PUBLIC_DIR, 'fonts'), join(PUBLIC_DIR, 'textures')])
+  return { base, idFile }
+}
+
+// # Scene + prop ids a shot draws
+const artIds = (s: Timeline['shots'][number]['shot']): string[] => {
+  const x = s as { kind: string; scene?: string; props?: { id: string }[]; data?: { icon?: string } }
+  return [...(x.kind === 'scene' && x.scene ? [x.scene] : []), ...(x.props ?? []).map((p) => p.id), ...(x.data?.icon ? [x.data.icon] : [])]
+}
+
+// # A chunk's key: its range + every shot visible in it (incl. the outgoing transition) + the art it uses
+export const chunkKeys = (tl: Timeline, chunks: Range[], art: string | ArtFingerprint) =>
+  chunks.map((c) => {
+    const w = tl.shots.filter((s) => s.to + TRANSITION > c.from && s.from < c.to)
+    let a: unknown = art
+    if (typeof art !== 'string') {
+      const ids = [...new Set(w.flatMap((s) => artIds(s.shot)))].sort()
+      const unknown = ids.filter((id) => !art.idFile[id])
+      if (unknown.length) throw new Error(`art fingerprint has no file for: ${unknown.join(', ')}`)
+      a = { base: art.base, lib: ids.map((id) => `${id}:${art.idFile[id]}`) }
+    }
+    return { ...c, key: createHash('sha256').update(JSON.stringify({ art: a, c, w })).digest('hex').slice(0, 12) }
+  })
 
 export const countFrames = (file: string): number => {
   const p = spawnSync('ffprobe', ['-v', 'error', '-count_packets', '-select_streams', 'v:0', '-show_entries', 'stream=nb_read_packets', '-of', 'csv=p=0', file], { encoding: 'utf8' })
@@ -120,7 +198,7 @@ export const remotionRange = async (inputProps: Record<string, unknown>): Promis
   return async (from, to, out) => {
     await renderMedia({
       serveUrl: await serveUrl(), composition: comp, inputProps, codec: 'h264', crf: 18, pixelFormat: 'yuv420p', imageFormat: 'jpeg', jpegQuality: 92,
-      frameRange: [from, to - 1], outputLocation: out, muted: true, timeoutInMilliseconds: TIMEOUT, port: PORT, concurrency: Math.max(2, Math.floor(cpus().length / 2)),
+      frameRange: [from, to - 1], outputLocation: out, muted: true, timeoutInMilliseconds: TIMEOUT, port: await port(), concurrency: Math.max(2, Math.floor(cpus().length / 2)),
     })
   }
 }

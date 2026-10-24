@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { register } from '../cli'
 import { isDone, loadJob, markStep, readJson, unmarkFrom } from '../jobs'
-import { artHash, autoSfx, chunkKeys, concatVideos, countFrames, mixAudio, mux, remotionRange, renderChunks, renderStills, splitChunks } from '../render'
+import { artFingerprint, autoSfx, chunkKeys, concatVideos, countFrames, mixAudio, mux, remotionRange, renderChunks, renderStills, splitChunks } from '../render'
 import { refuse, result } from '../result'
 import type { Timeline } from '../timeline'
 import { fileHash } from './script'
@@ -15,13 +15,13 @@ const stamped = (file: string, key: string) => existsSync(file) && existsSync(`$
 const stamp = (file: string, key: string) => writeFileSync(`${file}.key`, key)
 
 export const renderVideo = async (dir: string, tl: Timeline, voiceWav: string, out = join(dir, 'final.mp4')) => {
-  const art = artHash()
+  const art = artFingerprint()
   const props = { timeline: tl }
   const t0 = Date.now()
 
   // # 1. pre-flight: one still per shot catches a broken drawing in seconds, not after an hour
   const pre = join(dir, 'qa', 'preflight')
-  const preKey = `${art}:${JSON.stringify(tl.shots.map((s) => s.from))}:${fileHash(join(dir, 'timeline.json'))}`
+  const preKey = `${JSON.stringify(art)}:${JSON.stringify(tl.shots.map((s) => s.from))}:${fileHash(join(dir, 'timeline.json'))}`
   if (!stamped(join(pre, 'done'), preKey)) {
     log(`pre-flight: ${tl.shots.length} stills`)
     await renderStills('Episode', props, tl.shots.map((s) => Math.round(s.from + (s.to - s.from) * 0.6)), pre, 'shot')
