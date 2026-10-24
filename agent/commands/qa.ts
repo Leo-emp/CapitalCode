@@ -2,7 +2,7 @@
 import { existsSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { register } from '../cli'
-import { flagSheets, frameSheets, gateVideo, plannedMotion } from '../gates/video'
+import { flagSheets, frameSheets, gateVideo, plannedMotion, shotFrames } from '../gates/video'
 import { isDone, loadJob, markStep, readJson, unmarkFrom, writeJson } from '../jobs'
 import { refuse, result } from '../result'
 import type { Timeline } from '../timeline'
@@ -23,7 +23,7 @@ export const checkCritic = (c: CriticDoc): string[] => {
   return p
 }
 
-const PACK = (dir: string, sheets: string[], flags: string[], stats: object) => `# Critic pack — ${dir}
+const PACK = (dir: string, sheets: string[], flags: string[], stats: object, shots: string[] = []) => `# Critic pack — ${dir}
 
 You are the independent CapitalCode Critic. You did not write or plan this video.
 Judge it as a demanding viewer and as YouTube's "inauthentic content" reviewer.
@@ -34,6 +34,8 @@ a suspected one-frame glitch — decide if it is a real glitch).
 
 Sheets:
 ${sheets.map((s) => `- ${s}`).join('\n')}
+Every shot near its end (shot_NN = plan.json shots[NN-1]) — check each build finished cleanly:
+${shots.length ? `- ${shots[0]} … ${shots.at(-1)} (${shots.length} frames)` : '- none'}
 Flags (red-bordered, f-2 … f+2):
 ${flags.length ? flags.map((s) => `- ${s}`).join('\n') : '- none'}
 Measured: ${JSON.stringify(stats)}
@@ -61,8 +63,9 @@ register('gate-video', 'gate-video <job>  — duration, loudness, flicker scan, 
   const qa = join(dir, 'qa')
   const sheets = frameSheets(file, qa, loadJob(dir).kind === 'short' ? 3 : 10)
   const flags = flagSheets(file, r.flags, tl.fps, qa)
+  const shots = shotFrames(file, tl, join(qa, 'shots'))
   writeJson(join(qa, 'report.json'), r)
-  writeFileSync(join(qa, 'critic_pack.md'), PACK(dir, sheets, flags, r.stats))
+  writeFileSync(join(qa, 'critic_pack.md'), PACK(dir, sheets, flags, r.stats, shots))
   if (!r.ok) {
     for (const p of r.problems) console.log(`  - ${p}`)
     refuse(`video gate failed with ${r.problems.length} problem(s)`)

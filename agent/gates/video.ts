@@ -61,6 +61,18 @@ export const frameSheets = (file: string, outDir: string, every = 10, prefix = '
   return readdirSync(outDir).filter((f) => f.startsWith(`${prefix}_`)).sort().map((f) => join(outDir, f))
 }
 
+// # One frame near the end of every shot (95%), from the final video: the Critic sees each
+// # build finished — overflow, overlap, covered faces, empty screens — not just 10 s samples
+export const shotFrames = (file: string, tl: { fps: number; shots: { from: number; to: number }[] }, outDir: string): string[] => {
+  mkdirSync(outDir, { recursive: true })
+  for (const f of readdirSync(outDir)) if (f.startsWith('shot_')) rmSync(join(outDir, f))
+  return tl.shots.map((s, i) => {
+    const out = join(outDir, `shot_${String(i + 1).padStart(2, '0')}.jpg`)
+    ff(['-ss', ((s.from + (s.to - s.from) * 0.95) / tl.fps).toFixed(3), '-i', file, '-an', '-frames:v', '1', '-vf', 'scale=960:-2', '-q:v', '3', out], 'shot frame')
+    return out
+  })
+}
+
 // # Close-up sheet around each flagged frame (f-2 … f+2) so the Critic can judge it
 export const flagSheets = (file: string, flags: number[], fps: number, outDir: string): string[] =>
   flags.slice(0, 12).map((f, k) => {

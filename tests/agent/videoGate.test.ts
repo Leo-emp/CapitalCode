@@ -1,10 +1,10 @@
 // # Video QA: duration, loudness, true peak, one-frame flicker scan (cuts excused), frame sheets
 import { existsSync, mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { basename, join } from 'node:path'
 import { expect, test } from 'vitest'
 import { ff } from '../../agent/audio'
-import { findFlicker, frameDiffs, gateVideo, frameSheets } from '../../agent/gates/video'
+import { findFlicker, frameDiffs, gateVideo, frameSheets, shotFrames } from '../../agent/gates/video'
 
 // # 4 s gray clip, a one-frame white flash at frame 30, a hard cut to blue at frame 75; a −14 LUFS-ish tone
 const clip = (dir: string, flash = true) => {
@@ -50,3 +50,12 @@ test('plannedMotion = every cut + every slam cue (scene slams and slam slides)',
   ] }
   expect(plannedMotion(tl as any)).toEqual([100, 120, 300, 400, 410, 600])
 })
+
+// # The Critic sees every shot as built (one frame near the end of each shot, from the final video)
+test('shotFrames writes one numbered frame per shot', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ccqa-'))
+  const file = clip(dir)
+  const files = shotFrames(file, { fps: 30, shots: [{ from: 0, to: 60 }, { from: 60, to: 120 }] }, join(dir, 'qa', 'shots'))
+  expect(files.map((f) => basename(f))).toEqual(['shot_01.jpg', 'shot_02.jpg'])
+  expect(files.every((f) => existsSync(f))).toBe(true)
+}, 120_000)
