@@ -25,7 +25,12 @@ export type PlanGateOpts = {
   slideShare?: [number, number]; median?: [number, number]; maxShot?: number; minShot?: number
   // # owner review 2026-10-24: something on screen fast, few slams, brand early
   firstVisual?: number; maxSlams?: number; brandBy?: number
+  // # "show what is said": share of sentences allowed without their own illustration, longest gap (s)
+  maxBare?: number; maxGap?: number
 }
+
+// # Icons that decorate but do not SHOW anything the voice says — never count as illustration
+export const GENERIC_ICONS = ['question', 'exclamation', 'tick', 'cross', 'warning', 'magnifier', 'clock', 'calendar']
 
 export const sfxAvailable = (): string[] => {
   const d = join(PUBLIC_DIR, 'sfx', 'cc')
@@ -146,6 +151,29 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
     const gap = first - starts[i]
     if (gap > (o.firstVisual ?? 1.0)) problems.push(`${s.id}: slide is empty for ${gap.toFixed(1)} s after the cut — start the shot on "${s.at[0].word ?? 'its first word'}" (${s.at[0].sentence}) or cue the first item earlier`)
   })
+  // # show what is said: every sentence should get its own illustrative event (slide/vignette step,
+  // # a meaningful prop, a slam); chapter and brand cards count as visual content for the gap check
+  {
+    const events: Cue[] = []
+    const marks: number[] = []
+    plan.shots.forEach((s, i) => {
+      if (s.kind === 'slide' || s.kind === 'vignette') events.push(...(s.at ?? []))
+      if (s.kind === 'scene') {
+        for (const p of s.props ?? []) if (!GENERIC_ICONS.includes(p.id)) events.push(p.at)
+        if (s.slam) events.push(...s.slam.at)
+      }
+      if ((s.kind === 'chapter' || s.kind === 'brand') && Number.isFinite(starts[i])) marks.push(starts[i])
+    })
+    const sids = [...new Set(words.map((w) => w.sid))]
+    const shown = new Set(events.map((c) => c.sentence))
+    const bare = sids.filter((x) => !shown.has(x))
+    if (sids.length && bare.length / sids.length > (o.maxBare ?? 0.1))
+      problems.push(`${bare.length} of ${sids.length} sentences have nothing on screen that shows what is said (max ${Math.round((o.maxBare ?? 0.1) * 100)}%): ${bare.slice(0, 12).join(', ')}${bare.length > 12 ? ' …' : ''} — add a vignette step, a slide item or a meaningful prop on each; generic icons and pose changes do not count`)
+    const times = events.flatMap((c) => { try { return [resolveCue(words, c)] } catch { return [] } }).concat(marks, [first, o.duration]).sort((a, b) => a - b)
+    let worst = 0, at = 0
+    for (let k = 1; k < times.length; k++) if (times[k] - times[k - 1] > worst) { worst = times[k] - times[k - 1]; at = times[k - 1] }
+    if (worst > (o.maxGap ?? 6)) problems.push(`no illustration for ${worst.toFixed(1)} s from ${at.toFixed(1)} s (max ${o.maxGap ?? 6} s) — show what is being said there`)
+  }
   const slams = plan.shots.filter((s) => (s.kind === 'scene' && s.slam) || (s.kind === 'slide' && s.slide === 'slam')).length
   if (slams > (o.maxSlams ?? 3)) problems.push(`${slams} slams (max ${o.maxSlams ?? 3}) — keep them for the real payoff lines`)
   plan.shots.forEach((s, i) => {

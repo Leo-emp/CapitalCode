@@ -15,17 +15,18 @@ const DUR = 60.5
 const scene = (id: string, at: number, sceneId: string) => ({
   id, kind: 'scene' as const, start: { sentence: `s${at}` }, scene: sceneId,
   actors: [{ who: 'hero', anchor: 'stand', track: [{ at: { sentence: `s${at}` }, pose: 'idle' }, { at: { sentence: `s${at}`, word: 'money' }, pose: 'point', expression: 'shocked' }] }],
-  props: [{ id: 'cash-stack', anchor: 'prop1', at: { sentence: `s${at}`, word: 'money' } }],
+  props: [{ id: 'cash-stack', anchor: 'prop1', at: { sentence: `s${at}`, word: 'money' } }, { id: 'coin', anchor: 'prop2', at: { sentence: `s${at + 1}`, word: 'money' } }],
 })
 const slide = (id: string, at: number) => ({
   id, kind: 'slide' as const, start: { sentence: `s${at}` }, slide: 'bars', heading: 'H',
-  data: { bars: [{ label: 'A', value: 1 }, { label: 'B', value: 2 }] }, at: [{ sentence: `s${at}` }, { sentence: `s${at}`, word: 'money' }], // # first bar on the cut
+  data: { bars: [{ label: 'A', value: 1 }, { label: 'B', value: 2 }] }, at: [{ sentence: `s${at}` }, { sentence: `s${at + 1}`, word: 'money' }], // # first bar on the cut, second in the next sentence
 })
 // # shots every 2 sentences (8 s): scene/slide alternate → 50% slides, median 8 s
 const good = (): PlanDoc => ({
   shots: [
     scene('a', 1, 'shop-street'), slide('b', 3), scene('c', 5, 'bank-interior'), slide('d', 7),
-    scene('e', 9, 'vault-room'), slide('f', 11), scene('g', 13, 'mansion'),
+    scene('e', 9, 'vault-room'), slide('f', 11),
+    { ...scene('g', 13, 'mansion'), props: [...scene('g', 13, 'mansion').props, { id: 'house', anchor: 'prop1', at: { sentence: 's15', word: 'money' } }] },
   ],
   sfx: [{ at: { sentence: 's3' }, name: 'whoosh' }],
 })
@@ -165,7 +166,7 @@ describe('layout budgets', () => {
   })
   test('the first long video plan stays within budget', () => {
     expect(withSlide({ heading: 'One slice vs the average slice', slide: 'compare', at: [],
-      data: { cards: [{ title: 'Average of the other 490', value: '0.13%', lines: ['62.1% ÷ 490', 'of your money each'] }, { title: 'Difference', value: '≈ 60×', lines: ['7.52 ÷ 0.13'] }] } })).toBe('')
+      data: { cards: [{ title: 'Average of the other 490', value: '0.13%', lines: ['62.1% ÷ 490', 'of your money each'] }, { title: 'Difference', value: '≈ 60×', lines: ['7.52 ÷ 0.13'] }] } })).not.toMatch(/chars \(max|cards \(max|lines \(max/)
   })
 })
 
@@ -210,7 +211,7 @@ describe('vignette shots', () => {
   const vig = (patch: Record<string, unknown> = {}) => {
     const p = good()
     p.shots[1] = { id: 'b', kind: 'vignette', start: { sentence: 's3' }, vignette: 'lottery', data: { tickets: 40, winners: 2 },
-      at: [{ sentence: 's3' }, { sentence: 's3', word: 'money' }], ...patch } as any
+      at: [{ sentence: 's3' }, { sentence: 's4', word: 'money' }], ...patch } as any
     return gatePlan(p, words, opts())
   }
   test('a valid vignette passes and counts as illustration', () => {
@@ -222,5 +223,24 @@ describe('vignette shots', () => {
     expect(vig({ vignette: 'ufo' }).problems.join('\n')).toMatch(/b: unknown vignette "ufo"/)
     expect(vig({ data: { tickets: 5, winners: 9 } }).problems.join('\n')).toMatch(/b: lottery winners/)
     expect(vig({ at: [{ sentence: 's3' }, { sentence: 's3' }, { sentence: 's3' }, { sentence: 's3' }] }).problems.join('\n')).toMatch(/b: more cues than lottery steps/)
+  })
+})
+
+// # Owner 2026-10-24: "show more illustrations of what the voiceover is speaking"
+describe('show what is said', () => {
+  test('a plan whose scenes only change poses / show generic icons is refused', () => {
+    const p = good()
+    for (const i of [0, 2, 4, 6]) {
+      const s = p.shots[i] as any
+      s.props = [{ id: 'question', anchor: 'prop1', at: { sentence: s.start.sentence, word: 'money' } }]
+    }
+    const msg = gatePlan(p, words, opts()).problems.join('\n')
+    expect(msg).toMatch(/sentences have nothing on screen that shows what is said/)
+    expect(msg).toMatch(/generic icons and pose changes do not count/)
+  })
+  test('long gaps without an illustrative event are refused', () => {
+    const p = good()
+    for (const i of [0, 2, 4, 6]) (p.shots[i] as any).props = []
+    expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/no illustration for \d+\.\d s/)
   })
 })

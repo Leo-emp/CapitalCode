@@ -87,7 +87,15 @@ Read `words.json` and write `plan.json`: `{ "shots": [...], "sfx": [...] }`.
 A **cue** is a spoken word: `{ "sentence": "s12", "word": "million", "nth": 1 }`
 (word omitted = first word of the sentence). Everything lands on its word.
 
+- **Show what is said (owner rule, gate-enforced):** before placing shots, write for EVERY
+  sentence the picture that shows its words (literal or a clear metaphor). ≥ 90% of sentences
+  need their own illustrative event and never > 6 s without one. Counts: a vignette step, a
+  slide item, a meaningful prop (not question/exclamation/tick/cross/warning/magnifier/clock/
+  calendar), a slam. Pose changes do not count. Reach for **vignettes** first for story beats
+  (money-flow, pie, baskets, scale, bubble, leaderboard, lottery — see temp/catalog.md);
+  examples in art/vignettes/samples.ts.
 - Shot kinds: `brand` (once, ~0:20), `chapter` (`n`, `title`) at each chapter,
+  `vignette` (`vignette` id + `data` + `at` cues, one per step, + optional `heading`),
   `scene` (scene id + `actors` with pose/expression track on cues + `props` on cues
   + optional `slam` key words, `time`/`tone`/`framing`/`variant`), `slide`
   (`slide` kind + `heading` + `data` + `at` cues, one per item, + `source` line).
