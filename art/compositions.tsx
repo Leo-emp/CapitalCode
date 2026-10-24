@@ -8,6 +8,7 @@ import { DEMO_FRAMES, LibraryDemo } from './stylebible/Demo'
 import { FPS, H, W } from './tokens'
 import { Episode, type EpisodeProps, type EpisodeTimeline } from './episode/Episode'
 import { SH, Short, type ShortProps, SW } from './episode/Short'
+import { DioramaHook, type HookProps } from './diorama/Hook'
 
 // # Placeholder until the engine passes a real timeline via --props
 const EMPTY_TIMELINE: EpisodeTimeline = { fps: FPS, durationInFrames: 90, shots: [{ shot: { id: 'logo', kind: 'brand', start: 0 }, from: 0, to: 90 }], sfx: [] }
@@ -41,6 +42,7 @@ export const ArtCompositions: React.FC = () => (
     <Composition id="Short" component={Short} durationInFrames={90} fps={FPS} width={SW} height={SH}
       defaultProps={{ timeline: EMPTY_TIMELINE, captions: [], hook: '' } as ShortProps}
       calculateMetadata={({ props }) => ({ durationInFrames: props.timeline.durationInFrames })} />
+    <Composition id="DioramaHook" component={DioramaHook as React.FC<HookProps>} durationInFrames={1040} fps={FPS} width={W} height={H} defaultProps={{ cue: {} } as HookProps} />
     <Composition id="PoseStrip"component={PoseStrip} durationInFrames={1} fps={FPS} width={W} height={H} />
   </>
 )

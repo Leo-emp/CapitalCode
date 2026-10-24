@@ -15,6 +15,9 @@ import { camKeys, DEPTH, framed, layerCam, shownFraction } from '../../art/motio
 import { type Anchor, cameraFor, OVERSCAN, type SceneFraming } from '../../art/scenes/kit'
 import { SCENES } from '../../art/scenes/registry'
 import { VIGNETTES } from '../../art/vignettes/registry'
+import { cueMap } from '../../art/diorama/cues'
+import { findPiece } from '../../art/diorama/registry'
+import '../../art/diorama/pieces'
 import { PUBLIC_DIR } from '../paths'
 import type { Cue, PlanDoc, TimedWord } from '../schema'
 import { DECOR_FIGURES, layoutProblems, SLIDE_KINDS, SLIDE_SPECS } from '../slides'
@@ -56,6 +59,9 @@ const framingCuts = (s: { framing?: SceneFraming; camera?: { at: Cue; to: string
   return out
 }
 
+// # "s3:money#2" → { sentence: 's3', word: 'money', nth: 2 }
+const keyToCue = (k: string): Cue => { const [sentence, rest] = k.split(':'); if (!rest) return { sentence }; const [word, nth] = rest.split('#'); return nth ? { sentence, word, nth: +nth } : { sentence, word } }
+
 // # Seconds of on-screen text one scene slam / one kinetic text counts for in the text share
 export const SLAM_TEXT_S = 2, KINETIC_TEXT_S = 1.5
 // # Poses that are talk, not an action — a key to one of these does not show anything (spec §12.1)
@@ -93,6 +99,7 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
 
   if (!plan.shots?.length) return { ok: false, problems: ['plan has no shots'], stats: null }
   const ids = new Set<string>()
+  const spoken = cueMap(words)
   const starts: number[] = []
   // # zoom-into (living film): a shot grows out of a spot (or a point) of the shot before it
   plan.shots.forEach((s, i) => {
@@ -165,6 +172,11 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
       }
       if (s.data?.icon && !PROPS.some((x) => x.id === s.data.icon)) problems.push(`${s.id}: unknown icon prop "${String(s.data.icon)}"`)
       for (const c of s.at ?? []) cue(s.id, c)
+    } else if (s.kind === 'piece') {
+      // # a diorama piece: it must exist, and every cue it animates or sounds on must be a spoken word
+      const p = findPiece(s.piece)
+      if (!p) problems.push(`${s.id}: unknown piece "${s.piece}"`)
+      else for (const k of [...new Set([...p.beats, ...p.sfx.map((x) => x[0])])]) if (spoken[k] === undefined) problems.push(`${s.id}: piece ${p.id}: cue "${k}" is not spoken`)
     } else if (s.kind === 'vignette') {
       if (s.heading && s.heading.length > 36) problems.push(`${s.id}: vignette heading is longer than one line (max 36 characters)`)
       const v = VIGNETTES.find((x) => x.id === s.vignette)
@@ -199,7 +211,8 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
     shots: plan.shots.length,
     // # a vignette is half data (labels, numbers), half illustration → counts 0.5 toward slide share
     slideShare: valid ? plan.shots.reduce((a, s, i) => a + (s.kind === 'slide' ? lens[i] : s.kind === 'vignette' ? 0.5 * lens[i] : 0), 0) / o.duration : NaN,
-    medianShot: valid ? median(lens) : NaN,
+    // # pieces are continuous sequences (their beats keep the picture moving), so shot-length rules skip them
+    medianShot: valid && lens.some((_, i) => plan.shots[i].kind !== 'piece') ? median(lens.filter((_, i) => plan.shots[i].kind !== 'piece')) : NaN,
     scenes: [...new Set(plan.shots.flatMap((s) => (s.kind === 'scene' ? [s.scene] : [])))],
     slides: [...new Set(plan.shots.flatMap((s) => (s.kind === 'slide' ? [s.slide] : [])))],
     // # text on screen: slides + scene slams + kinetic texts, as a share of the runtime
@@ -208,12 +221,13 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
   }
   if (valid) {
     lens.forEach((l, i) => {
+      if (plan.shots[i].kind === 'piece') return
       if (l > (o.maxShot ?? 30)) problems.push(`${plan.shots[i].id}: shot is ${l.toFixed(1)} s (max ${o.maxShot ?? 30})`)
       if (l < (o.minShot ?? 1)) problems.push(`${plan.shots[i].id}: shot is ${l.toFixed(2)} s (min ${o.minShot ?? 1})`)
     })
     if (stats.slideShare < shareMin || stats.slideShare > shareMax) problems.push(`slide share ${(stats.slideShare * 100).toFixed(0)}% (want ${shareMin * 100}–${shareMax * 100}%)`)
     if (o.maxText !== undefined && stats.textShare > o.maxText) problems.push(`text ${Math.round(stats.textShare * 100)}% of runtime (max ${Math.round(o.maxText * 100)}%) — show it with a scene, vignette or metaphor instead of a slide`)
-    if (stats.medianShot < medMin || stats.medianShot > medMax) problems.push(`median shot ${stats.medianShot.toFixed(1)} s (want ${medMin}–${medMax} s)`)
+    if (Number.isFinite(stats.medianShot) && (stats.medianShot < medMin || stats.medianShot > medMax)) problems.push(`median shot ${stats.medianShot.toFixed(1)} s (want ${medMin}–${medMax} s)`)
   }
   // # a slide shows its first item within `firstVisual` s of the cut (no heading-only seconds)
   plan.shots.forEach((s, i) => {
@@ -230,6 +244,8 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
     const marks: number[] = []
     plan.shots.forEach((s, i) => {
       if (s.kind === 'slide' || s.kind === 'vignette') events.push(...(s.at ?? []))
+      // # a piece's beats are shown events (cue key "s3:money#2" → { sentence, word, nth })
+      if (s.kind === 'piece') for (const k of findPiece(s.piece)?.beats ?? []) if (spoken[k] !== undefined) events.push(keyToCue(k))
       if (s.kind === 'scene') {
         for (const p of s.props ?? []) {
           if (!GENERIC_ICONS.includes(p.id)) events.push(p.at)

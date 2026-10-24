@@ -23,12 +23,16 @@ import { type Cam, cameraAt, camKeys, DEPTH, framed, layerCam } from '../motion/
 import { ZOOM_INTO, zoomIntoAt } from '../motion/transition'
 import { KineticText } from '../motion/kinetic'
 import { cameraFor, OVERSCAN } from '../scenes/kit'
+import { type CueMap, reader } from '../diorama/cues'
+import { getPiece } from '../diorama/registry'
+import { ZigZagWipe } from '../diorama/kit'
+import '../diorama/pieces'
 import { getProp } from '../props/registry'
 import { Actor, holdsInHand, propBox } from '../rig/Actor'
 import { mixPose, type Pose, type PoseId, POSES } from '../rig/pose'
 import { getScene } from '../scenes/registry'
 import { getVignette } from '../vignettes/registry'
-import { FPS, fontFaces } from '../tokens'
+import { COLORS, FPS, fontFaces } from '../tokens'
 
 // # Same shapes as agent/timeline.ts, with every cue already a frame number
 type Tone = 'blue' | 'green' | 'red' | 'champagne' | 'text'
@@ -40,8 +44,9 @@ type RScene = { id: string; kind: 'scene'; start: number; scene: string; time?: 
 type RSlide = { id: string; kind: 'slide'; start: number; slide: string; heading?: string; kicker?: string; source?: string; data: any; at: number[] }
 type RChapter = { id: string; kind: 'chapter'; start: number; n: number; title: string }
 type RBrand = { id: string; kind: 'brand'; start: number }
-export type RShot = (RScene | RSlide | RVignette | RChapter | RBrand) & { enter?: { zoomInto: string | { x: number; y: number } } }
-export type EpisodeTimeline = { fps: number; durationInFrames: number; shots: { shot: RShot; from: number; to: number }[]; sfx: { name: string; t: number; volume: number }[]; speech?: [number, number][] }
+type RPiece = { id: string; kind: 'piece'; start: number; piece: string }
+export type RShot = (RScene | RSlide | RVignette | RChapter | RBrand | RPiece) & { enter?: { zoomInto: string | { x: number; y: number } } }
+export type EpisodeTimeline = { fps: number; durationInFrames: number; shots: { shot: RShot; from: number; to: number }[]; sfx: { name: string; t: number; volume: number }[]; speech?: [number, number][]; cues?: CueMap }
 export type EpisodeProps = { timeline: EpisodeTimeline; voice?: string; width?: number; height?: number }
 
 export const TRANSITION = 8 // # frames of zoom-through between shots
@@ -242,6 +247,7 @@ const ShotView: React.FC<{ s: RShot; f: number; from: number; to: number; speech
     : s.kind === 'slide' ? <SlideShotView s={s} f={f} from={from} />
     : s.kind === 'vignette' ? <VignetteShotView s={s} f={f} from={from} />
     : s.kind === 'chapter' ? <ChapterCard frame={f} n={s.n} title={s.title} cue={from} />
+    : s.kind === 'piece' ? null
     : <Lockup f={f - from} />
   // # zoom-into: fly into the point (outgoing) / grow out of it as a widening circle (incoming)
   if (enterAt && f < from + ZOOM_INTO) {
@@ -259,6 +265,19 @@ const ShotView: React.FC<{ s: RShot; f: number; from: number; to: number; speech
   return <AbsoluteFill style={{ opacity: from === 0 || enterAt ? 1 : inP, transform: `scale(${from === 0 || enterAt ? 1 + 0.08 * outP : scale})` }}>{body}</AbsoluteFill>
 }
 
+// # A diorama piece: its own stage and choreography in one 1920×1080 SVG, reading cue words by name
+export const WIPE = 12
+const PieceView: React.FC<{ s: RPiece; f: number; from: number; to: number; cues: CueMap }> = ({ s, f, from, to, cues }) => {
+  const P = getPiece(s.piece).Component
+  return (
+    <AbsoluteFill>
+      <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{ position: 'absolute', inset: 0 }}>
+        <P f={f} c={reader(cues, `piece ${s.piece}`)} from={from} to={to} />
+      </svg>
+    </AbsoluteFill>
+  )
+}
+
 // # Shots visible at frame f: the current one, plus the previous one while it zooms out under the new one
 // # (for TRANSITION frames, or ZOOM_INTO frames when the next shot grows out of it)
 export const visibleShots = (tl: EpisodeTimeline, f: number) =>
@@ -274,10 +293,29 @@ export const EpisodeFrame: React.FC<{ timeline: EpisodeTimeline; f: number }> = 
     const z = sh[i]?.shot.enter?.zoomInto
     return z !== undefined && i > 0 ? enterPoint(sh[i - 1], z, sh[i].from) : undefined
   }
-  return <>{visibleShots(timeline, f).map((x) => {
-    const i = sh.indexOf(x)
-    return <ShotView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} speech={timeline.speech} enterAt={pointOf(i)} exitAt={pointOf(i + 1)} />
-  })}</>
+  const cues = timeline.cues ?? {}
+  // # a piece that follows another piece comes in behind a zig-zag paper wipe (the reference's drawn transition):
+  // # the paper covers the old picture in the last WIPE frames, the cut happens under it, then it uncovers the new one
+  const wipeOf = (i: number) => (i > 0 && sh[i].shot.kind === 'piece' && sh[i - 1].shot.kind === 'piece' ? sh[i].from : undefined)
+  const wipes = sh.map((_, i) => wipeOf(i)).filter((x): x is number => x !== undefined && f >= x - WIPE && f < x + WIPE + 4)
+  return <>
+    {visibleShots(timeline, f).map((x) => {
+      const i = sh.indexOf(x)
+      if (x.shot.kind === 'piece') {
+        // # pieces hand over at the cut itself (the wipe hides it): no zoom-through, no overlap
+        if (f >= x.to) return null
+        return <PieceView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} cues={cues} />
+      }
+      return <ShotView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} speech={timeline.speech} enterAt={pointOf(i)} exitAt={pointOf(i + 1)} />
+    })}
+    {wipes.map((at) => (
+      <svg key={`w${at}`} width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>
+        <ZigZagWipe p={(f - (at - WIPE)) / WIPE} color={COLORS.champagne} mode="cover" />
+        <ZigZagWipe p={(f - at) / (WIPE + 4)} color={COLORS.champagne} mode="reveal" />
+        {f >= at - 1 && f < at + 1 && <rect width={1920} height={1080} fill={COLORS.champagne} />}
+      </svg>
+    ))}
+  </>
 }
 
 export const Episode: React.FC<EpisodeProps> = ({ timeline, voice }) => {

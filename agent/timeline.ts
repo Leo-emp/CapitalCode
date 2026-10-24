@@ -9,6 +9,9 @@ import { FPS } from '../art/tokens'
 import type { Cue, PlanDoc, Shot, TimedWord } from './schema'
 import { SLIDE_SPECS } from './slides'
 import { VIGNETTES } from '../art/vignettes/registry'
+import { cueMap, type CueMap } from '../art/diorama/cues'
+import { findPiece } from '../art/diorama/registry'
+import '../art/diorama/pieces'
 
 // # Seconds where a cue's word starts — searched only inside its own sentence
 export const resolveCue = (words: TimedWord[], cue: Cue): number => {
@@ -31,7 +34,7 @@ const mapCues = (x: any, f: (c: Cue) => number): any =>
 export const STAGGER = 12 // # frames between padded slide cues
 export type TimedShot = { shot: Resolved<Shot>; from: number; to: number }
 // # speech: [from, to] frames of each spoken sentence — characters talk-gesture inside these (living film §5)
-export type Timeline = { fps: number; durationInFrames: number; shots: TimedShot[]; sfx: { name: string; t: number; volume: number }[]; speech?: [number, number][] }
+export type Timeline = { fps: number; durationInFrames: number; shots: TimedShot[]; sfx: { name: string; t: number; volume: number }[]; speech?: [number, number][]; cues?: CueMap }
 
 export const buildTimeline = (plan: PlanDoc, words: TimedWord[], duration: number, fps = FPS): Timeline => {
   const frame = (c: Cue) => Math.round(resolveCue(words, c) * fps)
@@ -49,10 +52,16 @@ export const buildTimeline = (plan: PlanDoc, words: TimedWord[], duration: numbe
     return { shot: r, from: starts[i], to: i + 1 < starts.length ? starts[i + 1] : total }
   })
   const sfx = (plan.sfx ?? []).map((x) => ({ name: x.name, t: +resolveCue(words, x.at).toFixed(3), volume: x.volume ?? 1 }))
+  // # every named cue word as a frame, for diorama pieces; each piece adds its own sound effects
+  const cues = cueMap(words, fps)
+  for (const s of plan.shots) {
+    if (s.kind !== 'piece') continue
+    for (const [k, name, volume] of findPiece(s.piece)?.sfx ?? []) if (cues[k] !== undefined) sfx.push({ name, t: +(cues[k] / fps).toFixed(3), volume: volume ?? 1 })
+  }
   const speech: [number, number][] = []
   for (const sid of [...new Set(words.map((w) => w.sid))]) {
     const ws = words.filter((w) => w.sid === sid)
     speech.push([Math.round(ws[0].s * fps), Math.round(ws[ws.length - 1].e * fps)])
   }
-  return { fps, durationInFrames: total, shots, sfx, speech }
+  return { fps, durationInFrames: total, shots, sfx, speech, cues }
 }
