@@ -25,8 +25,16 @@ only job is the final review, so run the whole pipeline without asking.
    stats and results tell you what works; lean into it.
 2. `cc catalog` → read `temp/catalog.md` (every usable scene, anchor, prop, pose,
    expression, cast member, slide kind + data shape, sfx). Use only these ids.
-3. `cc status` → if the newest job is unfinished, **resume it** at its next step
+3. `cc doctor` → keys, ffmpeg, fonts, sfx, disk, Node in seconds. Fix anything BAD first.
+4. `cc status` → if the newest job is unfinished, **resume it** with `cc run <job>`
    instead of starting a new one (unless the owner gave a new topic).
+
+**`cc run <job>` is the engine:** it runs every automatic step in order (gate-script →
+voice → gate-plan → render → gate-video → critic check → package), re-gates any edited
+script or plan, checks the machine before slow or paid steps, and stops with
+`needs: …` when only you can write the next file. After any crash or fix, just run it
+again: voice is cached per chapter and render per chunk (keyed by the exact art each
+chunk shows), so nothing paid or slow repeats.
 
 ## 1. Topic (Topic Scout)
 
@@ -66,11 +74,11 @@ only job is the final review, so run the whole pipeline without asking.
   in the sentence: ≤ 1 per 3–4 sentences, never two sentences in a row.
 - No advice ("you should buy"), no predictions as fact, no hype, no accusations
   without a court/regulator source.
-- `cc gate-script <job>` → fix every listed problem in one pass, re-run until ok.
+- `cc run <job>` (or `cc gate-script <job>`) → fix every listed problem in one pass, re-run until ok.
 
 ## 4. Voice (Narrator)
 
-`cc voice <job>` → Azure Andrew HD, cached per chapter (a fix re-voices only what
+Done by `cc run`: Azure Andrew HD, cached per chapter (a fix re-voices only what
 changed) → `voice.wav` + `words.json` (every word with start/end and sentence id).
 
 ## 5. Visual plan (Visual Director)
@@ -93,7 +101,17 @@ A **cue** is a spoken word: `{ "sentence": "s12", "word": "million", "nth": 1 }`
 - Constant small motion: pose changes and props on cue words every few seconds;
   `slam` for the key payoff words; sfx sparingly (cuts get an automatic whoosh).
 - Data on screen = the facts in `facts.json`, with the source line on the slide.
-- `cc gate-plan <job>` → fix every problem (it names the nearest real words for a
+- Layout limits (gate-enforced, so nothing overflows the frame): heading/kicker ≤ 48
+  chars; slam ≤ 32 chars in total; bars ≤ 12 (labels ≤ 22); compare ≤ 3 cards (title ≤ 28,
+  value ≤ 9, ≤ 3 lines of ≤ 34); flow ≤ 4 nodes (≤ 30 chars); timeline ≤ 6 points;
+  equation ≤ 7 parts (≤ 12 chars); number label ≤ 48.
+- Numbers read off a chart are labelled "approx., read from chart" in the kicker; plot only
+  sourced points (never invent in-between values); show the working of our own maths
+  exactly as in facts.json.
+- Avoid scenes whose decoration shows made-up data that could be mistaken for real
+  numbers next to a data claim (e.g. `portfolio-dashboard`) and loud tickers under
+  calm lines (`news-desk`).
+- `cc run <job>` (gate-plan) → fix every problem (it names the nearest real words for a
   bad cue), re-run until ok. It writes `timeline.json`.
 - **New art:** if the story truly needs a scene/prop that is not in the catalog,
   draw it in the house style in `art/` (registry + tags), render a still, review it
@@ -101,13 +119,14 @@ A **cue** is a spoken word: `{ "sentence": "s12", "word": "million", "nth": 1 }`
 
 ## 6. Render (Editor)
 
-`cc render <job>` → pre-flight stills (look at a few), chunked resumable render,
-SFX mix, `final.mp4`. If interrupted, just run it again: finished chunks are reused.
-A long video takes roughly 45–60 min; run it in the background and wait for it.
+Done by `cc run`: pre-flight stills at the end of each shot (look at ALL of them as
+contact sheets before trusting the render: overflow, overlap, faces covered, empty
+screens), chunked resumable render, SFX mix, `final.mp4`. ~18 min for 8.6 min of video
+(~60 ms/frame); run it in the background. If interrupted, run it again.
 
 ## 7. QA + independent Critic
 
-1. `cc gate-video <job>` → duration, −14 LUFS, true peak, flicker scan, and the
+1. Done by `cc run`: gate-video → duration, −14 LUFS, true peak, flicker scan, and the
    critic pack `qa/critic_pack.md` (frame sheets + flag sheets).
 2. Dispatch a **fresh-context Critic subagent** (Agent tool, most capable model) with
    only: the path to `qa/critic_pack.md`, the job folder, `taste/capitalcode.md`, and

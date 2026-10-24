@@ -80,6 +80,46 @@
       "strength": 1,
       "added": "2026-10-24T04:45:58.757Z",
       "status": "active"
+    },
+    {
+      "id": "r9",
+      "area": "visual",
+      "rule": "Numbers read off a chart are labelled approximate on screen; plot only sourced points, never invented in-between values",
+      "source": "feedback",
+      "evidence": "critic-round1-index-fund",
+      "strength": 1,
+      "added": "2026-10-24T06:00:08.097Z",
+      "status": "active"
+    },
+    {
+      "id": "r10",
+      "area": "visual",
+      "rule": "All on-screen text must read on a phone: slide body text 30 px+, no tiny caps sub-lines",
+      "source": "feedback",
+      "evidence": "critic-round1-index-fund",
+      "strength": 1,
+      "added": "2026-10-24T06:00:18.433Z",
+      "status": "active"
+    },
+    {
+      "id": "r11",
+      "area": "pacing",
+      "rule": "No shot holds still for more than ~5 s; add a build, a prop or a cut",
+      "source": "feedback",
+      "evidence": "critic-round1-index-fund",
+      "strength": 1,
+      "added": "2026-10-24T06:00:28.811Z",
+      "status": "active"
+    },
+    {
+      "id": "r12",
+      "area": "visual",
+      "rule": "Show our own maths exactly as in facts.json (same inputs, same rounding)",
+      "source": "feedback",
+      "evidence": "critic-round1-index-fund",
+      "strength": 1,
+      "added": "2026-10-24T06:00:39.175Z",
+      "status": "active"
     }
   ],
   "feedback": [],
