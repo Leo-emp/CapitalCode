@@ -281,3 +281,15 @@ test('a vignette counts half toward slide share (data + illustration in one)', (
   for (const i of [1, 3, 5]) p.shots[i] = { ...(p.shots[i] as any), kind: 'vignette', vignette: 'lottery', data: { tickets: 20, winners: 2 } } as any
   expect(gatePlan(p, words, opts()).stats!.slideShare).toBeCloseTo(base / 2, 2)
 })
+
+// # Living film: walks between scene spots
+describe('walk paths', () => {
+  test('a walk to a known spot passes; an unknown spot is refused by name', () => {
+    const p = good()
+    const a = p.shots[0] as any
+    a.actors[0].path = [{ at: { sentence: 's1', word: 'money' }, to: 'stand2' }]
+    expect(gatePlan(p, words, opts()).problems.filter((x) => /path/.test(x))).toEqual([])
+    a.actors[0].path = [{ at: { sentence: 's1', word: 'money' }, to: 'nowhere' }]
+    expect(gatePlan(p, words, opts()).problems).toContain('a: path anchor "nowhere" not in scene shop-street')
+  })
+})

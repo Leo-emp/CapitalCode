@@ -28,7 +28,8 @@ export type TimedWord = { w: string; s: number; e: number; sid: string }
 // # (word omitted → the sentence's first word).
 export type Cue = { sentence: string; word?: string; nth?: number }
 export type ActorTrackKey = { at: Cue; pose: string; expression?: string }
-export type ShotActor = { who: string; anchor: string; track: ActorTrackKey[]; flip?: boolean }
+// # path: walk to another spot of the scene on a cue (living film); legs run one after another
+export type ShotActor = { who: string; anchor: string; track: ActorTrackKey[]; flip?: boolean; path?: { at: Cue; to: string }[] }
 // # on: 'hand' = held by actors[actor ?? 0] (follows the pose); 'floor' = stands on the anchor's ground line
 export type ShotProp = { id: string; anchor: string; at: Cue; size?: number; on?: 'hand' | 'floor'; actor?: number }
 export type SceneShot = {

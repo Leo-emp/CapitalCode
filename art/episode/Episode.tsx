@@ -17,6 +17,7 @@ import { clamp, SlideFrame } from '../infographics/SlideFrame'
 import { Emblem } from '../logo/Emblem'
 import { Lockup } from '../logo/LogoReveal'
 import { actedPose } from '../motion/life'
+import { walkAt, walkPose } from '../motion/walk'
 import { getProp } from '../props/registry'
 import { Actor, holdsInHand, propBox } from '../rig/Actor'
 import { type ExpressionId, type Pose, type PoseId } from '../rig/pose'
@@ -26,7 +27,7 @@ import { FPS, fontFaces } from '../tokens'
 
 // # Same shapes as agent/timeline.ts, with every cue already a frame number
 type Tone = 'blue' | 'green' | 'red' | 'champagne' | 'text'
-type RActor = { who: string; anchor: string; track: { at: number; pose: string; expression?: string }[]; flip?: boolean }
+type RActor = { who: string; anchor: string; track: { at: number; pose: string; expression?: string }[]; flip?: boolean; path?: { at: number; to: string }[] }
 // # on: 'hand' = held by actor[actor ?? 0] (follows the pose), 'floor' = stands on the anchor's ground line
 type RProp = { id: string; anchor: string; at: number; size?: number; on?: 'hand' | 'floor'; actor?: number }
 type RScene = { id: string; kind: 'scene'; start: number; scene: string; time?: 'night' | 'dusk' | 'rain' | 'fog'; tone?: 'none' | 'blue' | 'gold' | 'red' | 'green'
@@ -68,13 +69,18 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number; 
 
   const actorAt: { pose: Pose; anchor: typeof a[string]; flip: boolean }[] = []
   for (const [i, act] of (s.actors ?? []).entries()) {
-    const anc = a[act.anchor]
-    // # the second spot faces the first (two-person moments) unless the plan says otherwise
-    const flip = act.flip ?? (act.anchor === 'stand2' && a.stand ? anc.x > a.stand.x : false)
+    const home = a[act.anchor]
+    // # walking (living film): position along the path; the walk cycle replaces the keyed pose while moving
+    const legs = (act.path ?? []).filter((l) => a[l.to]).map((l) => ({ at: l.at, to: a[l.to] }))
+    const walk = legs.length ? walkAt(f, home, legs) : null
+    const anc = walk ? { ...home, x: walk.x, y: walk.y } : home
+    const moved = !!walk && legs.some((l) => f >= l.at)
+    // # the second spot faces the first (two-person moments) unless the plan says otherwise; a walker faces its way
+    const flip = moved ? walk!.facing < 0 : act.flip ?? (act.anchor === 'stand2' && a.stand ? anc.x > a.stand.x : false)
     const keys = [...act.track].sort((x, y) => x.at - y.at)
     // # each actor gets its own seed so two people never blink or gesture in sync
     const seed = i * 7 + act.who.length * 3 + 1
-    const pose = actedPose(f, keys.map((k) => [k.at, k.pose as PoseId]), speech, seed, FPS)
+    const pose = walk?.walking ? walkPose(f) : actedPose(f, keys.map((k) => [k.at, k.pose as PoseId]), speech, seed, FPS)
     const expr = [...keys].reverse().find((k) => k.at <= f && k.expression)?.expression as ExpressionId | undefined
     actorAt.push({ pose, anchor: anc, flip })
     // # an actor whose first key is after the cut walks in on that cue; otherwise it is there from the start

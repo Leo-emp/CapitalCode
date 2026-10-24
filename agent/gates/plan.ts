@@ -78,6 +78,10 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
         if (sc && sc.anchors[a.anchor] && !inFrame(sc.anchors, s.framing ?? 'wide', sc.anchors[a.anchor]))
           problems.push(`${s.id}: actor ${a.who} at "${a.anchor}" is out of frame with ${s.framing} framing — use wide/medium or another anchor`)
         if (!a.track?.length) problems.push(`${s.id}: actor ${a.who} has an empty track`)
+        for (const leg of a.path ?? []) {
+          if (sc && !sc.anchors[leg.to]) problems.push(`${s.id}: path anchor "${leg.to}" not in scene ${s.scene}`)
+          cue(s.id, leg.at)
+        }
         for (const k of a.track ?? []) {
           if (!(POSE_IDS as string[]).includes(k.pose)) problems.push(`${s.id}: unknown pose "${k.pose}"`)
           if (k.expression && !(EXPRESSIONS as string[]).includes(k.expression)) problems.push(`${s.id}: unknown expression "${k.expression}"`)
