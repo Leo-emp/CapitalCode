@@ -1,0 +1,2556 @@
+{
+  "shots": [
+    {
+      "id": "v1",
+      "kind": "vignette",
+      "start": {
+        "sentence": "s1"
+      },
+      "vignette": "money-flow",
+      "heading": "Your $100 in an S&P 500 fund",
+      "kicker": "Illustrative $100",
+      "source": "Source: ChartRow, S&P 500 fund SEC filings (Jun 2026)",
+      "data": {
+        "source": "Your $100",
+        "groups": [
+          {
+            "label": "490 others",
+            "share": 62.1,
+            "count": 490,
+            "tone": "blue"
+          },
+          {
+            "label": "just 10 giants",
+            "share": 37.9,
+            "count": 10,
+            "tone": "champagne"
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s1"
+        },
+        {
+          "sentence": "s2"
+        },
+        {
+          "sentence": "s3",
+          "word": "38"
+        }
+      ]
+    },
+    {
+      "id": "sl1",
+      "kind": "slide",
+      "start": {
+        "sentence": "s4"
+      },
+      "slide": "stacked",
+      "heading": "Your $100, split by the index",
+      "kicker": "Illustrative $100",
+      "source": "Source: ChartRow, S&P 500 fund SEC filings (Jun 2026)",
+      "data": {
+        "format": "moneyFull",
+        "segments": [
+          {
+            "label": "NVIDIA",
+            "value": 7.52,
+            "tone": "champagne"
+          },
+          {
+            "label": "Next 9 giants",
+            "value": 30.38,
+            "tone": "blue"
+          },
+          {
+            "label": "Other 490 · ~13¢ each",
+            "value": 62.1,
+            "tone": "text"
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s4"
+        },
+        {
+          "sentence": "s4",
+          "word": "cents"
+        },
+        {
+          "sentence": "s5",
+          "word": "490"
+        }
+      ]
+    },
+    {
+      "id": "br",
+      "kind": "brand",
+      "start": {
+        "sentence": "s6"
+      }
+    },
+    {
+      "id": "sc1",
+      "kind": "scene",
+      "start": {
+        "sentence": "s6",
+        "word": "concentrated"
+      },
+      "scene": "wall-street",
+      "framing": "wide",
+      "time": "night",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand",
+          "track": [
+            {
+              "at": {
+                "sentence": "s6",
+                "word": "concentrated"
+              },
+              "pose": "talk",
+              "expression": "neutral"
+            },
+            {
+              "at": {
+                "sentence": "s7"
+              },
+              "pose": "shrug",
+              "expression": "smug"
+            },
+            {
+              "at": {
+                "sentence": "s8",
+                "word": "own"
+              },
+              "pose": "hold",
+              "expression": "thinking"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "chart-board",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s6",
+            "word": "concentrated"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "shield",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s7",
+            "word": "bad"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "contract",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s8",
+            "word": "own"
+          },
+          "on": "hand",
+          "actor": 0
+        }
+      ]
+    },
+    {
+      "id": "sc2",
+      "kind": "scene",
+      "start": {
+        "sentence": "s9"
+      },
+      "scene": "stock-exchange",
+      "decorOk": true,
+      "framing": "wide",
+      "tone": "gold",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand",
+          "track": [
+            {
+              "at": {
+                "sentence": "s9"
+              },
+              "pose": "present",
+              "expression": "smiling"
+            },
+            {
+              "at": {
+                "sentence": "s10",
+                "word": "cost"
+              },
+              "pose": "hold",
+              "expression": "neutral"
+            },
+            {
+              "at": {
+                "sentence": "s10",
+                "word": "decide"
+              },
+              "pose": "think",
+              "expression": "thinking"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "dollar-sign",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s9",
+            "word": "money"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "calculator",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s10",
+            "word": "work"
+          },
+          "on": "hand",
+          "actor": 0
+        },
+        {
+          "id": "newspaper",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s10",
+            "word": "cost"
+          },
+          "on": "floor"
+        }
+      ]
+    },
+    {
+      "id": "ch1",
+      "kind": "chapter",
+      "start": {
+        "sentence": "s11"
+      },
+      "n": 1,
+      "title": "What you really own"
+    },
+    {
+      "id": "sl2",
+      "kind": "slide",
+      "start": {
+        "sentence": "s12"
+      },
+      "slide": "flow",
+      "heading": "How an index fund splits your money",
+      "data": {
+        "nodes": [
+          {
+            "title": "Company size",
+            "sub": "bigger company"
+          },
+          {
+            "title": "Market value",
+            "sub": "bigger weight"
+          },
+          {
+            "title": "Your dollars",
+            "sub": "more of each one"
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s12"
+        },
+        {
+          "sentence": "s13"
+        },
+        {
+          "sentence": "s13",
+          "word": "dollar"
+        }
+      ]
+    },
+    {
+      "id": "sl3",
+      "kind": "slide",
+      "start": {
+        "sentence": "s14"
+      },
+      "slide": "equation",
+      "heading": "Market cap",
+      "data": {
+        "parts": [
+          {
+            "text": "Share price"
+          },
+          {
+            "op": "×"
+          },
+          {
+            "text": "Shares"
+          },
+          {
+            "op": "="
+          },
+          {
+            "text": "Market cap"
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s14"
+        },
+        {
+          "sentence": "s14",
+          "word": "price"
+        },
+        {
+          "sentence": "s14",
+          "word": "times"
+        },
+        {
+          "sentence": "s14",
+          "word": "number"
+        },
+        {
+          "sentence": "s14",
+          "word": "shares"
+        }
+      ]
+    },
+    {
+      "id": "sc3",
+      "kind": "scene",
+      "start": {
+        "sentence": "s15"
+      },
+      "scene": "city-skyline",
+      "framing": "wide",
+      "time": "dusk",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand2",
+          "track": [
+            {
+              "at": {
+                "sentence": "s15"
+              },
+              "pose": "talk",
+              "expression": "neutral"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "factory",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s15",
+            "word": "big"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "shop-mini",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s15",
+            "word": "not"
+          },
+          "on": "floor"
+        }
+      ]
+    },
+    {
+      "id": "sl4",
+      "kind": "slide",
+      "start": {
+        "sentence": "s16"
+      },
+      "slide": "timeline",
+      "heading": "Top 10 share of the S&P 500",
+      "kicker": "1995 and 2000 approx., read from chart",
+      "source": "Source: Apollo Chief Economist, Bloomberg (Jan 2026); ChartRow, S&P 500 fund SEC filings (Jun 2026)",
+      "data": {
+        "points": [
+          {
+            "when": "Mid-1990s",
+            "what": "≈ 19%"
+          },
+          {
+            "when": "2000",
+            "what": "≈ 27%"
+          },
+          {
+            "when": "Dec 2025",
+            "what": "40.7%, the record",
+            "tone": "champagne"
+          },
+          {
+            "when": "Jun 2026",
+            "what": "37.9%",
+            "tone": "champagne"
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s16"
+        },
+        {
+          "sentence": "s16",
+          "word": "fifth"
+        },
+        {
+          "sentence": "s17",
+          "word": "40"
+        },
+        {
+          "sentence": "s18",
+          "word": "June"
+        }
+      ]
+    },
+    {
+      "id": "sl5",
+      "kind": "slide",
+      "start": {
+        "sentence": "s19"
+      },
+      "slide": "bars",
+      "heading": "The 10 biggest slices",
+      "kicker": "% of the S&P 500, June 2026",
+      "source": "Source: ChartRow, S&P 500 fund SEC filings (Jun 2026)",
+      "data": {
+        "format": "pct",
+        "bars": [
+          {
+            "label": "NVIDIA",
+            "value": 7.52
+          },
+          {
+            "label": "Apple",
+            "value": 6.59
+          },
+          {
+            "label": "Alphabet",
+            "value": 5.84
+          },
+          {
+            "label": "Microsoft",
+            "value": 4.3
+          },
+          {
+            "label": "Amazon",
+            "value": 3.62
+          },
+          {
+            "label": "Broadcom",
+            "value": 2.77
+          },
+          {
+            "label": "Micron",
+            "value": 2.02
+          },
+          {
+            "label": "Meta",
+            "value": 1.92
+          },
+          {
+            "label": "Tesla",
+            "value": 1.84
+          },
+          {
+            "label": "Eli Lilly",
+            "value": 1.47
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s19"
+        },
+        {
+          "sentence": "s21",
+          "word": "Apple"
+        },
+        {
+          "sentence": "s21",
+          "word": "Alphabet"
+        },
+        {
+          "sentence": "s21",
+          "word": "Microsoft"
+        },
+        {
+          "sentence": "s22",
+          "word": "Amazon"
+        },
+        {
+          "sentence": "s22",
+          "word": "Broadcom"
+        },
+        {
+          "sentence": "s22",
+          "word": "Micron"
+        },
+        {
+          "sentence": "s22",
+          "word": "Meta"
+        },
+        {
+          "sentence": "s22",
+          "word": "Tesla"
+        },
+        {
+          "sentence": "s22",
+          "word": "Eli"
+        }
+      ]
+    },
+    {
+      "id": "v1b",
+      "kind": "vignette",
+      "start": {
+        "sentence": "s22a"
+      },
+      "vignette": "loop",
+      "heading": "Concentration feeds itself",
+      "data": {
+        "steps": [
+          "Price rises",
+          "Weight rises",
+          "New dollars flow in",
+          "They buy more of it"
+        ],
+        "label": "it feeds itself"
+      },
+      "at": [
+        {
+          "sentence": "s22a"
+        },
+        {
+          "sentence": "s22b"
+        },
+        {
+          "sentence": "s22c"
+        },
+        {
+          "sentence": "s22c",
+          "word": "buys"
+        }
+      ]
+    },
+    {
+      "id": "sc4",
+      "kind": "scene",
+      "start": {
+        "sentence": "s22d"
+      },
+      "scene": "chart-wall",
+      "framing": "wide",
+      "tone": "blue",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand2",
+          "track": [
+            {
+              "at": {
+                "sentence": "s22d"
+              },
+              "pose": "shrug",
+              "expression": "smug"
+            },
+            {
+              "at": {
+                "sentence": "s22e",
+                "word": "formula"
+              },
+              "pose": "hold",
+              "expression": "neutral"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "ai-chip",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s22d"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "calculator",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s22e",
+            "word": "formula"
+          },
+          "on": "hand",
+          "actor": 0
+        }
+      ]
+    },
+    {
+      "id": "sl6",
+      "kind": "slide",
+      "start": {
+        "sentence": "s23"
+      },
+      "slide": "equation",
+      "heading": "The maths almost nobody does",
+      "data": {
+        "parts": [
+          {
+            "text": "100%"
+          },
+          {
+            "op": "−"
+          },
+          {
+            "text": "37.9%"
+          },
+          {
+            "op": "="
+          },
+          {
+            "text": "62.1%"
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s23"
+        },
+        {
+          "sentence": "s24",
+          "word": "If"
+        },
+        {
+          "sentence": "s24",
+          "word": "37.9"
+        },
+        {
+          "sentence": "s24",
+          "word": "remaining"
+        },
+        {
+          "sentence": "s24",
+          "word": "62.1"
+        }
+      ]
+    },
+    {
+      "id": "sl7",
+      "kind": "slide",
+      "start": {
+        "sentence": "s25"
+      },
+      "slide": "compare",
+      "heading": "One slice vs the average slice",
+      "source": "Source: ChartRow, S&P 500 fund SEC filings (Jun 2026); CapitalCode calculation",
+      "data": {
+        "cards": [
+          {
+            "title": "Average of the other 490",
+            "value": "0.13%",
+            "lines": [
+              "62.1% ÷ 490",
+              "of your money each"
+            ]
+          },
+          {
+            "title": "NVIDIA alone",
+            "value": "7.52%",
+            "lines": [
+              "of your money"
+            ],
+            "tone": "champagne"
+          },
+          {
+            "title": "Difference",
+            "value": "≈ 59×",
+            "lines": [
+              "7.52 ÷ 0.127"
+            ],
+            "winner": true
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s25"
+        },
+        {
+          "sentence": "s26",
+          "word": "NVIDIA"
+        },
+        {
+          "sentence": "s26",
+          "word": "60"
+        }
+      ]
+    },
+    {
+      "id": "sc5",
+      "kind": "scene",
+      "start": {
+        "sentence": "s27"
+      },
+      "scene": "office",
+      "framing": "wide",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand",
+          "track": [
+            {
+              "at": {
+                "sentence": "s27"
+              },
+              "pose": "hold",
+              "expression": "neutral"
+            },
+            {
+              "at": {
+                "sentence": "s28",
+                "word": "practice"
+              },
+              "pose": "talk",
+              "expression": "thinking"
+            },
+            {
+              "at": {
+                "sentence": "s29"
+              },
+              "pose": "present",
+              "expression": "smug"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "contract",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s27",
+            "word": "paper"
+          },
+          "on": "hand",
+          "actor": 0
+        },
+        {
+          "id": "coin-stack",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s28",
+            "word": "ten"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "shield",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s29",
+            "word": "Diversification"
+          },
+          "on": "floor"
+        }
+      ],
+      "slam": {
+        "words": [
+          {
+            "text": "HOW MANY"
+          },
+          {
+            "text": "BETS?",
+            "tone": "champagne"
+          }
+        ],
+        "at": [
+          {
+            "sentence": "s30",
+            "word": "many"
+          },
+          {
+            "sentence": "s30",
+            "word": "bets"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ch2",
+      "kind": "chapter",
+      "start": {
+        "sentence": "s31"
+      },
+      "n": 2,
+      "title": "The price of the bet"
+    },
+    {
+      "id": "sc6",
+      "kind": "scene",
+      "start": {
+        "sentence": "s31",
+        "word": "if"
+      },
+      "scene": "trading-desk",
+      "framing": "wide",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand",
+          "track": [
+            {
+              "at": {
+                "sentence": "s31",
+                "word": "if"
+              },
+              "pose": "talk",
+              "expression": "neutral"
+            },
+            {
+              "at": {
+                "sentence": "s32"
+              },
+              "pose": "hold",
+              "expression": "thinking"
+            },
+            {
+              "at": {
+                "sentence": "s33"
+              },
+              "pose": "present",
+              "expression": "neutral"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "coin-stack",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s31",
+            "word": "earn"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "price-tag",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s32",
+            "word": "paying"
+          },
+          "on": "hand",
+          "actor": 0
+        },
+        {
+          "id": "calculator",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s33",
+            "word": "calculation"
+          },
+          "on": "floor"
+        }
+      ]
+    },
+    {
+      "id": "v2",
+      "kind": "vignette",
+      "start": {
+        "sentence": "s34"
+      },
+      "vignette": "scale",
+      "heading": "What you pay for vs what you get",
+      "kicker": "Top 10, end of 2025 · approx., read from chart",
+      "source": "Source: Apollo Chief Economist, Bloomberg (Jan 2026)",
+      "data": {
+        "left": {
+          "label": "Share of index value",
+          "value": 40
+        },
+        "right": {
+          "label": "Share of profits",
+          "value": 27
+        }
+      },
+      "at": [
+        {
+          "sentence": "s34"
+        },
+        {
+          "sentence": "s34",
+          "word": "40"
+        },
+        {
+          "sentence": "s35",
+          "word": "27"
+        }
+      ]
+    },
+    {
+      "id": "sc7",
+      "kind": "scene",
+      "start": {
+        "sentence": "s36"
+      },
+      "scene": "ai-brain",
+      "framing": "wide",
+      "tone": "blue",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand2",
+          "track": [
+            {
+              "at": {
+                "sentence": "s36"
+              },
+              "pose": "hold",
+              "expression": "neutral"
+            },
+            {
+              "at": {
+                "sentence": "s37",
+                "word": "future"
+              },
+              "pose": "present",
+              "expression": "neutral"
+            },
+            {
+              "at": {
+                "sentence": "s38",
+                "word": "faster"
+              },
+              "pose": "point",
+              "expression": "smiling"
+            },
+            {
+              "at": {
+                "sentence": "s39"
+              },
+              "pose": "think",
+              "expression": "thinking"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "price-tag",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s36",
+            "word": "paying"
+          },
+          "on": "hand",
+          "actor": 0
+        },
+        {
+          "id": "arrow-up",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s37"
+          }
+        },
+        {
+          "id": "chart-board",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s38",
+            "word": "faster"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "coin-stack",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s39",
+            "word": "valuations"
+          },
+          "on": "floor"
+        }
+      ]
+    },
+    {
+      "id": "sl8",
+      "kind": "slide",
+      "start": {
+        "sentence": "s40"
+      },
+      "slide": "compare",
+      "heading": "Price per $1 of expected profit",
+      "kicker": "12-month forward P/E, Dec 2025",
+      "source": "Source: Apollo Chief Economist, Bloomberg (Jan 2026)",
+      "data": {
+        "cards": [
+          {
+            "title": "Top 10",
+            "value": "28×",
+            "lines": [
+              "next year’s earnings"
+            ],
+            "tone": "champagne"
+          },
+          {
+            "title": "Rest of the index",
+            "value": "19.5×",
+            "lines": [
+              "next year’s earnings"
+            ]
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s40"
+        },
+        {
+          "sentence": "s40",
+          "word": "19.5"
+        }
+      ]
+    },
+    {
+      "id": "sl9",
+      "kind": "slide",
+      "start": {
+        "sentence": "s40b"
+      },
+      "slide": "equation",
+      "heading": "What 28× means in plain money",
+      "data": {
+        "parts": [
+          {
+            "text": "$28 price"
+          },
+          {
+            "op": "÷"
+          },
+          {
+            "text": "$1 a year"
+          },
+          {
+            "op": "="
+          },
+          {
+            "text": "28 years"
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s40b"
+        },
+        {
+          "sentence": "s40b",
+          "word": "every"
+        },
+        {
+          "sentence": "s40b",
+          "word": "1"
+        },
+        {
+          "sentence": "s40c",
+          "word": "take"
+        },
+        {
+          "sentence": "s40c",
+          "word": "28"
+        }
+      ]
+    },
+    {
+      "id": "sc8",
+      "kind": "scene",
+      "start": {
+        "sentence": "s40d"
+      },
+      "scene": "gold-vault",
+      "framing": "wide",
+      "tone": "gold",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand",
+          "track": [
+            {
+              "at": {
+                "sentence": "s40d"
+              },
+              "pose": "think",
+              "expression": "thinking"
+            },
+            {
+              "at": {
+                "sentence": "s40d",
+                "word": "climbing"
+              },
+              "pose": "point",
+              "expression": "smiling"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "money-bag",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s40d"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "chart-board",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s40d",
+            "word": "climbing"
+          },
+          "on": "floor"
+        }
+      ]
+    },
+    {
+      "id": "sl10",
+      "kind": "slide",
+      "start": {
+        "sentence": "s41"
+      },
+      "slide": "number",
+      "heading": "The premium on the giants",
+      "source": "CapitalCode calculation: 28 ÷ 19.5",
+      "data": {
+        "value": 44,
+        "label": "more paid per $1 of future profit",
+        "format": "pct",
+        "tone": "red"
+      },
+      "at": [
+        {
+          "sentence": "s41"
+        },
+        {
+          "sentence": "s41",
+          "word": "giants"
+        }
+      ]
+    },
+    {
+      "id": "sc9",
+      "kind": "scene",
+      "start": {
+        "sentence": "s42"
+      },
+      "scene": "bull-bear",
+      "framing": "wide",
+      "tone": "green",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand",
+          "track": [
+            {
+              "at": {
+                "sentence": "s42"
+              },
+              "pose": "celebrate",
+              "expression": "smiling"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "trophy",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s42"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "money-bag",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s42",
+            "word": "paid"
+          },
+          "on": "floor"
+        }
+      ]
+    },
+    {
+      "id": "sl10b",
+      "kind": "slide",
+      "start": {
+        "sentence": "s43"
+      },
+      "slide": "number",
+      "heading": "Who delivered the gains",
+      "kicker": "S&P 500, since 1 Jan 2021",
+      "source": "Source: Apollo Chief Economist, Bloomberg (Jan 2026)",
+      "data": {
+        "value": 55,
+        "label": "of the gain came from the top 10",
+        "format": "pct",
+        "tone": "green"
+      },
+      "at": [
+        {
+          "sentence": "s43"
+        },
+        {
+          "sentence": "s43",
+          "word": "gain"
+        }
+      ]
+    },
+    {
+      "id": "sc10",
+      "kind": "scene",
+      "start": {
+        "sentence": "s44"
+      },
+      "scene": "boardroom",
+      "framing": "wide",
+      "time": "dusk",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand",
+          "track": [
+            {
+              "at": {
+                "sentence": "s44"
+              },
+              "pose": "present",
+              "expression": "neutral"
+            },
+            {
+              "at": {
+                "sentence": "s45"
+              },
+              "pose": "armsCrossed",
+              "expression": "worried"
+            },
+            {
+              "at": {
+                "sentence": "s46",
+                "word": "advance"
+              },
+              "pose": "hold",
+              "expression": "neutral"
+            },
+            {
+              "at": {
+                "sentence": "s47",
+                "word": "history"
+              },
+              "pose": "think",
+              "expression": "thinking"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "coin-stack",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s44",
+            "word": "profits"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "price-tag",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s45",
+            "word": "disappointment"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "money-bag",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s46",
+            "word": "advance"
+          },
+          "on": "hand",
+          "actor": 0
+        },
+        {
+          "id": "newspaper",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s47",
+            "word": "history"
+          },
+          "on": "floor"
+        }
+      ]
+    },
+    {
+      "id": "ch3",
+      "kind": "chapter",
+      "start": {
+        "sentence": "s48"
+      },
+      "n": 3,
+      "title": "We have been here before"
+    },
+    {
+      "id": "v3",
+      "kind": "vignette",
+      "start": {
+        "sentence": "s49"
+      },
+      "vignette": "bubble",
+      "heading": "The year 2000",
+      "kicker": "Top 10 ≈ 27% · approx., read from chart",
+      "source": "Source: Apollo Chief Economist, Bloomberg (Jan 2026)",
+      "data": {
+        "label": "Dot-com",
+        "value": "≈ 27%",
+        "items": [
+          "GE",
+          "Cisco",
+          "Intel"
+        ],
+        "pop": false
+      },
+      "at": [
+        {
+          "sentence": "s49"
+        },
+        {
+          "sentence": "s50",
+          "word": "safe"
+        }
+      ]
+    },
+    {
+      "id": "sc11",
+      "kind": "scene",
+      "start": {
+        "sentence": "s51"
+      },
+      "scene": "city-skyline",
+      "framing": "wide",
+      "time": "dusk",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand2",
+          "track": [
+            {
+              "at": {
+                "sentence": "s51"
+              },
+              "pose": "hold",
+              "expression": "neutral"
+            },
+            {
+              "at": {
+                "sentence": "s52",
+                "word": "real"
+              },
+              "pose": "present",
+              "expression": "smug"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "newspaper",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s51",
+            "word": "fake"
+          },
+          "on": "hand",
+          "actor": 0
+        },
+        {
+          "id": "factory",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s52",
+            "word": "General"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "phone",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s52",
+            "word": "Cisco"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "bank",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s52",
+            "word": "Citigroup"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "shop-mini",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s52",
+            "word": "Walmart"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "laptop",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s52",
+            "word": "Intel"
+          },
+          "on": "floor"
+        }
+      ]
+    },
+    {
+      "id": "sl11",
+      "kind": "slide",
+      "start": {
+        "sentence": "s53"
+      },
+      "slide": "compare",
+      "heading": "The year 2000",
+      "kicker": "12-month forward P/E",
+      "source": "Source: Apollo Chief Economist, Bloomberg (Jan 2026)",
+      "data": {
+        "cards": [
+          {
+            "title": "Top 10",
+            "value": "23.6×",
+            "lines": [
+              "expected earnings"
+            ],
+            "tone": "champagne"
+          },
+          {
+            "title": "Rest of the market",
+            "value": "16×",
+            "lines": [
+              "expected earnings"
+            ]
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s53"
+        },
+        {
+          "sentence": "s53",
+          "word": "16"
+        }
+      ]
+    },
+    {
+      "id": "v4",
+      "kind": "vignette",
+      "start": {
+        "sentence": "s55"
+      },
+      "vignette": "scale",
+      "heading": "Five years later: 2005",
+      "kicker": "12-month forward P/E",
+      "source": "Source: Apollo Chief Economist, Bloomberg (Jan 2026)",
+      "data": {
+        "left": {
+          "label": "Top 10",
+          "value": 11.5
+        },
+        "right": {
+          "label": "Rest of the market",
+          "value": 16
+        },
+        "unit": "×"
+      },
+      "at": [
+        {
+          "sentence": "s55"
+        },
+        {
+          "sentence": "s55",
+          "word": "11.5"
+        },
+        {
+          "sentence": "s57",
+          "word": "flipped"
+        }
+      ]
+    },
+    {
+      "id": "sc12",
+      "kind": "scene",
+      "start": {
+        "sentence": "s57a"
+      },
+      "scene": "living-room",
+      "framing": "wide",
+      "time": "rain",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "sit",
+          "track": [
+            {
+              "at": {
+                "sentence": "s57a"
+              },
+              "pose": "sit",
+              "expression": "thinking"
+            },
+            {
+              "at": {
+                "sentence": "s57c",
+                "word": "fell"
+              },
+              "pose": "sit",
+              "expression": "worried"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "phone",
+          "anchor": "sit",
+          "at": {
+            "sentence": "s57a",
+            "word": "bought"
+          },
+          "on": "hand",
+          "actor": 0
+        },
+        {
+          "id": "trophy",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s57b",
+            "word": "safest-looking"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "arrow-down",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s57c",
+            "word": "fell"
+          }
+        }
+      ]
+    },
+    {
+      "id": "v5",
+      "kind": "vignette",
+      "start": {
+        "sentence": "s58"
+      },
+      "vignette": "leaderboard",
+      "heading": "The top companies, 2000 → 2026",
+      "source": "Benzinga / Goldman Sachs data; ChartRow (Jun 2026)",
+      "data": {
+        "fromLabel": "2000",
+        "toLabel": "2026",
+        "before": [
+          "General Electric",
+          "Exxon Mobil",
+          "Pfizer",
+          "Cisco",
+          "Citigroup",
+          "Walmart",
+          "Microsoft",
+          "AIG",
+          "Merck",
+          "Intel"
+        ],
+        "after": [
+          "NVIDIA",
+          "Apple",
+          "Alphabet",
+          "Microsoft",
+          "Amazon",
+          "Broadcom",
+          "Micron",
+          "Meta",
+          "Tesla",
+          "Eli Lilly"
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s58"
+        },
+        {
+          "sentence": "s59",
+          "word": "Microsoft"
+        }
+      ]
+    },
+    {
+      "id": "sc13",
+      "kind": "scene",
+      "start": {
+        "sentence": "s61"
+      },
+      "scene": "shop-street",
+      "framing": "wide",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand",
+          "track": [
+            {
+              "at": {
+                "sentence": "s61"
+              },
+              "pose": "think",
+              "expression": "thinking"
+            },
+            {
+              "at": {
+                "sentence": "s62",
+                "word": "price"
+              },
+              "pose": "point",
+              "expression": "smug"
+            },
+            {
+              "at": {
+                "sentence": "s63",
+                "word": "years"
+              },
+              "pose": "hold",
+              "expression": "worried"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "newspaper",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s61",
+            "word": "lesson"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "price-tag",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s63",
+            "word": "price"
+          },
+          "on": "hand",
+          "actor": 0
+        }
+      ],
+      "slam": {
+        "words": [
+          {
+            "text": "GREAT COMPANY"
+          },
+          {
+            "text": "≠ GREAT PRICE",
+            "tone": "champagne"
+          }
+        ],
+        "at": [
+          {
+            "sentence": "s62",
+            "word": "company"
+          },
+          {
+            "sentence": "s62",
+            "word": "different"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ch4",
+      "kind": "chapter",
+      "start": {
+        "sentence": "s64"
+      },
+      "n": 4,
+      "title": "Why index funds still work"
+    },
+    {
+      "id": "sc14",
+      "kind": "scene",
+      "start": {
+        "sentence": "s65"
+      },
+      "scene": "ai-lab",
+      "framing": "wide",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand",
+          "track": [
+            {
+              "at": {
+                "sentence": "s65"
+              },
+              "pose": "hold",
+              "expression": "neutral"
+            },
+            {
+              "at": {
+                "sentence": "s66",
+                "word": "studied"
+              },
+              "pose": "present",
+              "expression": "thinking"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "contract",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s65",
+            "word": "evidence"
+          },
+          "on": "hand",
+          "actor": 0
+        },
+        {
+          "id": "chart-board",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s66",
+            "word": "studied"
+          },
+          "on": "floor"
+        }
+      ]
+    },
+    {
+      "id": "sl12",
+      "kind": "slide",
+      "start": {
+        "sentence": "s67"
+      },
+      "slide": "number",
+      "heading": "Where all the gains came from",
+      "kicker": "US stocks, 1926–2016",
+      "source": "Source: H. Bessembinder, Journal of Financial Economics (2018)",
+      "data": {
+        "value": 4,
+        "label": "of companies explain the entire net gain",
+        "format": "pct",
+        "tone": "green"
+      },
+      "at": [
+        {
+          "sentence": "s67"
+        },
+        {
+          "sentence": "s67",
+          "word": "entire"
+        }
+      ]
+    },
+    {
+      "id": "sl12b",
+      "kind": "slide",
+      "start": {
+        "sentence": "s68"
+      },
+      "slide": "number",
+      "heading": "Most stocks lose to cash",
+      "kicker": "About 4 in 7 US stocks, 1926–2016",
+      "source": "Source: H. Bessembinder, Journal of Financial Economics (2018)",
+      "data": {
+        "value": 57,
+        "label": "did worse than T-bills over their lifetime",
+        "format": "pct",
+        "tone": "red"
+      },
+      "at": [
+        {
+          "sentence": "s68"
+        },
+        {
+          "sentence": "s68",
+          "word": "bills"
+        }
+      ]
+    },
+    {
+      "id": "v6",
+      "kind": "vignette",
+      "start": {
+        "sentence": "s68a"
+      },
+      "vignette": "lottery",
+      "heading": "More like a lottery than a race",
+      "kicker": "Illustrative",
+      "data": {
+        "tickets": 48,
+        "winners": 2,
+        "label": "a few winners pay for everything"
+      },
+      "at": [
+        {
+          "sentence": "s68a"
+        },
+        {
+          "sentence": "s68a",
+          "word": "lottery"
+        },
+        {
+          "sentence": "s68b",
+          "word": "win"
+        }
+      ]
+    },
+    {
+      "id": "sl13",
+      "kind": "slide",
+      "start": {
+        "sentence": "s69"
+      },
+      "slide": "flow",
+      "heading": "Why index funds work",
+      "data": {
+        "nodes": [
+          {
+            "title": "Nobody knows the winners",
+            "sub": "in advance"
+          },
+          {
+            "title": "So you own them all",
+            "sub": "every company"
+          },
+          {
+            "title": "Winners pay for losers",
+            "sub": "the few carry the many",
+            "tone": "green"
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s69"
+        },
+        {
+          "sentence": "s70"
+        },
+        {
+          "sentence": "s70",
+          "word": "winners"
+        }
+      ]
+    },
+    {
+      "id": "sc15",
+      "kind": "scene",
+      "start": {
+        "sentence": "s71"
+      },
+      "scene": "vault-room",
+      "framing": "wide",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand2",
+          "track": [
+            {
+              "at": {
+                "sentence": "s71"
+              },
+              "pose": "armsCrossed",
+              "expression": "neutral"
+            },
+            {
+              "at": {
+                "sentence": "s72",
+                "word": "winners"
+              },
+              "pose": "hold",
+              "expression": "smiling"
+            },
+            {
+              "at": {
+                "sentence": "s73",
+                "word": "priced"
+              },
+              "pose": "point",
+              "expression": "worried"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "trophy",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s71",
+            "word": "won"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "gold-bar",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s72",
+            "word": "winners"
+          },
+          "on": "hand",
+          "actor": 0
+        },
+        {
+          "id": "price-tag",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s73",
+            "word": "priced"
+          },
+          "on": "floor"
+        }
+      ]
+    },
+    {
+      "id": "ch5",
+      "kind": "chapter",
+      "start": {
+        "sentence": "s74"
+      },
+      "n": 5,
+      "title": "How to think about your bet"
+    },
+    {
+      "id": "v7",
+      "kind": "vignette",
+      "start": {
+        "sentence": "s75"
+      },
+      "vignette": "baskets",
+      "heading": "Three funds, one bet?",
+      "kicker": "Illustrative · check your own funds",
+      "data": {
+        "baskets": [
+          "S&P 500 fund",
+          "Tech fund",
+          "Growth fund"
+        ],
+        "items": [
+          "NVIDIA",
+          "Apple",
+          "Microsoft"
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s75"
+        },
+        {
+          "sentence": "s76",
+          "word": "500"
+        },
+        {
+          "sentence": "s76",
+          "word": "tech"
+        },
+        {
+          "sentence": "s76",
+          "word": "growth"
+        }
+      ]
+    },
+    {
+      "id": "sc16",
+      "kind": "scene",
+      "start": {
+        "sentence": "s77"
+      },
+      "scene": "office",
+      "framing": "wide",
+      "time": "dusk",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand",
+          "track": [
+            {
+              "at": {
+                "sentence": "s77"
+              },
+              "pose": "hold",
+              "expression": "thinking"
+            },
+            {
+              "at": {
+                "sentence": "s77",
+                "word": "surprised"
+              },
+              "pose": "shrug",
+              "expression": "shocked"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "calculator",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s77",
+            "word": "Add"
+          },
+          "on": "hand",
+          "actor": 0
+        }
+      ]
+    },
+    {
+      "id": "sl14",
+      "kind": "slide",
+      "start": {
+        "sentence": "s77a"
+      },
+      "slide": "flow",
+      "heading": "Step 1: find your real bet",
+      "data": {
+        "nodes": [
+          {
+            "title": "Open each fund’s top holdings",
+            "sub": "one page, every fund"
+          },
+          {
+            "title": "List the 10 biggest names",
+            "sub": "in every fund you own"
+          },
+          {
+            "title": "Count the repeats",
+            "sub": "same giants, many funds",
+            "tone": "champagne"
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s77a"
+        },
+        {
+          "sentence": "s77a",
+          "word": "single"
+        },
+        {
+          "sentence": "s77b",
+          "word": "names"
+        }
+      ]
+    },
+    {
+      "id": "sc17",
+      "kind": "scene",
+      "start": {
+        "sentence": "s78"
+      },
+      "scene": "savings-jars",
+      "framing": "wide",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand",
+          "track": [
+            {
+              "at": {
+                "sentence": "s78"
+              },
+              "pose": "think",
+              "expression": "thinking"
+            },
+            {
+              "at": {
+                "sentence": "s79",
+                "word": "Someone"
+              },
+              "pose": "pockets",
+              "expression": "smiling"
+            }
+          ]
+        },
+        {
+          "who": "owner",
+          "anchor": "stand2",
+          "track": [
+            {
+              "at": {
+                "sentence": "s78"
+              },
+              "pose": "idle",
+              "expression": "neutral"
+            },
+            {
+              "at": {
+                "sentence": "s79",
+                "word": "five"
+              },
+              "pose": "hold",
+              "expression": "worried"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "piggy-bank",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s78"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "coin-stack",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s79",
+            "word": "30"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "wallet",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s79",
+            "word": "five"
+          },
+          "on": "hand",
+          "actor": 1
+        },
+        {
+          "id": "arrow-down",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s79a"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sl15",
+      "kind": "slide",
+      "start": {
+        "sentence": "s80"
+      },
+      "slide": "compare",
+      "heading": "Same index, different bet",
+      "kicker": "Share held by the top 10",
+      "source": "ChartRow: S&P 500 and S&P 500 Equal Weight (2026); CapitalCode calculation",
+      "data": {
+        "cards": [
+          {
+            "title": "Regular S&P 500",
+            "value": "37.9%",
+            "lines": [
+              "in its top 10",
+              "weighted by size"
+            ],
+            "tone": "champagne"
+          },
+          {
+            "title": "Equal-weight version",
+            "value": "0.2% each",
+            "lines": [
+              "100% ÷ 500 companies"
+            ]
+          },
+          {
+            "title": "Its top 10",
+            "value": "≈ 3%",
+            "lines": [
+              "of the fund"
+            ],
+            "winner": true
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s80"
+        },
+        {
+          "sentence": "s81",
+          "word": "equal-weight"
+        },
+        {
+          "sentence": "s81",
+          "word": "3"
+        }
+      ]
+    },
+    {
+      "id": "sc18",
+      "kind": "scene",
+      "start": {
+        "sentence": "s82"
+      },
+      "scene": "meeting-room",
+      "framing": "wide",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand",
+          "track": [
+            {
+              "at": {
+                "sentence": "s82"
+              },
+              "pose": "talk",
+              "expression": "neutral"
+            },
+            {
+              "at": {
+                "sentence": "s83",
+                "word": "right"
+              },
+              "pose": "handshake",
+              "expression": "smiling"
+            },
+            {
+              "at": {
+                "sentence": "s84",
+                "word": "deserve"
+              },
+              "pose": "present",
+              "expression": "smiling"
+            },
+            {
+              "at": {
+                "sentence": "s84a",
+                "word": "worst"
+              },
+              "pose": "armsCrossed",
+              "expression": "thinking"
+            }
+          ]
+        },
+        {
+          "who": "investor",
+          "anchor": "stand2",
+          "track": [
+            {
+              "at": {
+                "sentence": "s82"
+              },
+              "pose": "think",
+              "expression": "thinking"
+            },
+            {
+              "at": {
+                "sentence": "s83",
+                "word": "right"
+              },
+              "pose": "handshake",
+              "expression": "smiling"
+            },
+            {
+              "at": {
+                "sentence": "s84b",
+                "word": "later"
+              },
+              "pose": "shrug",
+              "expression": "worried"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "receipt",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s82",
+            "word": "costs"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "briefcase",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s83",
+            "word": "choices"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "contract",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s84",
+            "word": "know"
+          },
+          "on": "hand",
+          "actor": 0
+        },
+        {
+          "id": "arrow-down",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s84a",
+            "word": "worst"
+          }
+        },
+        {
+          "id": "newspaper",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s84b",
+            "word": "later"
+          },
+          "on": "floor"
+        }
+      ]
+    },
+    {
+      "id": "ch6",
+      "kind": "chapter",
+      "start": {
+        "sentence": "s85"
+      },
+      "n": 6,
+      "title": "So, is it diversified?"
+    },
+    {
+      "id": "sl16",
+      "kind": "slide",
+      "start": {
+        "sentence": "s86"
+      },
+      "slide": "slam",
+      "heading": "So, is it diversified?",
+      "data": {
+        "words": [
+          {
+            "text": "COMPANIES: YES",
+            "tone": "green"
+          },
+          {
+            "text": "MONEY: FAR LESS",
+            "tone": "red"
+          }
+        ]
+      },
+      "at": [
+        {
+          "sentence": "s86"
+        },
+        {
+          "sentence": "s87",
+          "word": "less"
+        }
+      ]
+    },
+    {
+      "id": "sl17",
+      "kind": "slide",
+      "start": {
+        "sentence": "s88"
+      },
+      "slide": "number",
+      "heading": "Where your money really goes",
+      "source": "Source: ChartRow, S&P 500 fund SEC filings (Jun 2026)",
+      "data": {
+        "value": 37.9,
+        "label": "of every dollar rides on just 10 companies",
+        "format": "cents",
+        "tone": "champagne"
+      },
+      "at": [
+        {
+          "sentence": "s88"
+        },
+        {
+          "sentence": "s88",
+          "word": "future"
+        }
+      ]
+    },
+    {
+      "id": "sc19",
+      "kind": "scene",
+      "start": {
+        "sentence": "s89"
+      },
+      "scene": "wall-street",
+      "framing": "wide",
+      "time": "dusk",
+      "tone": "gold",
+      "actors": [
+        {
+          "who": "hero",
+          "anchor": "stand",
+          "track": [
+            {
+              "at": {
+                "sentence": "s89"
+              },
+              "pose": "present",
+              "expression": "smiling"
+            },
+            {
+              "at": {
+                "sentence": "s90",
+                "word": "purpose"
+              },
+              "pose": "hold",
+              "expression": "smug"
+            },
+            {
+              "at": {
+                "sentence": "s91"
+              },
+              "pose": "idle",
+              "expression": "smiling"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "id": "gold-bar",
+          "anchor": "prop1",
+          "at": {
+            "sentence": "s89",
+            "word": "great"
+          },
+          "on": "floor"
+        },
+        {
+          "id": "contract",
+          "anchor": "stand",
+          "at": {
+            "sentence": "s90",
+            "word": "purpose"
+          },
+          "on": "hand",
+          "actor": 0
+        },
+        {
+          "id": "chart-board",
+          "anchor": "prop2",
+          "at": {
+            "sentence": "s91",
+            "word": "money"
+          },
+          "on": "floor"
+        }
+      ]
+    }
+  ],
+  "sfx": [
+    {
+      "at": {
+        "sentence": "s1",
+        "word": "100"
+      },
+      "name": "cash"
+    },
+    {
+      "at": {
+        "sentence": "s3",
+        "word": "38"
+      },
+      "name": "impact"
+    },
+    {
+      "at": {
+        "sentence": "s26",
+        "word": "60"
+      },
+      "name": "ding"
+    },
+    {
+      "at": {
+        "sentence": "s43",
+        "word": "55"
+      },
+      "name": "pop"
+    },
+    {
+      "at": {
+        "sentence": "s57",
+        "word": "flipped"
+      },
+      "name": "thud"
+    },
+    {
+      "at": {
+        "sentence": "s67",
+        "word": "4"
+      },
+      "name": "ding"
+    },
+    {
+      "at": {
+        "sentence": "s73",
+        "word": "priced"
+      },
+      "name": "thud"
+    },
+    {
+      "at": {
+        "sentence": "s88",
+        "word": "38"
+      },
+      "name": "impact"
+    }
+  ]
+}

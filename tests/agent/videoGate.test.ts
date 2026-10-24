@@ -88,3 +88,19 @@ test('changeEvery measures seconds between visual changes', () => {
   expect(s).toBeGreaterThan(0.8)
   expect(s).toBeLessThan(4)
 }, 120_000)
+
+// # Living film (spec §7): something new at least every 1.5 s, measured on the render — refused above that
+test('gateVideo refuses a video whose picture changes less often than every maxChangeEvery seconds', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ccqa-'))
+  const file = clip(dir)
+  const r = gateVideo(file, { expectSeconds: 4, cuts: [75], lufs: [-60, 0], maxChangeEvery: 0.5 })
+  expect(r.problems.join('\n')).toMatch(/a new visual every [\d.]+ s \(max 0\.5 s\)/)
+}, 120_000)
+
+test('camera moves, hand-overs and kinetic text are planned motion too', async () => {
+  const { plannedMotion } = await import('../../agent/gates/video')
+  const tl = { fps: 30, durationInFrames: 600, sfx: [], shots: [
+    { from: 0, to: 600, shot: { kind: 'scene', scene: 'shop-street', camera: [{ at: 40, to: 'door' }], text: [{ words: 'x', at: 90, style: 'pop' }], props: [{ id: 'coin', anchor: 'prop1', at: 10, give: { at: 120, to: 1 } }] } },
+  ] }
+  expect(plannedMotion(tl as any)).toEqual(expect.arrayContaining([40, 90, 120]))
+})

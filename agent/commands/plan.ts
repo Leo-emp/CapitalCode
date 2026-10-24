@@ -14,8 +14,9 @@ export const readHistory = (file = HISTORY_FILE): History => (existsSync(file) ?
 
 // # Shorts run faster and carry fewer slides than long videos
 export const PACE = {
-  long: { slideShare: [0.35, 0.65] as [number, number], median: [6, 14] as [number, number], maxShot: 30, minShot: 1 },
-  short: { slideShare: [0, 0.7] as [number, number], median: [1.5, 5] as [number, number], maxShot: 8, minShot: 0.8, maxSlams: 1, brandBy: Infinity },
+// # living film (spec §7, §12.6): something shown every ≤ 2 s, every sentence shown, text ≤ 25% (Shorts ≤ 35%)
+  long: { slideShare: [0, 1] as [number, number], median: [6, 14] as [number, number], maxShot: 30, minShot: 1, maxGap: 2, maxBare: 0, maxText: 0.25 },
+  short: { slideShare: [0, 1] as [number, number], median: [1.5, 5] as [number, number], maxShot: 8, minShot: 0.8, maxSlams: 1, brandBy: Infinity, maxGap: 2, maxBare: 0, maxText: 0.35 },
 }
 
 register('gate-plan', 'gate-plan <job>  — check plan.json, write timeline.json', (a) => {

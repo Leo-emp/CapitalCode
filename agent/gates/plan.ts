@@ -27,7 +27,14 @@ export type PlanGateOpts = {
   firstVisual?: number; maxSlams?: number; brandBy?: number
   // # "show what is said": share of sentences allowed without their own illustration, longest gap (s)
   maxBare?: number; maxGap?: number
+  // # living film (spec §12.6): most of the runtime is pictures — text (slides, slams, kinetic text) at most this share
+  maxText?: number
 }
+
+// # Seconds of on-screen text one scene slam / one kinetic text counts for in the text share
+export const SLAM_TEXT_S = 2, KINETIC_TEXT_S = 1.5
+// # Poses that are talk, not an action — a key to one of these does not show anything (spec §12.1)
+const TALK_POSES = ['idle', 'talk', 'present']
 
 // # Icons that decorate but do not SHOW anything the voice says — never count as illustration
 export const GENERIC_ICONS = ['question', 'exclamation', 'tick', 'cross', 'warning', 'magnifier', 'clock', 'calendar']
@@ -169,6 +176,9 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
     medianShot: valid ? median(lens) : NaN,
     scenes: [...new Set(plan.shots.flatMap((s) => (s.kind === 'scene' ? [s.scene] : [])))],
     slides: [...new Set(plan.shots.flatMap((s) => (s.kind === 'slide' ? [s.slide] : [])))],
+    // # text on screen: slides + scene slams + kinetic texts, as a share of the runtime
+    textShare: valid ? plan.shots.reduce((a, s, i) => a + (s.kind === 'slide' ? lens[i]
+      : s.kind === 'scene' ? (s.slam ? SLAM_TEXT_S : 0) + (s.text?.length ?? 0) * KINETIC_TEXT_S : 0), 0) / o.duration : NaN,
   }
   if (valid) {
     lens.forEach((l, i) => {
@@ -176,6 +186,7 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
       if (l < (o.minShot ?? 1)) problems.push(`${plan.shots[i].id}: shot is ${l.toFixed(2)} s (min ${o.minShot ?? 1})`)
     })
     if (stats.slideShare < shareMin || stats.slideShare > shareMax) problems.push(`slide share ${(stats.slideShare * 100).toFixed(0)}% (want ${shareMin * 100}–${shareMax * 100}%)`)
+    if (o.maxText !== undefined && stats.textShare > o.maxText) problems.push(`text ${Math.round(stats.textShare * 100)}% of runtime (max ${Math.round(o.maxText * 100)}%) — show it with a scene, vignette or metaphor instead of a slide`)
     if (stats.medianShot < medMin || stats.medianShot > medMax) problems.push(`median shot ${stats.medianShot.toFixed(1)} s (want ${medMin}–${medMax} s)`)
   }
   // # a slide shows its first item within `firstVisual` s of the cut (no heading-only seconds)
@@ -194,8 +205,19 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
     plan.shots.forEach((s, i) => {
       if (s.kind === 'slide' || s.kind === 'vignette') events.push(...(s.at ?? []))
       if (s.kind === 'scene') {
-        for (const p of s.props ?? []) if (!GENERIC_ICONS.includes(p.id)) events.push(p.at)
+        for (const p of s.props ?? []) {
+          if (!GENERIC_ICONS.includes(p.id)) events.push(p.at)
+          if (p.give) events.push(p.give.at) // # handing it over is an action
+        }
         if (s.slam) events.push(...s.slam.at)
+        // # living film (spec §12.1): the camera going to a named spot, a walk, an action pose or a change of
+        // # feeling, kinetic text — all show the line; talk poses and the engine's drift/follow/idle do not
+        for (const c of s.camera ?? []) events.push(c.at)
+        for (const a of s.actors ?? []) {
+          for (const leg of a.path ?? []) events.push(leg.at)
+          a.track.slice(1).forEach((k) => { if (k.expression || !TALK_POSES.includes(k.pose)) events.push(k.at) })
+        }
+        for (const k of s.text ?? []) events.push(k.at)
       }
       if ((s.kind === 'chapter' || s.kind === 'brand') && Number.isFinite(starts[i])) marks.push(starts[i])
       // # a chapter card's title is the visual for the sentence it opens on

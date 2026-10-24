@@ -49,7 +49,7 @@ export const brightness = (file: string): number => {
   return +(ys.reduce((a, b) => a + b, 0) / ys.length / 255 * 100).toFixed(1)
 }
 
-export const gateVideo = (file: string, o: { expectSeconds: number; cuts: number[]; lufs?: [number, number]; peakMax?: number; brightness?: [number, number] }): VideoGate => {
+export const gateVideo = (file: string, o: { expectSeconds: number; cuts: number[]; lufs?: [number, number]; peakMax?: number; brightness?: [number, number]; maxChangeEvery?: number }): VideoGate => {
   const problems: string[] = []
   const seconds = duration(file)
   if (Math.abs(seconds - o.expectSeconds) > 0.5) problems.push(`duration ${seconds.toFixed(1)} s, expected ${o.expectSeconds.toFixed(1)} s`)
@@ -60,7 +60,10 @@ export const gateVideo = (file: string, o: { expectSeconds: number; cuts: number
   const flags = findFlicker(frameDiffs(file), o.cuts)
   const b = brightness(file)
   if (o.brightness && (b < o.brightness[0] || b > o.brightness[1])) problems.push(`brightness ${b}% (want ${o.brightness[0]}–${o.brightness[1]}%)`)
-  return { ok: problems.length === 0, problems, flags, stats: { seconds: +seconds.toFixed(2), lufs: l.lufs, peak: l.peak, brightness: b, changeEvery: changeEvery(file) } } // # reported; target ≈ 1 s (owner r20)
+  // # living film (spec §7): something new on screen at least every maxChangeEvery seconds (reference: 0.8 s)
+  const ce = changeEvery(file)
+  if (o.maxChangeEvery !== undefined && ce > o.maxChangeEvery) problems.push(`a new visual every ${ce} s (max ${o.maxChangeEvery} s) — add more cued events: camera moves to named things, actions, vignette steps`)
+  return { ok: problems.length === 0, problems, flags, stats: { seconds: +seconds.toFixed(2), lufs: l.lufs, peak: l.peak, brightness: b, changeEvery: ce } }
 }
 
 // # Contact sheets for the Critic: one frame every N seconds, 4×3 per sheet
@@ -100,6 +103,12 @@ export const plannedMotion = (tl: { shots: { from: number; shot: any }[] }): num
     if (s.shot.kind === 'slide' && s.shot.slide === 'slam') for (const c of s.shot.at) out.add(c)
     // # vignette steps move big things on purpose (a weight dropping, a bubble popping)
     if (s.shot.kind === 'vignette') for (const c of s.shot.at) out.add(c)
+    // # living film: camera moves, hand-overs and kinetic text change the picture on purpose too
+    if (s.shot.kind === 'scene') {
+      for (const c of s.shot.camera ?? []) out.add(c.at)
+      for (const k of s.shot.text ?? []) out.add(k.at)
+      for (const p of s.shot.props ?? []) if (p.give) out.add(p.give.at)
+    }
   })
   return [...out].sort((a, b) => a - b)
 }
