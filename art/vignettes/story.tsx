@@ -25,7 +25,7 @@ const Bubble: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame,
       {pop < 1 && (
         <g opacity={1 - pop}>
           <circle cx={cx} cy={cy} r={r} fill={COLORS.blue} fillOpacity={0.1} stroke={COLORS.blueLight} strokeWidth={4} />
-          <ellipse cx={cx + r * 0.42} cy={cy - r * 0.42} rx={r * 0.2} ry={r * 0.09} fill="#fff" opacity={0.3} transform={`rotate(40 ${cx + r * 0.42} ${cy - r * 0.42})`} />
+          <ellipse cx={cx + r * 0.55} cy={cy + r * 0.45} rx={r * 0.16} ry={r * 0.07} fill="#fff" opacity={0.25} transform={`rotate(-45 ${cx + r * 0.55} ${cy + r * 0.45})`} />
           <Label x={cx} y={cy - r * 0.5 + 20} size={50} weight={800} color={COLORS.champagneLight} opacity={swell}>{data.label}</Label>
           {data.value && <Label x={cx} y={cy + 30} size={84} weight={800} color={COLORS.champagneLight} opacity={swell}>{data.value}</Label>}
         </g>
@@ -88,6 +88,9 @@ const Leaderboard: React.FC<{ frame: number; data: any; cues: number[] }> = ({ f
         )
       })}
       {data.title && <Label x={960} y={170} size={38} color={COLORS.dim}>{data.title}</Label>}
+      {/* # which ranking is showing: the old year fades out as the new one fades in */}
+      {data.fromLabel && <Label x={x0 + w + 40} y={y0 + 46} anchor="start" size={64} weight={800} color={COLORS.champagne} opacity={1 - ease}>{data.fromLabel}</Label>}
+      {data.toLabel && <Label x={x0 + w + 40} y={y0 + 46} anchor="start" size={64} weight={800} color={COLORS.green} opacity={ease}>{data.toLabel}</Label>}
     </g>
   )
 }
@@ -183,7 +186,7 @@ export const STORY_VIGNETTES = [
     Component: Bubble,
   }),
   makeVignette('leaderboard', 'A ranking reshuffles: old leaders out, new in', ['ranking', 'change', 'history', 'companies'], {
-    hint: '{ title?, before: string[], after: string[] } (≤ 10 each; names in both are marked as survivors) — cues: old ranking, reshuffle',
+    hint: '{ title?, fromLabel?: "2000", toLabel?: "2026", before: string[], after: string[] } (≤ 10 each; names in both are marked as survivors) — cues: old ranking, reshuffle',
     items: () => 2,
     check: (d) => list(d, 'before', 2) ?? list(d, 'after', 2) ?? (d.before.length > 10 || d.after.length > 10 ? 'at most 10 rows' : null),
     Component: Leaderboard,

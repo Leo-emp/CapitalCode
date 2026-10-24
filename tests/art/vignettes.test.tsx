@@ -53,3 +53,11 @@ test('loop nodes sit on a wide oval, clear of the centre label', async () => {
     expect(dx > 400 || dy > 220, `node ${i}`).toBe(true)
   }
 })
+
+test('leaderboard shows which ranking is on screen (e.g. 2000 → 2026)', () => {
+  const v = getVignette('leaderboard')
+  const data = { ...SAMPLES.leaderboard, fromLabel: '2000', toLabel: '2026' }
+  const at = (f: number) => renderToStaticMarkup(<svg>{React.createElement(v.Component, { frame: f, data, cues: [0, 100] })}</svg>)
+  expect(at(50)).toContain('>2000<')
+  expect(at(300)).toContain('>2026<')
+})
