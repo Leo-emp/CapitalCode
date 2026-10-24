@@ -257,3 +257,12 @@ describe('props in hands or on the floor', () => {
     expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/a: prop cash-stack: on must be "hand" or "floor"/)
   })
 })
+
+test('a chapter card shows its own opening sentence (its title is the visual)', () => {
+  const p = good()
+  p.shots.splice(1, 0, { id: 'ch', kind: 'chapter', start: { sentence: 's2' }, n: 1, title: 'T' } as any)
+  ;(p.shots[0] as any).props = (p.shots[0] as any).props.filter((x: any) => x.at.sentence !== 's2')
+  // # with a zero budget every bare sentence is listed — s2 must not be among them
+  const msg = gatePlan(p, words, { ...opts(), maxBare: 0 }).problems.find((x) => /nothing on screen/.test(x)) ?? ''
+  expect(msg).not.toMatch(/\bs2\b/)
+})

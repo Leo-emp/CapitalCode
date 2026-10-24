@@ -166,6 +166,8 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
         if (s.slam) events.push(...s.slam.at)
       }
       if ((s.kind === 'chapter' || s.kind === 'brand') && Number.isFinite(starts[i])) marks.push(starts[i])
+      // # a chapter card's title is the visual for the sentence it opens on
+      if (s.kind === 'chapter') events.push(s.start)
     })
     const sids = [...new Set(words.map((w) => w.sid))]
     const shown = new Set(events.map((c) => c.sentence))
