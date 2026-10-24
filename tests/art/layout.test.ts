@@ -91,10 +91,11 @@ test('pctFormat uses the same decimals for every value of a chart', () => {
 })
 
 // # Owner review: slides averaged 7.4% brightness vs 12–16% for the Alux reference
-test('the slide/chapter panel is as bright as the reference (10–18% luma)', async () => {
+// # living film (spec §4): the panel is the lit night-flat sky — video band 20–35%, so the bare panel sits ≈ 14–24%
+test('the slide/chapter panel is lit night-flat navy (14–24% luma)', async () => {
   const { PANEL_STOPS } = await import('../../art/tokens')
   const luma = (hex: string) => { const n = parseInt(hex.slice(1), 16); return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255 * 100 }
   const mean = PANEL_STOPS.reduce((a, h) => a + luma(h), 0) / PANEL_STOPS.length
-  expect(mean).toBeGreaterThanOrEqual(10)
-  expect(mean).toBeLessThanOrEqual(18)
+  expect(mean).toBeGreaterThanOrEqual(14)
+  expect(mean).toBeLessThanOrEqual(24)
 })
