@@ -3,5 +3,6 @@ import { registerPiece } from './registry'
 import { HOOK } from './Hook'
 import { ACT1 } from './act1'
 import { ACT2 } from './act2'
+import { ACT3 } from './act3'
 
-for (const p of [HOOK, ...ACT1, ...ACT2]) registerPiece(p)
+for (const p of [HOOK, ...ACT1, ...ACT2, ...ACT3]) registerPiece(p)
