@@ -59,8 +59,20 @@ test('plan camera keys: a named spot becomes a target (people framed at the ches
   const ks = camKeys(10, base, [{ at: 50, to: 'prop1', zoom: 1.8 }, { at: 90, to: 'stand' }, { at: 120, to: { x: 700, y: 500 } }], anchors)
   expect(ks[0]).toEqual({ at: 10, ...base })
   expect(ks[1]).toEqual({ at: 50, x: 1300, y: 300, zoom: 1.8 })
-  expect(ks[2]).toEqual({ at: 90, x: 400, y: 1000 - 300, zoom: 1.8 })
+  // # at 1.8× a full body no longer fits: framed from the head down (head room first)
+  expect(ks[2]).toEqual({ at: 90, x: 400, y: 1000 - 600 + 360 / 1.8, zoom: 1.8 })
   expect(ks[3]).toEqual({ at: 120, x: 700, y: 500, zoom: 1.8 })
   // # first move with no zoom given: a gentle push-in
   expect(camKeys(0, base, [{ at: 20, to: 'prop1' }], anchors)[1].zoom).toBe(1.35)
+})
+
+test('a close zoom on a person keeps the head in frame (head room first, feet may leave)', async () => {
+  const { camKeys, framed, layerCam, DEPTH } = await import('../../art/motion/camera')
+  const stand = { x: 420, y: 1011, scale: 1, layer: 'front' as const }
+  for (const zoom of [1.35, 1.6, 1.9, 2.5]) {
+    const k = camKeys(0, { x: 960, y: 540, zoom: 1 }, [{ at: 1, to: 'stand', zoom }], { stand })[1]
+    const v = framed(layerCam({ ...k, zoom: k.zoom * 1.04 }, DEPTH.front))
+    const headTop = (stand.y - 580 * stand.scale) * v.k + v.ty // # top of the hair on screen
+    expect(headTop, `zoom ${zoom}`).toBeGreaterThanOrEqual(30)
+  }
 })

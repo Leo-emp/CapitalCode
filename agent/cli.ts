@@ -44,6 +44,7 @@ const loadCommands = async () => {
   await import('./commands/doctor')
   await import('./commands/run')
   await import('./commands/shorts')
+  await import('./commands/stylebible')
 }
 
 const main = async () => {

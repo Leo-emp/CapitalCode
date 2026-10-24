@@ -45,7 +45,7 @@ export const DEPTH = { back: 0.6, mid: 1, front: 1.12 } as const
 export const layerCam = (cam: Cam, d: number): Cam => ({ x: 960 + (cam.x - 960) * d, y: 540 + (cam.y - 540) * d, zoom: cam.zoom })
 
 // # A plan's camera keys → camera keys in world pixels. `to` is a scene spot (people are framed at the
-// # chest: 300 px above the feet) or a point. Zoom carries over from the previous key; a first move with
+// # chest, 300 px above the feet — or higher on a close zoom, so the head never leaves the frame) or a point. Zoom carries over from the previous key; a first move with
 // # no zoom is a gentle push-in (1.35×).
 type Spot = { x: number; y: number; scale: number }
 export const PUSH = 1.35
@@ -53,12 +53,12 @@ export const camKeys = (from: number, base: Cam, keys: { at: number; to: string 
   const out: CamKey[] = [{ at: from, ...base }]
   for (const k of [...keys].sort((a, b) => a.at - b.at)) {
     const prev = out[out.length - 1]
+    const zoom = k.zoom ?? (out.length === 1 ? Math.max(PUSH, base.zoom) : prev.zoom)
     let p = { x: base.x, y: base.y }
     if (typeof k.to === 'string') {
       const a = anchors[k.to]
-      if (a) p = /^(stand|sit)/.test(k.to) ? { x: a.x, y: a.y - 300 * a.scale } : { x: a.x, y: a.y }
+      if (a) p = /^(stand|sit)/.test(k.to) ? { x: a.x, y: Math.min(a.y - 300 * a.scale, a.y - 600 * a.scale + 360 / zoom) } : { x: a.x, y: a.y }
     } else p = { x: k.to.x, y: k.to.y }
-    const zoom = k.zoom ?? (out.length === 1 ? Math.max(PUSH, base.zoom) : prev.zoom)
     out.push({ at: k.at, x: p.x, y: p.y, zoom })
   }
   return out
