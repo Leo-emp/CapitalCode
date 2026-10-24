@@ -4,7 +4,7 @@
 // offset in the ORIGINAL text (SSML escaping is mapped back).
 // The key is read from .env.local and never printed.
 // ============================================================
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import * as sdk from 'microsoft-cognitiveservices-speech-sdk'
 import { ENV_FILE } from './paths'
 import { VOICE, type Synth, type SynthWord } from './voice'
@@ -64,7 +64,9 @@ export const azureSynth =(opts: { voice?: string; retries?: number } = {}): Synt
     const cfg = sdk.SpeechConfig.fromSubscription(key, region)
     cfg.speechSynthesisOutputFormat = sdk.SpeechSynthesisOutputFormat.Riff24Khz16BitMonoPcm
     cfg.setProperty(sdk.PropertyId.SpeechServiceResponse_RequestSentenceBoundary, 'false')
-    const synth = new sdk.SpeechSynthesizer(cfg, sdk.AudioConfig.fromAudioFileOutput(outWav))
+    // # no SDK file output: it finishes writing after the callback (a half-written last chapter broke concat).
+    // # We write the whole RIFF buffer ourselves, synchronously, before resolving.
+    const synth = new sdk.SpeechSynthesizer(cfg, null as unknown as sdk.AudioConfig)
     const { xml } = escapeWithMap(text)
     const head = `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="${voice}">`
     const ssml = `${head}${xml}</voice></speak>`
@@ -78,8 +80,10 @@ export const azureSynth =(opts: { voice?: string; retries?: number } = {}): Synt
     }
     synth.speakSsmlAsync(ssml, (r) => {
       synth.close()
-      if (r.reason === sdk.ResultReason.SynthesizingAudioCompleted) resolve({ words: snapWords(text, events.filter((x) => x.at >= 0)) })
-      else reject(new Error(`azure synth failed: ${sdk.ResultReason[r.reason]} ${r.errorDetails ?? ''}`.trim()))
+      if (r.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
+        writeFileSync(outWav, Buffer.from(r.audioData))
+        resolve({ words: snapWords(text, events.filter((x) => x.at >= 0)) })
+      } else reject(new Error(`azure synth failed: ${sdk.ResultReason[r.reason]} ${r.errorDetails ?? ''}`.trim()))
     }, (err) => { synth.close(); reject(new Error(`azure synth error: ${err}`)) })
   })
 

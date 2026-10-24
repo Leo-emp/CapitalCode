@@ -57,7 +57,7 @@ only job is the final review, so run the whole pipeline without asking.
   "chapters": [{ "title": "Hook", "sentences": [
     { "id": "s1", "text": "…", "facts": ["f1"], "stress": "half" } ] }] }
 ```
-- **1,250–1,500 words** (gate window 1,150–1,700) = 8–10 min. Hook (mystery/stakes,
+- **~1,550 words** (gate window 1,450–1,850; Andrew reads ~182 words/min) = 8–10 min. Hook (mystery/stakes,
   first 2 sentences, no greeting) → brand moment (~0:20) → 3–5 chapters → payoff →
   one-line outro.
 - One clear thesis, argued with **our own calculation, comparison or chart** from

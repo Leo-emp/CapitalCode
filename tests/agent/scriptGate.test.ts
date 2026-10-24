@@ -6,13 +6,13 @@ import type { FactsDoc, ScriptDoc } from '../../agent/schema'
 const filler = (n: number, seed: string) =>
   Array.from({ length: n }, (_, i) => `${seed} point ${"abcdefghijklmnopqrstuvwxyz"[i % 26]} explains how incentives shape what owners and buyers decide over many careful years.`)
 
-// # A valid ~1,250-word script: hook with a stake, thesis, sourced numbers, sparse stress
+// # A valid ~1,550-word script (Andrew HD reads ~182 wpm, measured 2026-10-24): hook with a stake, thesis, sourced numbers, sparse stress
 const make = (): { script: ScriptDoc; facts: FactsDoc } => {
   const intro = [
     { id: 's1', text: 'Why would anyone pay one million dollars for a shop that earns 350,000 a year?', facts: ['f1'] },
     { id: 's2', text: 'Because buyers are not paying for the past.', stress: 'past' },
   ]
-  const body = filler(74, 'This').map((text, i) => ({ id: `s${i + 3}`, text }))
+  const body = filler(92, 'This').map((text, i) => ({ id: `s${i + 3}`, text }))
   return {
     script: {
       title: 'Why a small shop sells for $1M', area: 'business', format: 'explainer',
@@ -27,6 +27,11 @@ describe('gateScript', () => {
   test('a good script passes', () => {
     const { script, facts } = make()
     expect(gateScript(script, facts, { sources: [] }).problems).toEqual([])
+  })
+  test('1,250 words is only ~7 min at the measured pace, so it is refused', () => {
+    const { script, facts } = make()
+    script.chapters[1].sentences = script.chapters[1].sentences.slice(0, 74)
+    expect(gateScript(script, facts, { sources: [] }).problems.join(' ')).toMatch(/words/)
   })
   test('too short / too long', () => {
     const { script, facts } = make()

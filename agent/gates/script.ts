@@ -27,7 +27,8 @@ const ngrams = (text: string, n: number) => {
 
 export const gateScript = (script: ScriptDoc, facts: FactsDoc, opts: GateOpts) => {
   const problems: string[] = []
-  const min = opts.minWords ?? 1150, max = opts.maxWords ?? 1700
+  // # Andrew HD reads ~182 words/min (measured on the first long video, 2026-10-24) → 8–10 min ≈ 1,450–1,850 words
+  const min = opts.minWords ?? 1450, max = opts.maxWords ?? 1850
   const sents = allSentences(script)
   const ids = new Set<string>()
   for (const s of sents) {
@@ -35,7 +36,7 @@ export const gateScript = (script: ScriptDoc, facts: FactsDoc, opts: GateOpts) =
     ids.add(s.id)
   }
 
-  // # length (8–10 min at ~150 words/min)
+  // # length
   const words = sents.reduce((n, s) => n + countWords(s.text), 0)
   if (words < min || words > max) problems.push(`script has ${words} words; needs ${min}–${max} for an 8–10 min video`)
 
