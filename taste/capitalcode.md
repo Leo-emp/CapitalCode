@@ -7,9 +7,12 @@ two disagree, the newer owner rule wins.
 ## Brand
 - One premium money-media brand: **how the money actually works**. Calm, precise,
   data-backed, a little wry. Never hype, never fear-mongering, never "guru".
-- Dark Alux look: very dark frames (~11% mean brightness), champagne accent from the
-  logo; red/green only for losses/gains. Inter / Bebas Neue / JetBrains Mono, subtle
-  grain, vignette.
+- **Night flat** (living film, owner 2026-10-24): a lit deep-navy night (never near-black,
+  25–30% mean brightness, gate 20–35%) with bright solid objects (champagne, sky blue, coral,
+  teal); a deep-teal second world for ~30% of shots. Champagne accent from the logo; red/green
+  only for losses/gains. Inter / Bebas Neue / JetBrains Mono, subtle grain, soft vignette.
+- Our own: colours and characters. Kurzgesagt is the bar for editing, never a look to copy
+  (no pastel cream worlds, no bird, no copied layouts).
 
 ## Story
 - Every video argues **one thesis** a smart friend would find surprising, and proves
@@ -27,15 +30,18 @@ two disagree, the newer owner rule wins.
   shocking number). No music. SFX quiet under the voice. Final mix −14 LUFS.
 
 ## Visuals
-- ~50% illustrated scenes, ~50% clean infographic slides; chapter cards between acts.
-- Shots held long (median 6–14 s) with constant small motion inside: pose changes,
-  props entering, camera drift and push-ins. Nothing static for more than ~2 s.
+- **A living animated film:** every line shown as it is said — characters act (walk, take,
+  hand over, feel), objects do things, the camera goes to what is named and flies into the
+  next shot (zoom-into). Something new on screen about every second (gate: ≤ 1.5 s; the
+  reference measured 0.8 s). Text (slides, slams, kinetic words) ≤ 25% of runtime.
+- Shots held long (median 6–14 s) but never still: the engine adds blinks, breathing,
+  talk gestures and camera drift; the plan adds the meaningful events.
 - **Everything lands on the word**: a number appears as it is said, a prop as it is
   named, a pose change on the emotional word.
 - Slides: small heading top-left with a short accent rule, lots of empty space, one
   idea per slide, numbers in accent colours, source line at the bottom.
-- Characters: the approved front-facing HD cast only, consistent looks, expressions
-  that match the line.
+- Characters: the approved front-facing HD cast only (mini cast for crowds), consistent
+  looks, expressions that change with the line and melt from one into the next.
 - Variety: rotate scenes, chart types, framings, times of day and colour moods; a
   video must never look like a template of the last one.
 
@@ -53,7 +59,8 @@ two disagree, the newer owner rule wins.
 | accuracy | Every number matches facts.json; no advice, no hype |
 | originality | Own structure and examples; could not be a reworded article |
 | visuals | Polished, varied, on brand; text crisp and readable |
-| sync | Every visual lands on its word |
+| sync | Every visual lands on its word; every line is shown |
+| life | Characters act and feel, the camera travels to what is named; nothing frozen |
 | pacing | No dead air, no shot that overstays, energy varies by section |
 | audio | Clear voice, natural read, SFX support not distract |
 

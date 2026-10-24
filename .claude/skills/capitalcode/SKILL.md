@@ -87,13 +87,29 @@ Read `words.json` and write `plan.json`: `{ "shots": [...], "sfx": [...] }`.
 A **cue** is a spoken word: `{ "sentence": "s12", "word": "million", "nth": 1 }`
 (word omitted = first word of the sentence). Everything lands on its word.
 
-- **Show what is said (owner rule, gate-enforced):** before placing shots, write for EVERY
-  sentence the picture that shows its words (literal or a clear metaphor). ≥ 90% of sentences
-  need their own illustrative event and never > 6 s without one. Counts: a vignette step, a
-  slide item, a meaningful prop (not question/exclamation/tick/cross/warning/magnifier/clock/
-  calendar), a slam. Pose changes do not count. Reach for **vignettes** first for story beats
-  (money-flow, pie, baskets, scale, bubble, leaderboard, lottery — see temp/catalog.md);
-  examples in art/vignettes/samples.ts.
+- **Living film (owner 2026-10-24, spec docs/superpowers/specs/2026-10-24-capitalcode-living-film-design.md):**
+  every line is SHOWN as it is said, by characters who act, objects that do things, and a
+  camera that goes to what is named. Plan in beats of 2–3 words, sentence by sentence:
+  - **verb → character action** (walk there with `path`, hand it over with `give`, a pose like
+    point/celebrate/facepalm, a prop picked up on the word)
+  - **noun → object or camera** (the prop pops in on its word, or `camera` glides to the spot)
+  - **feeling → expression** (a track key with `expression`; it melts in over 8 frames)
+  - **idea → metaphor/vignette** (crowd-giant, slice-grows, tracks, house-of-cards,
+    money-mountain, see-saw, crowd, grid, circles + the older ones — temp/catalog.md;
+    examples in art/vignettes/samples.ts)
+  - **key number/word → kinetic `text`** now and then (owner: "occasionally where relevant";
+    ≤ 2 per shot)
+  - between related shots use `enter: { zoomInto: spot }` (the next shot grows out of a door,
+    window, coin…) instead of a cut
+  - worlds: `night` for ~70% of scene shots, `teal` for ~30% (chapter changes, flashbacks,
+    inside places)
+- **Gate-enforced density:** every sentence has its own shown event (chapter openers count
+  through the card) and never > 2 s without one; rendered video must change at least every
+  1.5 s. Counts: vignette steps, slide items, meaningful props (not question/exclamation/tick/
+  cross/warning/magnifier/clock/calendar), hand-overs, slams, camera keys, walk legs, action
+  poses / changes of feeling, kinetic text. Talk poses (idle/talk/present) do not count, and
+  never plan what the engine adds itself: blinks, breathing, glances, sway, talk gestures
+  while the voice speaks, camera drift, camera follow of a walker.
 - Shot kinds: `brand` (once, ~0:20), `chapter` (`n`, `title`) at each chapter,
   `vignette` (`vignette` id + `data` + `at` cues, one per step, + optional `heading`),
   `scene` (scene id + `actors` with pose/expression track on cues + `props` on cues
@@ -106,7 +122,8 @@ A **cue** is a spoken word: `{ "sentence": "s12", "word": "million", "nth": 1 }`
 - Pace (gate-enforced): a slide shows its first item within 1 s of its cut (start the
   shot ON the word that brings the first item); at most 3 slams per long video (1 per
   Short), saved for payoff lines; brand card by 0:25; first shot on s1; median shot 6–14 s, none over 30 s;
-  slides 35–65% of runtime; never the same scene twice in a row; vary chart types;
+  text (slides + 2 s per slam + 1.5 s per kinetic text) ≤ 25% of runtime (Shorts ≤ 35%) —
+  pictures carry the video, slides only for the key numbers; never the same scene twice in a row; vary chart types;
   scene set must not repeat a recent video (> 60% overlap is refused).
 - **Acting, not presenting (owner rule):** characters do things inside the scene. Props go
   `"on": "hand"` (held by `actors[actor ?? 0]`, follows the pose; shown only while the hand holds:
@@ -114,8 +131,15 @@ A **cue** is a spoken word: `{ "sentence": "s12", "word": "million", "nth": 1 }`
   someone stands there). Only effects (lightning, fire, cracks, arrows) may float. Every scene has
   `stand2` for a second actor (faces the first automatically): use `handshake`, `talk`, `sit` (at a
   `sit` anchor) for real moments between people.
-- Constant small motion: pose changes and props on cue words every few seconds;
-  `slam` for the key payoff words; sfx sparingly (cuts get an automatic whoosh).
+- Example living-film scene shot (camera to the named thing, a walk, a hand-over, a feeling, a word):
+  `{ "id": "sh7", "kind": "scene", "start": {"sentence": "s14"}, "scene": "bank-interior", "world": "teal", "enter": { "zoomInto": "door" },
+     "actors": [{ "who": "hero", "anchor": "stand", "path": [{ "at": {"sentence": "s14", "word": "walk"}, "to": "counter" }],
+                  "track": [{ "at": {"sentence": "s14"}, "pose": "hold", "expression": "worried" }, { "at": {"sentence": "s15", "word": "back"}, "pose": "idle", "expression": "smiling" }] },
+                { "who": "buyer", "anchor": "stand2", "track": [{ "at": {"sentence": "s14"}, "pose": "idle" }] }],
+     "props": [{ "id": "cash-stack", "anchor": "stand", "at": {"sentence": "s14"}, "on": "hand", "give": { "at": {"sentence": "s15", "word": "hands"}, "to": 1 } }],
+     "camera": [{ "at": {"sentence": "s14", "word": "vault"}, "to": "prop1", "zoom": 1.6 }],
+     "text": [{ "words": "£1,250 saved", "at": {"sentence": "s15", "word": "saved"}, "style": "count", "anchor": "stand" }] }`
+- `slam` for the key payoff words; sfx sparingly (cuts get an automatic whoosh).
 - Data on screen = the facts in `facts.json`, with the source line on the slide.
 - Layout limits (gate-enforced, so nothing overflows the frame): heading/kicker ≤ 48
   chars; slam ≤ 32 chars in total; bars ≤ 12 (labels ≤ 22); compare ≤ 3 cards (title ≤ 28,

@@ -20,3 +20,10 @@ test('catalog markdown names every scene id once', () => {
   const md = catalogMarkdown(c)
   for (const s of c.scenes) expect(md).toContain(`\`${s.id}\``)
 })
+
+// # Living film: the director must find the new tools in the catalog
+test('catalog markdown lists the new vignettes and documents the living-film fields', () => {
+  const md = catalogMarkdown(catalog([]))
+  for (const id of ['crowd', 'grid', 'circles', 'crowd-giant', 'slice-grows', 'tracks', 'house-of-cards', 'money-mountain', 'see-saw']) expect(md).toContain(`\`${id}\``)
+  for (const field of ['camera', 'path', 'give', 'enter.zoomInto', 'world', 'text']) expect(md).toContain(`\`${field}\``)
+})
