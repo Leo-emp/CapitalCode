@@ -39,3 +39,13 @@ test('every scene has a second standing spot for two-person moments', () => {
 test('handshake and talk poses exist', () => {
   expect(POSE_IDS).toEqual(expect.arrayContaining(['handshake', 'talk']))
 })
+
+test('a floor prop on an occupied spot steps aside, away from the centre of the frame', () => {
+  const left = { x: 600, y: 900, scale: 1, layer: 'mid' as const }
+  const right = { x: 1400, y: 900, scale: 1, layer: 'mid' as const }
+  const a = propBox('floor', 170, left, { occupied: true })
+  expect(a.x).toBeLessThan(left.x - 170)                     // # beside the feet, on the outer side
+  const b = propBox('floor', 170, right, { occupied: true })
+  expect(b.x).toBeGreaterThan(right.x + 40)
+  expect(propBox('floor', 170, left).x).toBeCloseTo(left.x - 85, 0)   // # free spot: centred as before
+})

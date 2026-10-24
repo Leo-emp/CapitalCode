@@ -58,12 +58,16 @@ export const heldPoint = (pose: string | Pose, anchor: At, flip = false): { x: n
 }
 
 // # Prop box (top-left + size): in the hand (follows the pose), standing on the floor, or centred on its anchor
-export const propBox = (on: 'hand' | 'floor' | undefined, size: number, anchor: At, o: { pose?: string | Pose; flip?: boolean; actor?: At } = {}) => {
+export const propBox = (on: 'hand' | 'floor' | undefined, size: number, anchor: At, o: { pose?: string | Pose; flip?: boolean; actor?: At; occupied?: boolean } = {}) => {
   if (on === 'hand') {
     const s = size * 0.62
     const h = heldPoint(o.pose ?? 'hold', o.actor ?? anchor, o.flip)
     return { x: h.x - s / 2, y: h.y - s * 0.75, size: s }
   }
-  if (on === 'floor') return { x: anchor.x - size / 2, y: anchor.y - size, size }
+  if (on === 'floor') {
+    // # someone stands on this spot: set the prop down beside their feet, on the side away from the frame centre
+    const dx = o.occupied ? (anchor.x < 960 ? -1 : 1) * (size * 0.5 + 130 * anchor.scale) : 0
+    return { x: anchor.x - size / 2 + dx, y: anchor.y - size, size }
+  }
   return { x: anchor.x - size / 2, y: anchor.y - size / 2, size }
 }
