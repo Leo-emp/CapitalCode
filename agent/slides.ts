@@ -70,3 +70,9 @@ export const layoutProblems = (s: { kind: string; slide?: string; heading?: stri
   }
   return p
 }
+
+// ------------------------------------------------------------ scenes with made-up figures
+// # Their decoration shows readable prices, percentages or tickers (checked against the style
+// # bible, 2026-10-24). Next to a data claim they could pass as real numbers, so a shot must opt
+// # in with decorOk: true (e.g. a coffee-shop menu in a story about coffee prices).
+export const DECOR_FIGURES = ['portfolio-dashboard', 'stock-exchange', 'bond-desk', 'coffee-shop', 'checkout', 'apartment-rent', 'pitch-meeting', 'crypto-exchange', 'supermarket', 'news-desk']

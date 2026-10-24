@@ -9,7 +9,9 @@ import { POSE_IDS } from '../art/rig/pose'
 import { PROPS } from '../art/props/registry'
 import { SCENES } from '../art/scenes/registry'
 import { LAYOUTS, TONES } from './package'
-import { SLIDE_KINDS } from './slides'
+import { DECOR_FIGURES, SLIDE_KINDS } from './slides'
+export { DECOR_FIGURES }
+
 
 // # The data shape each slide kind expects (what SLIDE_SPECS checks) + how many cues it takes
 const SLIDE_HINTS: Record<string, string> = {
@@ -53,7 +55,7 @@ export const catalogMarkdown = (c: Catalog) => [
   `## Scenes (${c.scenes.length})`,
   '| id | title | tags | anchors |',
   '|---|---|---|---|',
-  ...c.scenes.map((s) => `| \`${s.id}\` | ${s.title} | ${s.tags.join(', ')} | ${s.anchors.join(', ')} |`),
+  ...c.scenes.map((s) => `| \`${s.id}\` | ${s.title}${DECOR_FIGURES.includes(s.id) ? ' ⚠ shows made-up figures (needs decorOk)' : ''} | ${s.tags.join(', ')} | ${s.anchors.join(', ')} |`),
   '',
   `## Props (${c.props.length})`,
   ...c.props.map((p) => `- \`${p.id}\` (${p.tags.join(', ')})`),

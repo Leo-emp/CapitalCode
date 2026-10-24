@@ -15,7 +15,7 @@ import { type Anchor, cameraFor, type SceneFraming } from '../../art/scenes/kit'
 import { SCENES } from '../../art/scenes/registry'
 import { PUBLIC_DIR } from '../paths'
 import type { Cue, PlanDoc, TimedWord } from '../schema'
-import { layoutProblems, SLIDE_KINDS, SLIDE_SPECS } from '../slides'
+import { DECOR_FIGURES, layoutProblems, SLIDE_KINDS, SLIDE_SPECS } from '../slides'
 import { resolveCue } from '../timeline'
 
 export type History = { job: string; scenes: string[]; slides: string[]; area?: string; format?: string; kind?: string; title?: string; date?: string }[]
@@ -62,6 +62,8 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
     if (s.kind === 'scene') {
       const sc = SCENES.find((x) => x.id === s.scene)
       if (!sc) problems.push(`${s.id}: unknown scene "${s.scene}"`)
+      if (DECOR_FIGURES.includes(s.scene) && !(s as { decorOk?: boolean }).decorOk)
+        problems.push(`${s.id}: scene ${s.scene} shows made-up figures (prices/%/tickers) — pick another scene, or set decorOk: true if they fit the story`)
       for (const a of s.actors ?? []) {
         if (!CAST.includes(a.who)) problems.push(`${s.id}: unknown actor "${a.who}" (cast: ${CAST.join(', ')})`)
         if (sc && !sc.anchors[a.anchor]) problems.push(`${s.id}: scene ${s.scene} has no anchor "${a.anchor}" (has: ${Object.keys(sc.anchors).join(', ')})`)

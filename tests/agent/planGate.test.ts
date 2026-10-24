@@ -168,3 +168,19 @@ describe('layout budgets', () => {
       data: { cards: [{ title: 'Average of the other 490', value: '0.13%', lines: ['62.1% ÷ 490', 'of your money each'] }, { title: 'Difference', value: '≈ 60×', lines: ['7.52 ÷ 0.13'] }] } })).toBe('')
   })
 })
+
+// # Scenes whose decoration shows made-up figures (prices, %, tickers) could pass as real data
+describe('decoration with made-up figures', () => {
+  test('a scene with baked-in figures is refused unless the shot says decorOk', () => {
+    const p = good()
+    ;(p.shots[0] as any).scene = 'crypto-exchange'
+    expect(gatePlan(p, words, opts()).problems.join('\n')).toMatch(/a: scene crypto-exchange shows made-up figures/)
+    ;(p.shots[0] as any).decorOk = true
+    expect(gatePlan(p, words, opts()).problems.join('\n')).not.toMatch(/made-up figures/)
+  })
+  test('every listed scene exists', async () => {
+    const { DECOR_FIGURES } = await import('../../agent/catalog')
+    const { SCENES } = await import('../../art/scenes/registry')
+    for (const id of DECOR_FIGURES) expect(SCENES.some((s) => s.id === id), id).toBe(true)
+  })
+})
