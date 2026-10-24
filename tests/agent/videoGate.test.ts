@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { basename, join } from 'node:path'
 import { expect, test } from 'vitest'
 import { ff } from '../../agent/audio'
-import { brightness, findFlicker, frameDiffs, gateVideo, frameSheets, shotFrames } from '../../agent/gates/video'
+import { brightness, changeEvery, findFlicker, frameDiffs, gateVideo, frameSheets, shotFrames } from '../../agent/gates/video'
 
 // # 4 s gray clip, a one-frame white flash at frame 30, a hard cut to blue at frame 75; a −14 LUFS-ish tone
 const clip = (dir: string, flash = true) => {
@@ -79,3 +79,12 @@ test('vignette steps are planned motion too (a weight dropping on a scale was fl
   ] }
   expect(plannedMotion(tl as any)).toEqual([20, 140, 200, 300])
 })
+
+// # Owner: the reference "illustrates almost every word" — measured as how often something new appears
+test('changeEvery measures seconds between visual changes', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ccqa-'))
+  const file = clip(dir) // # 4 s: a flash at 1 s and a cut at 2.5 s → about 2 changes
+  const s = changeEvery(file)
+  expect(s).toBeGreaterThan(0.8)
+  expect(s).toBeLessThan(4)
+}, 120_000)

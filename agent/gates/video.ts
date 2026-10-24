@@ -39,7 +39,7 @@ export const findFlicker = (d: number[], cuts: number[], opts: { transition?: nu
   return flags
 }
 
-export type VideoGate = { ok: boolean; problems: string[]; flags: number[]; stats: { seconds: number; lufs: number; peak: number; brightness: number } }
+export type VideoGate = { ok: boolean; problems: string[]; flags: number[]; stats: { seconds: number; lufs: number; peak: number; brightness: number; changeEvery: number } }
 
 // # Mean picture brightness in % (luma, one frame per second). Alux reference ≈ 16%.
 export const brightness = (file: string): number => {
@@ -60,7 +60,7 @@ export const gateVideo = (file: string, o: { expectSeconds: number; cuts: number
   const flags = findFlicker(frameDiffs(file), o.cuts)
   const b = brightness(file)
   if (o.brightness && (b < o.brightness[0] || b > o.brightness[1])) problems.push(`brightness ${b}% (want ${o.brightness[0]}–${o.brightness[1]}%)`)
-  return { ok: problems.length === 0, problems, flags, stats: { seconds: +seconds.toFixed(2), lufs: l.lufs, peak: l.peak, brightness: b } }
+  return { ok: problems.length === 0, problems, flags, stats: { seconds: +seconds.toFixed(2), lufs: l.lufs, peak: l.peak, brightness: b, changeEvery: changeEvery(file) } } // # reported; target ≈ 1 s (owner r20)
 }
 
 // # Contact sheets for the Critic: one frame every N seconds, 4×3 per sheet
@@ -102,4 +102,14 @@ export const plannedMotion = (tl: { shots: { from: number; shot: any }[] }): num
     if (s.shot.kind === 'vignette') for (const c of s.shot.at) out.add(c)
   })
   return [...out].sort((a, b) => a - b)
+}
+
+// # How often something new appears (seconds between visual changes): frame differences at 10 fps,
+// # a change = a jump above 1.2 luma, at most one per 0.5 s. Kurzgesagt ≈ 0.8 s; our first video 4.8 s.
+export const changeEvery = (file: string): number => {
+  const p = spawnSync('ffmpeg', ['-v', 'error', '-i', file, '-an', '-vf', 'fps=10,scale=160:-2,format=gray,tblend=all_mode=difference,signalstats,metadata=print:key=lavfi.signalstats.YAVG:file=-', '-f', 'null', '-'], { encoding: 'utf8', maxBuffer: 64 << 20 })
+  const ys = [...p.stdout.matchAll(/YAVG=([\d.]+)/g)].map((m) => Number(m[1]))
+  let events = 0, last = -99
+  ys.forEach((v, i) => { if (v > 1.2 && i - last >= 5) { events++; last = i } })
+  return +((ys.length / 10) / Math.max(1, events)).toFixed(2)
 }

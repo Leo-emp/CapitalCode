@@ -190,6 +190,16 @@
       "strength": 1,
       "added": "2026-10-24T12:31:53.639Z",
       "status": "active"
+    },
+    {
+      "id": "r20",
+      "area": "pacing",
+      "rule": "Illustrate almost every word: a new visual element every ~1 s (2–3 spoken words). Measured: Kurzgesagt one change every 0.8 s, our first video every 4.8 s",
+      "source": "reference",
+      "evidence": "kurzgesagt-measured-2026-10-24",
+      "strength": 1,
+      "added": "2026-10-24T12:32:59.524Z",
+      "status": "active"
     }
   ],
   "feedback": [
