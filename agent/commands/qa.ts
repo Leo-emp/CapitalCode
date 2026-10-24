@@ -14,6 +14,8 @@ export type CriticDoc = { verdict: 'pass' | 'fix'; score: number; checks: Record
 // # Max 2 Critic rounds (spec §5c). After round 2 a "fix" is accepted only with the director's
 // # written note on what was done; its fixes are kept and shown in the owner's review note.
 export const MAX_CRITIC_ROUNDS = 2
+// # rounds = archived verdicts (critic_round<N>.json) + the current critic.json
+export const criticRound = (dir: string) => readdirSync(dir).filter((f) => /^critic_round\d+\.json$/.test(f)).length + 1
 export type CriticDecision = { accept: true; flagged: string[]; note?: string } | { accept: false; reason: string }
 export const criticDecision = (c: CriticDoc, round: number, final?: string): CriticDecision => {
   if (c.verdict === 'pass') return { accept: true, flagged: [] }
@@ -93,8 +95,7 @@ register('critic', 'critic <job>  — accept critic.json (pass ≥ 8) or list th
   const c = readJson<CriticDoc>(join(dir, 'critic.json'))
   const bad = checkCritic(c)
   if (bad.length) { for (const p of bad) console.log(`  - ${p}`); refuse('critic.json is incomplete') }
-  // # rounds = archived verdicts (critic_round<N>.json) + this one
-  const round = readdirSync(dir).filter((f) => /^critic_roundd+.json$/.test(f)).length + 1
+  const round = criticRound(dir)
   const final = a.find((x) => x.startsWith('--final='))?.slice(8) ?? (a.includes('--final') ? a[a.indexOf('--final') + 1] : undefined)
   const d = criticDecision(c, round, final)
   if (!d.accept) { for (const f of c.fixes) console.log(`  - FIX: ${f}`); return refuse(d.reason) }

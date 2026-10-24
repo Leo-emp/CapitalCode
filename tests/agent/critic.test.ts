@@ -1,6 +1,6 @@
 // # The Critic's verdict is only accepted when complete and consistent
 import { describe, expect, test } from 'vitest'
-import { checkCritic, criticDecision, type CriticDoc } from '../../agent/commands/qa'
+import { checkCritic, criticDecision, criticRound, type CriticDoc } from '../../agent/commands/qa'
 
 const checks = { hook: 8, thesis: 9, accuracy: 9, originality: 8, visuals: 8, sync: 8, pacing: 8, audio: 9 }
 test('a complete pass ≥ 8 is accepted', () => expect(checkCritic({ verdict: 'pass', score: 8.5, checks, fixes: [] })).toEqual([]))
@@ -33,4 +33,15 @@ describe('critic round limit', () => {
   test('a final note cannot skip round 2', () => {
     expect(criticDecision(fix, 1, 'skip').accept).toBe(false)
   })
+})
+
+test('criticRound counts archived verdicts (critic_round<N>.json) plus the current one', async () => {
+  const { mkdtempSync, writeFileSync } = await import('node:fs')
+  const { tmpdir } = await import('node:os')
+  const { join } = await import('node:path')
+  const d = mkdtempSync(join(tmpdir(), 'cc-'))
+  writeFileSync(join(d, 'critic.json'), '{}')
+  expect(criticRound(d)).toBe(1)
+  writeFileSync(join(d, 'critic_round1.json'), '{}')
+  expect(criticRound(d)).toBe(2)
 })
