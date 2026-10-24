@@ -19,6 +19,8 @@ import { Lockup } from '../logo/LogoReveal'
 import { expressionAt, GIVE_FRAMES, heldBy } from '../motion/acting'
 import { actedPose } from '../motion/life'
 import { walkAt, walkPose } from '../motion/walk'
+import { cameraAt, camKeys } from '../motion/camera'
+import { cameraFor } from '../scenes/kit'
 import { getProp } from '../props/registry'
 import { Actor, holdsInHand, propBox } from '../rig/Actor'
 import { mixPose, type Pose, type PoseId, POSES } from '../rig/pose'
@@ -32,7 +34,7 @@ type RActor = { who: string; anchor: string; track: { at: number; pose: string; 
 // # on: 'hand' = held by actor[actor ?? 0] (follows the pose), 'floor' = stands on the anchor's ground line
 type RProp = { id: string; anchor: string; at: number; size?: number; on?: 'hand' | 'floor'; actor?: number; give?: { at: number; to: number } }
 type RScene = { id: string; kind: 'scene'; start: number; scene: string; time?: 'night' | 'dusk' | 'rain' | 'fog'; tone?: 'none' | 'blue' | 'gold' | 'red' | 'green'
-  framing?: 'wide' | 'medium' | 'close'; variant?: string; world?: 'night' | 'teal'; actors?: RActor[]; props?: RProp[]; slam?: { words: { text: string; tone?: Tone }[]; at: number[] } }
+  framing?: 'wide' | 'medium' | 'close'; variant?: string; world?: 'night' | 'teal'; camera?: { at: number; to: string | { x: number; y: number }; zoom?: number }[]; actors?: RActor[]; props?: RProp[]; slam?: { words: { text: string; tone?: Tone }[]; at: number[] } }
 type RSlide = { id: string; kind: 'slide'; start: number; slide: string; heading?: string; kicker?: string; source?: string; data: any; at: number[] }
 type RChapter = { id: string; kind: 'chapter'; start: number; n: number; title: string }
 type RBrand = { id: string; kind: 'brand'; start: number }
@@ -69,6 +71,7 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number; 
   const slots: Record<'back' | 'mid' | 'front', React.ReactNode[]> = { back: [], mid: [], front: [] }
 
   const actorAt: { pose: Pose; anchor: typeof a[string]; flip: boolean }[] = []
+  const walkers: (typeof a[string])[] = []
   for (const [i, act] of (s.actors ?? []).entries()) {
     const home = a[act.anchor]
     // # walking (living film): position along the path; the walk cycle replaces the keyed pose while moving
@@ -91,6 +94,7 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number; 
     // # feelings melt into each other over a few frames instead of snapping
     const ex = expressionAt(f, keys)
     actorAt.push({ pose, anchor: anc, flip })
+    if (walk) walkers.push(anc)
     // # an actor whose first key is after the cut walks in on that cue; otherwise it is there from the start
     const enterAt = keys[0].at > from + 2 ? keys[0].at : -999
     const enter = interpolate(f, [enterAt - 4, enterAt + 8], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) })
@@ -129,10 +133,19 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number; 
 
   // # slow push-in keeps every scene alive; a slam darkens the scene and hits the words
   const push = interpolate(f, [from, to], [1.0, 1.05], clamp)
+  // # the camera (living film): the opening framing, then glides to what the plan names on its cue words;
+  // # with no moves planned it follows a walker; it always drifts a little
+  const fc = cameraFor(s.framing ?? 'wide', a.focus ?? a.prop1 ?? { x: 960, y: 540 })
+  const base = { x: (960 - fc.tx) / fc.k, y: (540 - fc.ty) / fc.k, zoom: fc.k }
+  const seed = [...s.id].reduce((n, c) => n + c.charCodeAt(0), 0)
+  const w0 = walkers[0]
+  const camera = s.camera?.length ? cameraAt(f, camKeys(from, base, s.camera, a), seed)
+    : w0 ? cameraAt(f, [{ at: from, x: w0.x, y: w0.y - 300 * w0.scale, zoom: Math.max(base.zoom, 1.2) }], seed)
+    : cameraAt(f, [{ at: from, ...base }], seed)
   return (
     <AbsoluteFill>
       <AbsoluteFill style={{ transform: `scale(${push})` }}>
-        <Scene.Component frame={f} t={t} lightsOn={1} time={s.time} tone={s.tone} framing={s.framing} variant={s.variant} world={s.world}
+        <Scene.Component frame={f} t={t} lightsOn={1} time={s.time} tone={s.tone} framing={s.framing} variant={s.variant} world={s.world} camera={camera}
           actors={{ back: slots.back.length ? slots.back : undefined, mid: slots.mid.length ? slots.mid : undefined, front: slots.front.length ? slots.front : undefined }} />
       </AbsoluteFill>
       {s.slam && slamAt !== undefined && f >= slamAt - 3 && (

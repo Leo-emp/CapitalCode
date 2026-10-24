@@ -8,6 +8,7 @@
 import React from 'react'
 import { Emblem } from '../logo/Emblem'
 import type { ArtEntry } from '../registry'
+import { type Cam, DEPTH, framed, layerCam } from '../motion/camera'
 import { COLORS, WORLDS, type World, type WorldId } from '../tokens'
 import { useUid } from '../uid'
 
@@ -35,12 +36,16 @@ export type SceneProps = {
   t?: number; lightsOn?: number; frame?: number; variant?: string
   actors?: { back?: React.ReactNode; mid?: React.ReactNode; front?: React.ReactNode }
   time?: SceneTime; tone?: SceneTone; framing?: SceneFraming; world?: WorldId
+  camera?: Cam // # living film camera (art/motion/camera); without it the old fixed framing + slow slide
 }
 
 const TONES: Record<Exclude<SceneTone, 'none'>, string> = { blue: '#2A8FE0', gold: '#E9B949', red: '#F0454B', green: '#3DDC97' }
 const ZOOM: Record<SceneFraming, number> = { wide: 1, medium: 1.18, close: 1.45 }
 
 // # Camera: zoom toward the focal point, never showing outside the 1920×1080 canvas
+// # Scenes are drawn a little larger than the frame when the camera moves, so its drift never shows an edge
+export const OVERSCAN = 1.04
+
 export const cameraFor = (framing: SceneFraming, focus: { x: number; y: number }) => {
   const k = ZOOM[framing]
   const clampT = (v: number, size: number) => Math.min(0, Math.max(size * (1 - k), v))
@@ -91,7 +96,7 @@ export const withStand2 = (anchors: Record<string, Anchor>): Record<string, Anch
 
 export const makeScene = (id: string, title: string, tags: string[], rawAnchors: Record<string, Anchor>, draw: SceneDraw): SceneEntry => {
   const anchors = withStand2(rawAnchors)
-  const Component: React.FC<SceneProps> = ({ t = 0, lightsOn = 1, frame = 0, variant, actors = {}, time = 'night', tone = 'none', framing = 'wide', world = 'night' }) => {
+  const Component: React.FC<SceneProps> = ({ t = 0, lightsOn = 1, frame = 0, variant, actors = {}, time = 'night', tone = 'none', framing = 'wide', world = 'night', camera }) => {
     const base = useUid(id)
     const u = (n: string) => `${base}-${n}`
     const w = WORLDS[world] ?? WORLDS.night
@@ -100,17 +105,25 @@ export const makeScene = (id: string, title: string, tags: string[], rawAnchors:
     try { layers = draw({ u, frame, t, lightsOn, variant, w }) } finally { DRAWING = null }
     const focus = anchors.focus ?? anchors.prop1 ?? { x: 960, y: 540 }
     const cam = cameraFor(framing, focus)
+    // # living film: a moving camera with parallax — each layer sees the pan/zoom scaled by its depth,
+    // # with a little overscan so the drift is visible even on a wide shot
+    const layerT = (d: number, dx: number) => {
+      if (!camera) return `translate(${dx * t} 0)`
+      const v = framed(layerCam({ ...camera, zoom: camera.zoom * OVERSCAN }, d))
+      return `translate(${v.tx} ${v.ty}) scale(${v.k})`
+    }
+    const outer = camera ? '' : `translate(${cam.tx} ${cam.ty}) scale(${cam.k})`
     return (
       <WorldCtx.Provider value={w}>
       <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{ position: 'absolute', inset: 0 }} data-world={world}>
         <rect width={1920} height={1080} fill={w.sky[0]} />
-        <g data-camera={cam.k} transform={`translate(${cam.tx} ${cam.ty}) scale(${cam.k})`}>
-        <g transform={`translate(${-12 * t} 0)`}>{layers.back}</g>
-        {actors.back && <g transform={`translate(${-36 * t} 0)`}>{actors.back}</g>}
-        <g transform={`translate(${-36 * t} 0)`}>{layers.mid}</g>
-        {actors.mid && <g transform={`translate(${-36 * t} 0)`}>{actors.mid}</g>}
-        <g transform={`translate(${-70 * t} 0)`}>{layers.front}</g>
-        {actors.front && <g transform={`translate(${-70 * t} 0)`}>{actors.front}</g>}
+        <g data-camera={camera ? camera.zoom : cam.k} transform={outer}>
+        <g transform={layerT(DEPTH.back, -12)}>{layers.back}</g>
+        {actors.back && <g transform={layerT(DEPTH.mid, -36)}>{actors.back}</g>}
+        <g transform={layerT(DEPTH.mid, -36)}>{layers.mid}</g>
+        {actors.mid && <g transform={layerT(DEPTH.mid, -36)}>{actors.mid}</g>}
+        <g transform={layerT(DEPTH.front, -70)}>{layers.front}</g>
+        {actors.front && <g transform={layerT(DEPTH.front, -70)}>{actors.front}</g>}
         </g>
         <Weather time={time} frame={frame} u={u} />
         {tone !== 'none' && <rect data-tone={tone} width={1920} height={1080} fill={TONES[tone]} opacity={0.22} style={{ mixBlendMode: 'soft-light' }} />}

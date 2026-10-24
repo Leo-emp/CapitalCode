@@ -302,3 +302,14 @@ describe('hand-over', () => {
     expect(gatePlan(p, words, opts()).problems).toContain('a: prop cash-stack is given to actor 1, but the shot has 1 actor')
   })
 })
+
+describe('camera', () => {
+  test('a camera move to an unknown spot is refused; a known spot or a point passes', () => {
+    const p = good()
+    const a = p.shots[0] as any
+    a.camera = [{ at: { sentence: 's1', word: 'money' }, to: 'prop1' }, { at: { sentence: 's2' }, to: { x: 500, y: 400 } }]
+    expect(gatePlan(p, words, opts()).problems.filter((x) => /camera/.test(x))).toEqual([])
+    a.camera = [{ at: { sentence: 's1', word: 'money' }, to: 'vault' }]
+    expect(gatePlan(p, words, opts()).problems).toContain('a: camera target "vault" not in scene shop-street')
+  })
+})

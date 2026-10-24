@@ -101,6 +101,10 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
         if (p.on === 'hand' && (p.actor ?? 0) >= n) problems.push(`${s.id}: prop ${p.id} is held by actor ${p.actor ?? 0}, but the shot has ${n} actor${n === 1 ? '' : 's'}`)
         cue(s.id, p.at)
       }
+      for (const c of s.camera ?? []) {
+        if (typeof c.to === 'string' && sc && !sc.anchors[c.to]) problems.push(`${s.id}: camera target "${c.to}" not in scene ${s.scene}`)
+        cue(s.id, c.at)
+      }
       if (s.slam) { s.slam.at.forEach((c) => cue(s.id, c)); if (!s.slam.words?.length) problems.push(`${s.id}: slam needs words`) }
     } else if (s.kind === 'slide') {
       if (!SLIDE_KINDS.includes(s.slide)) problems.push(`${s.id}: unknown slide "${s.slide}" (kinds: ${SLIDE_KINDS.join(', ')})`)
