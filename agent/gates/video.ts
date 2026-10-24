@@ -98,6 +98,8 @@ export const plannedMotion = (tl: { shots: { from: number; shot: any }[] }): num
     if (i) out.add(s.from)
     if (s.shot.kind === 'scene' && s.shot.slam) for (const c of s.shot.slam.at) out.add(c)
     if (s.shot.kind === 'slide' && s.shot.slide === 'slam') for (const c of s.shot.at) out.add(c)
+    // # vignette steps move big things on purpose (a weight dropping, a bubble popping)
+    if (s.shot.kind === 'vignette') for (const c of s.shot.at) out.add(c)
   })
   return [...out].sort((a, b) => a - b)
 }

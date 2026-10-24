@@ -70,3 +70,12 @@ test('brightness is measured and, when a band is given, enforced', () => {
   expect(r.stats.brightness).toBeCloseTo(b, 0)
   expect(r.problems.join('\n')).toMatch(/brightness .* \(want 12–20%\)/)
 }, 120_000)
+
+test('vignette steps are planned motion too (a weight dropping on a scale was flagged)', async () => {
+  const { plannedMotion } = await import('../../agent/gates/video')
+  const tl = { fps: 30, durationInFrames: 600, sfx: [], shots: [
+    { from: 0, to: 300, shot: { kind: 'vignette', vignette: 'scale', at: [20, 140, 200] } },
+    { from: 300, to: 600, shot: { kind: 'slide', slide: 'bars', at: [350] } },
+  ] }
+  expect(plannedMotion(tl as any)).toEqual([20, 140, 200, 300])
+})

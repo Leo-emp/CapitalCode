@@ -175,7 +175,8 @@ const Scale: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame, 
         <line x1={e.x} y1={e.y} x2={e.x + 120} y2={e.y + 230} stroke={COLORS.line} strokeWidth={3} />
         <path d={`M ${e.x - 170} ${e.y + 230} Q ${e.x} ${e.y + 300} ${e.x + 170} ${e.y + 230} Z`} fill={COLORS.bgPanel} stroke={COLORS.blue} strokeWidth={4} />
         {t > 0.01 && (
-          <g transform={`translate(${e.x} ${interpolate(t, [0, 1], [e.y - 300, e.y + 230 - size / 2], clamp)})`}>
+          // # drops a short way onto its pan and fades in — never flies across the slide heading
+          <g opacity={Math.min(1, t * 2.5)} transform={`translate(${e.x} ${interpolate(t, [0, 1], [e.y + 230 - size / 2 - 160, e.y + 230 - size / 2], clamp)})`}>
             <rect x={-size / 2} y={-size / 2} width={size} height={size} rx={10} fill={col} opacity={0.9} />
             <Label x={0} y={14} size={44} weight={800} color={COLORS.bg}>{`${v.value}${unit}`}</Label>
           </g>
