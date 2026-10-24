@@ -36,3 +36,10 @@ test('vignette text is phone-readable (no font below 28 px)', async () => {
       .filter((m) => Number(m[1] ?? m[2]) < 28).map((m) => `${f}: ${m[0]}`))
   expect(small).toEqual([])
 })
+
+test('leaderboard takes 10 rows and marks the names that survive', () => {
+  const v = getVignette('leaderboard')
+  expect(v.check(SAMPLES.leaderboard)).toBeNull()
+  const html = renderToStaticMarkup(<svg>{React.createElement(v.Component, { frame: 300, data: SAMPLES.leaderboard, cues: [0, 100] })}</svg>)
+  expect(html).toMatch(/data-survivor="Microsoft"/)
+})

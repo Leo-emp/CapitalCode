@@ -70,7 +70,7 @@ export const CompareCards: React.FC<{ frame: number; cards: { title: string; val
       return (
         <div key={i} style={{ flex: 1, padding: '40px 36px', borderRadius: 10, border: `2px solid ${c.winner ? col : 'rgba(255,255,255,0.12)'}`,
           background: c.winner ? `${col}14` : 'rgba(255,255,255,0.03)', boxShadow: c.winner ? `0 0 50px ${col}33` : 'none', ...rise(g, 40) }}>
-          <div style={{ fontSize: 32, letterSpacing: 3, color: COLORS.dim, fontWeight: 700 }}>{c.title.toUpperCase()}</div>
+          <div style={{ fontSize: 34, color: COLORS.dim, fontWeight: 700 }}>{c.title}</div>
           <div style={{ fontSize: 84, fontWeight: 800, color: col, margin: '16px 0 22px' }}>{c.value}</div>
           {c.lines.map((l, k) => <div key={k} style={{ fontSize: 34, color: COLORS.text, marginTop: 12, opacity: 0.9 }}>• {l}</div>)}
         </div>

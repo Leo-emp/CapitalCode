@@ -36,3 +36,11 @@ test('no infographic text is smaller than 24 px', async () => {
       .filter((m) => Number(m[1] ?? m[2]) < 24).map((m) => `${f}: ${m[0]}`))
   expect(small).toEqual([])
 })
+
+// # Critic v2 / owner r10: no tracked-caps sub-lines — labels and card titles stay in sentence case
+test('number labels and compare-card titles keep sentence case', () => {
+  const n = renderToStaticMarkup(<NumberBuild frame={60} value={44} cues={[0, 10]} label="more paid per $1 of future profit" />)
+  expect(n).toContain('more paid per $1 of future profit')
+  const c = renderToStaticMarkup(<CompareCards frame={60} cards={[{ title: 'Rest of the index', value: '19.5×', lines: ['x'] }]} cues={[0]} />)
+  expect(c).toContain('Rest of the index')
+})

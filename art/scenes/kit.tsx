@@ -170,7 +170,7 @@ export const Pavement: React.FC<{ y: number; u: (n: string) => string; spill?: {
 // ------------------------------------------------------------
 export const RoomShell: React.FC<{ floor?: number; panels?: boolean }> = ({ floor = 880, panels = true }) => (
   <g>
-    <rect width={1920} height={1080} fill="#04060B" />
+    <rect width={1920} height={1080} fill="#0B1524" />
     <line x1={0} x2={1920} y1={floor} y2={floor} stroke={L.dim} strokeWidth={2} />
     <line x1={0} x2={1920} y1={floor - 18} y2={floor - 18} stroke={L.dim} strokeWidth={1} opacity={0.6} />
     {panels && Array.from({ length: 8 }, (_, i) => <rect key={i} x={40 + i * 240} y={90} width={200} height={floor - 150} fill="none" stroke={L.dim} strokeWidth={1} opacity={0.35} />)}

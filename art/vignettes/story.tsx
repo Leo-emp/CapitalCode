@@ -16,17 +16,18 @@ const Bubble: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame,
   const appear = settle(frame, cues[0])
   const swell = settle(frame, cues[1])
   const pop = data.pop ? ramp(frame, cues[2], 14) : 0
-  const cx = 960, cy = 520
+  const cx = 960, cy = 590
   const wobble = 1 + 0.015 * Math.sin(frame / 5)
-  const r = (80 + 270 * swell) * appear * wobble * (1 + 0.25 * pop)
+  const r = (80 + 220 * swell) * appear * wobble * (1 + 0.25 * pop)
   return (
     <g>
       <Glow id="bb-g" x={cx} y={cy} r={r * 1.6 + 1} opacity={0.3 * (1 - pop)} />
       {pop < 1 && (
         <g opacity={1 - pop}>
           <circle cx={cx} cy={cy} r={r} fill={COLORS.blue} fillOpacity={0.1} stroke={COLORS.blueLight} strokeWidth={4} />
-          <ellipse cx={cx - r * 0.35} cy={cy - r * 0.45} rx={r * 0.22} ry={r * 0.1} fill="#fff" opacity={0.35} transform={`rotate(-30 ${cx - r * 0.35} ${cy - r * 0.45})`} />
-          <Label x={cx} y={cy - r * 0.55 + 20} size={50} weight={800} color={COLORS.champagneLight} opacity={swell}>{data.label}</Label>
+          <ellipse cx={cx + r * 0.42} cy={cy - r * 0.42} rx={r * 0.2} ry={r * 0.09} fill="#fff" opacity={0.3} transform={`rotate(40 ${cx + r * 0.42} ${cy - r * 0.42})`} />
+          <Label x={cx} y={cy - r * 0.5 + 20} size={50} weight={800} color={COLORS.champagneLight} opacity={swell}>{data.label}</Label>
+          {data.value && <Label x={cx} y={cy + 30} size={84} weight={800} color={COLORS.champagneLight} opacity={swell}>{data.value}</Label>}
         </g>
       )}
       {/* # names float inside; when it pops they fall and turn red */}
@@ -34,7 +35,7 @@ const Bubble: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame,
         const a = (i / Math.max(1, items.length)) * Math.PI * 2 + 0.6
         const s = settle(frame, (cues[1] ?? 0) + 6 + i * 5)
         const fall = pop * 120
-        const x = cx + Math.cos(a) * r * 0.45, y = cy + 40 + Math.sin(a) * r * 0.3 + fall
+        const x = cx + Math.cos(a) * r * 0.5, y = cy + (data.value ? 120 : 40) + Math.sin(a) * r * 0.22 + fall
         return <Label key={i} x={x} y={y} size={40} color={pop > 0.3 ? COLORS.red : COLORS.text} opacity={s * (1 - pop)}>{it}</Label>
       })}
       {/* # the pop: a ring and shards flying out */}
@@ -53,14 +54,14 @@ const Bubble: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame,
 
 // ---------------------------------------------------------------- leaderboard
 // # data: { title?, before: string[], after: string[] } (≤ 8 each) — steps: old ranking, reshuffle
-const ROW = 86
+const ROW = 66
 const Leaderboard: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame, data, cues }) => {
   const before = data.before as string[], after = data.after as string[]
   const show = settle(frame, cues[0])
   const t = interpolate(frame, [cues[1] ?? Infinity, (cues[1] ?? Infinity) + 36], [0, 1], { ...clamp })
   const ease = t * t * (3 - 2 * t)
   const names = [...new Set([...before, ...after])]
-  const y0 = 220, x0 = 600, w = 720
+  const y0 = 250, x0 = 600, w = 720
   const n = Math.max(before.length, after.length)
   return (
     <g opacity={show}>
@@ -77,7 +78,14 @@ const Leaderboard: React.FC<{ frame: number; data: any; cues: number[] }> = ({ f
         if (b >= 0 && a >= 0) { y = interpolate(ease, [0, 1], [b, a]) * ROW + y0 + 50; col = a < b ? COLORS.green : a > b ? COLORS.red : COLORS.text }
         else if (b >= 0) { const k = Math.min(1, ease * 2); y = b * ROW + y0 + 50; x += k * 560; op = 1 - k; col = k > 0.05 ? COLORS.red : COLORS.text }
         else { const k = Math.max(0, ease * 2 - 1); y = y0 + a * ROW + 50; x += (1 - k) * 560; op = k; col = COLORS.green }
-        return <Label key={nm} x={x} y={y} anchor="start" size={40} weight={700} color={col} opacity={op}>{nm}</Label>
+        // # a name in both rankings survived: gold, marked (e.g. "only Microsoft is still there")
+        const survivor = b >= 0 && a >= 0
+        return (
+          <g key={nm} data-survivor={survivor ? nm : undefined}>
+            {survivor && ease > 0.5 && <rect x={x0 - 110} y={y - 44} width={w + 110} height={ROW - 10} rx={8} fill="none" stroke={COLORS.champagne} strokeWidth={4} opacity={(ease - 0.5) * 2} />}
+            <Label x={x} y={y} anchor="start" size={36} weight={survivor ? 800 : 700} color={survivor ? COLORS.champagneLight : col} opacity={op}>{nm}</Label>
+          </g>
+        )
       })}
       {data.title && <Label x={960} y={170} size={38} color={COLORS.dim}>{data.title}</Label>}
     </g>
@@ -121,17 +129,60 @@ const Lottery: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame
   )
 }
 
+// ---------------------------------------------------------------- loop
+// # data: { steps: string[] (3–4), label? } — a cycle that feeds itself; one step lights per cue, then it spins
+const Loop: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame, data, cues }) => {
+  const steps = data.steps as string[]
+  const n = steps.length, cx = 960, cy = 580, R = 270
+  const last = cues[n - 1] ?? Infinity
+  const spin = frame > last ? ((frame - last) / 90) * Math.PI * 2 : 0
+  const at = (i: number) => { const a = -Math.PI / 2 + (i / n) * Math.PI * 2; return { x: cx + Math.cos(a) * R, y: cy + Math.sin(a) * R, a } }
+  return (
+    <g>
+      <Glow id="lp-g" x={cx} y={cy} r={520} color={COLORS.warm} opacity={0.12 + (frame > last ? 0.12 : 0)} />
+      <circle cx={cx} cy={cy} r={R} fill="none" stroke={COLORS.lineDim} strokeWidth={3} strokeDasharray="14 12" />
+      {steps.map((_, i) => {
+        // # arrow from step i to step i+1, drawn when step i+1 lights (the last one closes the loop)
+        const on = settle(frame, cues[(i + 1) % n === 0 ? n - 1 : i + 1])
+        const p = at(i), q = at(i + 1)
+        const mid = (p.a + (q.a < p.a ? q.a + Math.PI * 2 : q.a)) / 2
+        const mx = cx + Math.cos(mid) * (R + 24), my = cy + Math.sin(mid) * (R + 24)
+        return <path key={`a${i}`} d={`M ${p.x} ${p.y} Q ${mx} ${my} ${q.x} ${q.y}`} fill="none" stroke={COLORS.champagne} strokeWidth={6} opacity={on} strokeDasharray="1600" strokeDashoffset={1600 * (1 - on)} />
+      })}
+      {steps.map((t, i) => {
+        const p = at(i), on = settle(frame, cues[i], true)
+        const w = Math.max(280, t.length * 20 + 60)
+        return (
+          <g key={i} opacity={0.25 + 0.75 * on} transform={`translate(${p.x} ${p.y}) scale(${0.9 + 0.1 * on})`}>
+            <rect x={-w / 2} y={-40} width={w} height={80} rx={40} fill="#12233A" stroke={on > 0.5 ? COLORS.champagne : COLORS.blue} strokeWidth={4} />
+            <Label x={0} y={13} size={36} weight={800} color={COLORS.text}>{t}</Label>
+          </g>
+        )
+      })}
+      {/* # a coin running round the loop once it is closed */}
+      {frame > last && <circle cx={cx + Math.cos(spin - Math.PI / 2) * R} cy={cy + Math.sin(spin - Math.PI / 2) * R} r={18} fill="#E2B85C" stroke="#FFE3A0" strokeWidth={3} />}
+      {data.label && <Label x={cx} y={cy + 14} size={46} weight={800} color={COLORS.champagneLight} opacity={settle(frame, last + 10)}>{data.label}</Label>}
+    </g>
+  )
+}
+
 export const STORY_VIGNETTES = [
+  makeVignette('loop', 'A cycle that feeds itself', ['feedback', 'momentum', 'compounding', 'concentration'], {
+    hint: '{ steps: string[] (3–4 short steps), label? } — cues: one per step (the last closes the loop)',
+    items: (d) => d?.steps?.length ?? 0,
+    check: (d) => list(d, 'steps', 3) ?? (d.steps.length > 4 ? 'at most 4 steps' : d.steps.some((x: string) => x.length > 22) ? 'steps must be ≤ 22 chars' : null),
+    Component: Loop,
+  }),
   makeVignette('bubble', 'A bubble swelling (and popping)', ['bubble', 'mania', 'crash', 'history', 'valuation'], {
-    hint: '{ label, items?: string[] (≤ 5 short names), pop?: boolean } — cues: appear, swell, (pop)',
+    hint: '{ label, value?: "≈ 27%", items?: string[] (≤ 5 short names), pop?: boolean } — cues: appear, swell, (pop)',
     items: (d) => (d?.pop ? 3 : 2),
     check: (d) => (d?.label ? ((d.items ?? []).length > 5 ? 'at most 5 items' : null) : 'needs a "label"'),
     Component: Bubble,
   }),
   makeVignette('leaderboard', 'A ranking reshuffles: old leaders out, new in', ['ranking', 'change', 'history', 'companies'], {
-    hint: '{ title?, before: string[], after: string[] } (≤ 8 each) — cues: old ranking, reshuffle',
+    hint: '{ title?, before: string[], after: string[] } (≤ 10 each; names in both are marked as survivors) — cues: old ranking, reshuffle',
     items: () => 2,
-    check: (d) => list(d, 'before', 2) ?? list(d, 'after', 2) ?? (d.before.length > 8 || d.after.length > 8 ? 'at most 8 rows' : null),
+    check: (d) => list(d, 'before', 2) ?? list(d, 'after', 2) ?? (d.before.length > 10 || d.after.length > 10 ? 'at most 10 rows' : null),
     Component: Leaderboard,
   }),
   makeVignette('lottery', 'Many tickets, a few huge winners', ['odds', 'winners', 'risk', 'stocks', 'returns'], {

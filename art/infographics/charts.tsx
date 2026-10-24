@@ -24,7 +24,7 @@ export const NumberBuild: React.FC<{ frame: number; value: number; cues: [number
   return (
     <div style={{ position: 'absolute', left: x, top: y, ...rise(a) }}>
       <div style={{ fontSize: size, fontWeight: 800, color: TONE[tone], lineHeight: 1 }}>{format(v)}</div>
-      {label && <div style={{ fontSize: 36, letterSpacing: 5, color: COLORS.dim, marginTop: 14 }}>{label.toUpperCase()}</div>}
+      {label && <div style={{ fontSize: 38, color: COLORS.text, opacity: 0.85, marginTop: 14 }}>{label}</div>}
     </div>
   )
 }
@@ -48,7 +48,7 @@ export const Equation: React.FC<{ frame: number; parts: EqPart[]; cues: number[]
       return (
         <div key={i} style={rise(v)}>
           <div style={{ fontSize: 116, fontWeight: 800, color: TONE[p.tone ?? 'blue'], lineHeight: 1 }}>{p.text}</div>
-          {p.label && <div style={{ fontSize: 32, letterSpacing: 5, color: COLORS.dim, marginTop: 12 }}>{p.label.toUpperCase()}</div>}
+          {p.label && <div style={{ fontSize: 34, color: COLORS.dim, marginTop: 12 }}>{p.label}</div>}
         </div>
       )
     })}
