@@ -20,7 +20,7 @@ export const duration = (file: string): number => {
 
 // # Integrated loudness (LUFS) and true peak (dBTP) via ebur128
 export const loudness = (file: string): { lufs: number; peak: number } => {
-  const p = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', file, '-af', 'ebur128=peak=true', '-f', 'null', '-'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })
+  const p = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', file, '-vn', '-af', 'ebur128=peak=true', '-f', 'null', '-'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })
   const i = [...p.stderr.matchAll(/I:\s+(-?[\d.]+) LUFS/g)].at(-1)
   const tp = [...p.stderr.matchAll(/Peak:\s+(-?[\d.]+) dBFS/g)].at(-1)
   if (!i) throw new Error(`could not measure loudness of ${file}`)
