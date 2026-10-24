@@ -9,7 +9,7 @@ import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:net'
-import { cpus } from 'node:os'
+import { cpus, freemem } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { bundle } from '@remotion/bundler'
 import { renderMedia, renderStill, selectComposition } from '@remotion/renderer'
@@ -206,7 +206,7 @@ export const remotionRange = async (inputProps: Record<string, unknown>): Promis
   return async (from, to, out) => {
     await renderMedia({
       serveUrl: await serveUrl(), composition: comp, inputProps, codec: 'h264', crf: 18, pixelFormat: 'yuv420p', imageFormat: 'jpeg', jpegQuality: 92,
-      frameRange: [from, to - 1], outputLocation: out, muted: true, timeoutInMilliseconds: TIMEOUT, port: await port(), concurrency: Math.max(2, Math.floor(cpus().length / 2)),
+      frameRange: [from, to - 1], outputLocation: out, muted: true, timeoutInMilliseconds: TIMEOUT, port: await port(), concurrency: renderConcurrency(freemem() / 1e9, cpus().length), // # re-checked every chunk
     })
   }
 }
@@ -259,3 +259,8 @@ export const mixAudio = (voice: string, sfx: Sfx[], seconds: number, out: string
 // # Video (no audio) + mixed audio → final mp4 (AAC 192k stereo, fast start)
 export const mux = (video: string, audio: string, out: string) =>
   ff(['-i', video, '-i', audio, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-ac', '2', '-shortest', '-movflags', '+faststart', out], 'mux')
+
+// # Browser tabs for one chunk: half the cores at most, and only as many as free memory allows
+// # (≈ 0.45 GB per tab, 2 GB kept for the system) — a render on a busy PC slows down instead of being killed
+export const renderConcurrency = (freeGB: number, cores: number) =>
+  Math.max(1, Math.min(Math.max(1, Math.floor(cores / 2)), Math.floor((freeGB - 2) / 0.45)))

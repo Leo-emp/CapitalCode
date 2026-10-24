@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, test } from 'vitest'
 import { duration, ff, loudness, tone } from '../../agent/audio'
-import { artFingerprint, autoSfx, chunkKeys, concatList, countFrames, freePort, mixAudio, pruneChunks, renderChunks, splitChunks } from '../../agent/render'
+import { artFingerprint, autoSfx, chunkKeys, concatList, countFrames, freePort, mixAudio, pruneChunks, renderChunks, renderConcurrency, splitChunks } from '../../agent/render'
 import { createServer } from 'node:net'
 
 // # A fake renderer: a solid-colour clip with exactly (to - from) frames at 30 fps
@@ -131,4 +131,12 @@ test('pruneChunks deletes chunk files that are not in the current render', async
   const removed = pruneChunks(d, [join(d, 'chunk_000000_000900_aaa.mp4'), join(d, 'chunk_000900_001800_bbb.mp4')])
   expect(removed).toEqual(['chunk_000000_000900_old.mp4'])
   expect(readdirSync(d).sort()).toEqual(['audio.wav', 'chunk_000000_000900_aaa.mp4', 'chunk_000900_001800_bbb.mp4'])
+})
+
+// # A render was killed for low memory (2026-10-24): browser tabs scale with free memory, not just cores
+test('render concurrency follows free memory and cores', () => {
+  expect(renderConcurrency(7.0, 16)).toBe(8)      // # plenty: half the cores
+  expect(renderConcurrency(3.5, 16)).toBe(3)      // # tight: fewer tabs, slower but safe
+  expect(renderConcurrency(1.0, 16)).toBe(1)      // # never zero
+  expect(renderConcurrency(32, 4)).toBe(2)        // # never more than half the cores
 })
