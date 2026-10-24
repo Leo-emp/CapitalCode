@@ -99,16 +99,26 @@ const Eye: React.FC<{ cx: number; spec: FaceSpec; blink?: number }> = ({ cx, spe
   )
 }
 
-export const FaceHD: React.FC<{ expression: ExpressionId; brow?: string; blink?: number }> = ({ expression, brow: browColor = BROW, blink = 0 }) => {
-  const s = FACES[expression]
+// # to + mix (living film): the face is part-way from `expression` to `to` — brows and gaze slide,
+// # eyes and mouth cross-fade (their shapes can't be morphed point by point)
+export const FaceHD: React.FC<{ expression: ExpressionId; brow?: string; blink?: number; to?: ExpressionId; mix?: number }> = ({ expression, brow: browColor = BROW, blink = 0, to, mix = 0 }) => {
+  const a = FACES[expression], b = FACES[to ?? expression], m = to ? Math.max(0, Math.min(1, mix)) : 0
+  const lerp = (x: number, y: number) => x + (y - x) * m
+  const s: FaceSpec = { ...a, browL: [lerp(a.browL[0], b.browL[0]), lerp(a.browL[1], b.browL[1])], browR: [lerp(a.browR[0], b.browR[0]), lerp(a.browR[1], b.browR[1])], browArc: lerp(a.browArc, b.browArc), look: lerp(a.look, b.look) }
   const brow = (x1: number, x2: number, y: [number, number]) =>
     <path d={`M${x1} ${y[0]} Q${(x1 + x2) / 2} ${(y[0] + y[1]) / 2 + s.browArc} ${x2} ${y[1]}`} stroke={browColor} strokeWidth={4.5} strokeLinecap="round" fill="none" />
+  const eyesMouth = (f: FaceSpec, o: number) => (
+    <g opacity={o}>
+      <Eye cx={-15} spec={{ ...f, look: s.look }} blink={blink} /><Eye cx={25} spec={{ ...f, look: s.look }} blink={blink} />
+      <path d={f.mouth} stroke={f.mouthFill === '#F4F7FC' ? 'none' : LINE} strokeWidth={3.5} fill={f.mouthFill ?? 'none'} strokeLinecap="round" strokeLinejoin="round" />
+    </g>
+  )
   return (
-    <g data-expression={expression}>
+    <g data-expression={m >= 0.5 && to ? to : expression}>
       <g transform="translate(0 -3)">{brow(-28, -4, s.browL)}{brow(14, 38, s.browR)}</g>
-      <Eye cx={-15} spec={s} blink={blink} /><Eye cx={25} spec={s} blink={blink} />
       <path d="M6 -90 Q11 -80 5 -76" stroke="#0E1730" strokeWidth={3} fill="none" strokeLinecap="round" />
-      <path d={s.mouth} stroke={s.mouthFill === '#F4F7FC' ? 'none' : LINE} strokeWidth={3.5} fill={s.mouthFill ?? 'none'} strokeLinecap="round" strokeLinejoin="round" />
+      {m < 1 && eyesMouth(a, 1 - m)}
+      {m > 0 && eyesMouth(b, m)}
     </g>
   )
 }
@@ -116,7 +126,7 @@ export const FaceHD: React.FC<{ expression: ExpressionId; brow?: string; blink?:
 // ------------------------------------------------------------
 // HEAD — oval with jaw, ears, hair styles, glasses
 // ------------------------------------------------------------
-const Head: React.FC<{ look: LookHD; expression: ExpressionId; tilt: number; u: (n: string) => string; blink?: number }> = ({ look, expression, tilt, u, blink }) => (
+const Head: React.FC<{ look: LookHD; expression: ExpressionId; tilt: number; u: (n: string) => string; blink?: number; blend?: { from: ExpressionId; mix: number } }> = ({ look, expression, tilt, u, blink, blend }) => (
   <g transform={`rotate(${tilt} 4 -60)`}>
     <defs>
       <linearGradient id={u('face')} x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor={look.skin[0]} /><stop offset="100%" stopColor={look.skin[1]} /></linearGradient>
@@ -160,7 +170,9 @@ const Head: React.FC<{ look: LookHD; expression: ExpressionId; tilt: number; u: 
       <path d="M-24 -160 C0 -172 24 -168 40 -152" stroke={look.hairColor[1]} strokeWidth={3} fill="none" strokeLinecap="round" opacity={0.7} /></g>}
     {look.hair === 'none' && <g>
       <path d="M-50 -110 L-48 -86 L-42 -88 L-42 -112 Z M54 -110 L52 -86 L46 -88 L46 -112 Z" fill={look.hairColor[0]} /></g>}
-    <FaceHD expression={expression} brow={look.brow} blink={blink} />
+    {blend
+      ? <FaceHD expression={blend.from} to={expression} mix={blend.mix} brow={look.brow} blink={blink} />
+      : <FaceHD expression={expression} brow={look.brow} blink={blink} />}
     {look.glasses && <g fill="rgba(160,215,255,0.07)" stroke="#8FD0FF" strokeWidth={3}>
       <circle cx={-15} cy={-100} r={17} /><circle cx={25} cy={-100} r={17} /><path d="M2 -102 Q5 -106 8 -102" fill="none" />
       <path d="M-32 -102 L-44 -104 M42 -102 L52 -104" fill="none" /></g>}
@@ -285,7 +297,7 @@ const Torso: React.FC<{ look: LookHD }> = ({ look }) => {
 // THE HD CHARACTER
 // ------------------------------------------------------------
 // # life (optional): blink 0–1, breath −1..1, headTurn degrees — from art/motion/life idleLife()
-export const CharacterHD: React.FC<{ pose: Pose; look?: LookHD; frame?: number; breathe?: boolean; life?: { blink: number; breath: number; headTurn: number } }> = ({ pose: p, look = LOOKS_HD.hero, frame: f = 0, breathe = true, life }) => {
+export const CharacterHD: React.FC<{ pose: Pose; look?: LookHD; frame?: number; breathe?: boolean; life?: { blink: number; breath: number; headTurn: number }; blend?: { from: ExpressionId; mix: number } }> = ({ pose: p, look = LOOKS_HD.hero, frame: f = 0, breathe = true, life, blend }) => {
   const base = useUid('chd')
   const u = (n: string) => `${base}-${n}`
   const S = HD_SKELETON
@@ -299,7 +311,7 @@ export const CharacterHD: React.FC<{ pose: Pose; look?: LookHD; frame?: number; 
         {/* # Arms that hang behind the body when crossed are drawn first */}
         <g transform={`translate(0 ${b})`}><Torso look={look} /></g>
         <path d="M-16 -30 L18 -30 L20 14 L-16 14 Z" fill={look.skin[1]} />
-        <g transform="translate(0 26) scale(1.14) translate(0 -4)"><Head look={look} expression={p.expression} tilt={(life ? life.headTurn : Math.sin(f / 40) * 1.5) + p.head} u={u} blink={life?.blink} /></g>
+        <g transform="translate(0 26) scale(1.14) translate(0 -4)"><Head look={look} expression={p.expression} tilt={(life ? life.headTurn : Math.sin(f / 40) * 1.5) + p.head} u={u} blink={life?.blink} blend={blend} /></g>
         <g transform={`translate(0 ${b})`}>
           <g transform={`translate(${S.shoulderL.x} ${S.shoulderL.y})`}><Arm a={p.l} side={-1} look={look} /></g>
           <g transform={`translate(${S.shoulderR.x} ${S.shoulderR.y})`}><Arm a={p.r} side={1} look={look} /></g>

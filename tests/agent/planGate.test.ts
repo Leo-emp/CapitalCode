@@ -293,3 +293,12 @@ describe('walk paths', () => {
     expect(gatePlan(p, words, opts()).problems).toContain('a: path anchor "nowhere" not in scene shop-street')
   })
 })
+
+describe('hand-over', () => {
+  test('giving a prop to an actor who is not in the shot is refused', () => {
+    const p = good()
+    const a = p.shots[0] as any
+    a.props[0] = { ...a.props[0], on: 'hand', give: { at: { sentence: 's2', word: 'money' }, to: 1 } }
+    expect(gatePlan(p, words, opts()).problems).toContain('a: prop cash-stack is given to actor 1, but the shot has 1 actor')
+  })
+})

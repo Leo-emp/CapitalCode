@@ -16,11 +16,12 @@ import { formatMoney, pctFormat } from '../infographics/layout'
 import { clamp, SlideFrame } from '../infographics/SlideFrame'
 import { Emblem } from '../logo/Emblem'
 import { Lockup } from '../logo/LogoReveal'
+import { expressionAt, GIVE_FRAMES, heldBy } from '../motion/acting'
 import { actedPose } from '../motion/life'
 import { walkAt, walkPose } from '../motion/walk'
 import { getProp } from '../props/registry'
 import { Actor, holdsInHand, propBox } from '../rig/Actor'
-import { type ExpressionId, type Pose, type PoseId } from '../rig/pose'
+import { mixPose, type Pose, type PoseId, POSES } from '../rig/pose'
 import { getScene } from '../scenes/registry'
 import { getVignette } from '../vignettes/registry'
 import { FPS, fontFaces } from '../tokens'
@@ -29,7 +30,7 @@ import { FPS, fontFaces } from '../tokens'
 type Tone = 'blue' | 'green' | 'red' | 'champagne' | 'text'
 type RActor = { who: string; anchor: string; track: { at: number; pose: string; expression?: string }[]; flip?: boolean; path?: { at: number; to: string }[] }
 // # on: 'hand' = held by actor[actor ?? 0] (follows the pose), 'floor' = stands on the anchor's ground line
-type RProp = { id: string; anchor: string; at: number; size?: number; on?: 'hand' | 'floor'; actor?: number }
+type RProp = { id: string; anchor: string; at: number; size?: number; on?: 'hand' | 'floor'; actor?: number; give?: { at: number; to: number } }
 type RScene = { id: string; kind: 'scene'; start: number; scene: string; time?: 'night' | 'dusk' | 'rain' | 'fog'; tone?: 'none' | 'blue' | 'gold' | 'red' | 'green'
   framing?: 'wide' | 'medium' | 'close'; variant?: string; world?: 'night' | 'teal'; actors?: RActor[]; props?: RProp[]; slam?: { words: { text: string; tone?: Tone }[]; at: number[] } }
 type RSlide = { id: string; kind: 'slide'; start: number; slide: string; heading?: string; kicker?: string; source?: string; data: any; at: number[] }
@@ -80,15 +81,22 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number; 
     const keys = [...act.track].sort((x, y) => x.at - y.at)
     // # each actor gets its own seed so two people never blink or gesture in sync
     const seed = i * 7 + act.who.length * 3 + 1
-    const pose = walk?.walking ? walkPose(f) : actedPose(f, keys.map((k) => [k.at, k.pose as PoseId]), speech, seed, FPS)
-    const expr = [...keys].reverse().find((k) => k.at <= f && k.expression)?.expression as ExpressionId | undefined
+    let pose = walk?.walking ? walkPose(f) : actedPose(f, keys.map((k) => [k.at, k.pose as PoseId]), speech, seed, FPS)
+    // # hand-over: giver and receiver both reach out (hold) around the moment the object changes hands
+    for (const p of s.props ?? []) {
+      if (!p.give || (i !== (p.actor ?? 0) && i !== p.give.to)) continue
+      const g = p.give.at, reach = interpolate(f, [g - 10, g - 2, g + GIVE_FRAMES + 6, g + GIVE_FRAMES + 14], [0, 1, 1, 0], clamp)
+      if (reach > 0) pose = mixPose(pose, POSES.hold, reach)
+    }
+    // # feelings melt into each other over a few frames instead of snapping
+    const ex = expressionAt(f, keys)
     actorAt.push({ pose, anchor: anc, flip })
     // # an actor whose first key is after the cut walks in on that cue; otherwise it is there from the start
     const enterAt = keys[0].at > from + 2 ? keys[0].at : -999
     const enter = interpolate(f, [enterAt - 4, enterAt + 8], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) })
     slots[anc.layer].push(
       <g key={`a${i}`} opacity={enter} transform={`translate(${(1 - enter) * (flip ? 60 : -60)} 0)`}>
-        <Actor who={act.who} pose={pose} expression={expr} x={anc.x} y={anc.y} scale={anc.scale} frame={f} flip={flip} life={seed} />
+        <Actor who={act.who} pose={pose} expression={ex.expression} blend={ex.from ? { from: ex.from, mix: ex.mix! } : undefined} x={anc.x} y={anc.y} scale={anc.scale} frame={f} flip={flip} life={seed} />
       </g>,
     )
   }
@@ -100,9 +108,18 @@ const SceneShotView: React.FC<{ s: RScene; f: number; from: number; to: number; 
     const Prop = getProp(p.id).Component
     const size = (p.size ?? 170) * anc.scale
     if (f < p.at - 1 || !layers.props) continue
-    const holder = p.on === 'hand' ? actorAt[p.actor ?? 0] : undefined
-    if (holder && !holdsInHand(holder.pose)) continue // # hand busy (chin, pointing, pocket): put the prop away
-    const box = propBox(p.on, size, anc, holder ? { pose: holder.pose, flip: holder.flip, actor: holder.anchor } : { occupied: (s.actors ?? []).some((x) => x.anchor === p.anchor), ground: a.stand?.y })
+    // # who holds it now (a hand-over moves it from the giver's hand to the receiver's)
+    const hb = p.on === 'hand' ? heldBy(f, p) : undefined
+    const holder = hb ? actorAt[hb.actor] : undefined
+    const passing = !!hb && hb.travel > 0 && hb.travel < 1
+    if (holder && !passing && !holdsInHand(holder.pose)) continue // # hand busy (chin, pointing, pocket): put the prop away
+    const boxOf = (h: (typeof actorAt)[number]) => propBox('hand', size, anc, { pose: h.pose, flip: h.flip, actor: h.anchor })
+    let box = propBox(p.on, size, anc, holder ? { pose: holder.pose, flip: holder.flip, actor: holder.anchor } : { occupied: (s.actors ?? []).some((x) => x.anchor === p.anchor), ground: a.stand?.y })
+    if (passing && p.give && actorAt[p.actor ?? 0] && actorAt[p.give.to]) {
+      const b0 = boxOf(actorAt[p.actor ?? 0]), b1 = boxOf(actorAt[p.give.to]), t = hb!.travel
+      // # a small arc while it travels, like it is being passed over
+      box = { x: b0.x + (b1.x - b0.x) * t, y: b0.y + (b1.y - b0.y) * t - Math.sin(Math.PI * t) * 30, size: b0.size }
+    }
     // # several props on one anchor fan out (not for held props)
     const k = p.on === 'hand' ? 0 : (perAnchor[p.anchor] = (perAnchor[p.anchor] ?? -1) + 1)
     // # floor props share the standing ground, so they share its layer (in front of a foreground pavement)

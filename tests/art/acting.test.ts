@@ -89,3 +89,32 @@ test('in scenes with a foreground pavement, people stand on the front layer', as
     expect(s.anchors.stand2.layer, id).toBe('front')
   }
 })
+
+// ------------------------------------------------------------ living film: feelings that change, things handed over
+test('face blends between two expressions (never a snap)', async () => {
+  const React = (await import('react')).default
+  const { renderToStaticMarkup } = await import('react-dom/server')
+  const { FaceHD } = await import('../../art/rig/hd/CharacterHD')
+  const at = (mix: number) => renderToStaticMarkup(React.createElement('svg', null, React.createElement(FaceHD, { expression: 'worried', to: 'smiling', mix })))
+  expect(at(0.5)).not.toBe(at(0))
+  expect(at(0.5)).not.toBe(at(1))
+  expect(at(0)).toBe(renderToStaticMarkup(React.createElement('svg', null, React.createElement(FaceHD, { expression: 'worried' }))))
+})
+
+test('expressionAt eases from the previous feeling over 8 frames', async () => {
+  const { expressionAt } = await import('../../art/motion/acting')
+  const keys = [{ at: 0, pose: 'idle', expression: 'worried' }, { at: 100, pose: 'idle', expression: 'smiling' }]
+  expect(expressionAt(50, keys)).toEqual({ expression: 'worried' })
+  expect(expressionAt(104, keys)).toEqual({ expression: 'smiling', from: 'worried', mix: 0.5 })
+  expect(expressionAt(108, keys)).toEqual({ expression: 'smiling' })
+})
+
+test('heldBy: giver until the cue, receiver 12 frames later, travelling in between', async () => {
+  const { heldBy } = await import('../../art/motion/acting')
+  const prop = { on: 'hand' as const, actor: 0, give: { at: 100, to: 1 } }
+  expect(heldBy(99, prop)).toEqual({ actor: 0, travel: 0 })
+  expect(heldBy(112, prop)).toEqual({ actor: 1, travel: 1 })
+  let last = 0
+  for (let f = 100; f <= 112; f++) { const t = heldBy(f, prop).travel; expect(t).toBeGreaterThanOrEqual(last); last = t }
+  expect(heldBy(500, { on: 'hand' as const, actor: 1 })).toEqual({ actor: 1, travel: 0 })
+})

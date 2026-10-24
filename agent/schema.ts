@@ -31,7 +31,8 @@ export type ActorTrackKey = { at: Cue; pose: string; expression?: string }
 // # path: walk to another spot of the scene on a cue (living film); legs run one after another
 export type ShotActor = { who: string; anchor: string; track: ActorTrackKey[]; flip?: boolean; path?: { at: Cue; to: string }[] }
 // # on: 'hand' = held by actors[actor ?? 0] (follows the pose); 'floor' = stands on the anchor's ground line
-export type ShotProp = { id: string; anchor: string; at: Cue; size?: number; on?: 'hand' | 'floor'; actor?: number }
+// # give: on a cue the held prop moves into another actor's hand (living film hand-over)
+export type ShotProp = { id: string; anchor: string; at: Cue; size?: number; on?: 'hand' | 'floor'; actor?: number; give?: { at: Cue; to: number } }
 export type SceneShot = {
   id: string; start: Cue; kind: 'scene'; scene: string
   time?: 'night' | 'dusk' | 'rain' | 'fog'; tone?: 'none' | 'blue' | 'gold' | 'red' | 'green'; framing?: 'wide' | 'medium' | 'close'

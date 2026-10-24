@@ -37,14 +37,15 @@ export const Actor: React.FC<{
   breathe?: boolean
   flip?: boolean                   // # face the other way
   life?: number                    // # seed: blinks, breathes, glances and sways on its own (living film)
-}> = ({ who, pose, expression, x, y, scale = 1, frame = 0, breathe = true, flip = false, life }) => {
+  blend?: { from: ExpressionId; mix: number } // # the face is still melting in from this feeling
+}> = ({ who, pose, expression, x, y, scale = 1, frame = 0, breathe = true, flip = false, life, blend }) => {
   const look = getLookHD(who)
   const base = typeof pose === 'string' ? getPose(pose) : pose
   const p = expression ? { ...base, expression } : base
   const l = life === undefined ? undefined : idleLife(frame, life)
   return (
     <g data-actor={who} transform={`translate(${x + (l ? l.sway * scale : 0)} ${y}) scale(${(flip ? -1 : 1) * BASE * scale} ${BASE * scale})`}>
-      <CharacterHD pose={p} look={look} frame={frame} breathe={breathe} life={l} />
+      <CharacterHD pose={p} look={look} frame={frame} breathe={breathe} life={l} blend={blend} />
     </g>
   )
 }
