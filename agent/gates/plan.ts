@@ -133,6 +133,7 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
       if (s.data?.icon && !PROPS.some((x) => x.id === s.data.icon)) problems.push(`${s.id}: unknown icon prop "${String(s.data.icon)}"`)
       for (const c of s.at ?? []) cue(s.id, c)
     } else if (s.kind === 'vignette') {
+      if (s.heading && s.heading.length > 36) problems.push(`${s.id}: vignette heading is longer than one line (max 36 characters)`)
       const v = VIGNETTES.find((x) => x.id === s.vignette)
       if (!v) problems.push(`${s.id}: unknown vignette "${s.vignette}" (vignettes: ${VIGNETTES.map((x) => x.id).join(', ')})`)
       else {

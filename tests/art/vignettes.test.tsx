@@ -112,3 +112,12 @@ test('steps follow the data: collapse / burn add a step', () => {
   expect(getVignette('money-mountain').items({ burn: true })).toBe(3)
   expect(getVignette('slice-grows').items(SAMPLES['slice-grows'])).toBe(2)
 })
+
+test('slides and vignettes are drawn in the night-flat world (no old near-black panel colours)', async () => {
+  const { readFileSync, readdirSync } = await import('node:fs')
+  const { luma, PANEL_STOPS, WORLDS } = await import('../../art/tokens')
+  const old = ['art/vignettes', 'art/infographics'].flatMap((dir) => readdirSync(dir).filter((f) => f.endsWith('.tsx')).flatMap((f) =>
+    [...readFileSync(`${dir}/${f}`, 'utf8').matchAll(/COLORS\.bgPanel|COLORS\.bg\b|#0A111C|#060A11|#05070C/g)].map((m) => `${dir}/${f}: ${m[0]}`)))
+  expect(old).toEqual([])
+  expect(luma(PANEL_STOPS[2])).toBeGreaterThanOrEqual(luma(WORLDS.night.sky[0]) * 0.9)
+})

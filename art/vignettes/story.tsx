@@ -6,7 +6,7 @@
 // ============================================================
 import React from 'react'
 import { interpolate } from 'remotion'
-import { COLORS } from '../tokens'
+import { COLORS, WORLDS } from '../tokens'
 import { clamp, Glow, hash01, Label, list, makeVignette, num, ramp, settle } from './kit'
 
 // ---------------------------------------------------------------- bubble
@@ -68,7 +68,7 @@ const Leaderboard: React.FC<{ frame: number; data: any; cues: number[] }> = ({ f
       <Glow id="lb-g" x={960} y={540} r={620} opacity={0.18} />
       {Array.from({ length: n }, (_, i) => (
         <g key={i}>
-          <rect x={x0 - 110} y={y0 + i * ROW} width={w + 110} height={ROW - 12} rx={8} fill={COLORS.bgPanel} stroke={COLORS.lineDim} strokeWidth={2} />
+          <rect x={x0 - 110} y={y0 + i * ROW} width={w + 110} height={ROW - 12} rx={8} fill={WORLDS.night.wall} stroke={COLORS.lineDim} strokeWidth={2} />
           <Label x={x0 - 55} y={y0 + i * ROW + 50} size={36} weight={800} color={COLORS.champagne}>{`${i + 1}`}</Label>
         </g>
       ))}
@@ -120,8 +120,8 @@ const Lottery: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame
         return (
           <g key={i} opacity={appear * (1 - fade * 0.5)} transform={`translate(${x} ${y}) scale(${s})`}>
             <rect x={-tw / 2} y={-th / 2} width={tw} height={th} rx={8} fill={isWin && win > 0.05 ? '#3A2C0C' : '#12233A'} stroke={col} strokeWidth={isWin && win > 0.05 ? 5 : 3} strokeDasharray={isWin ? undefined : '10 6'} />
-            <circle cx={-tw / 2} cy={0} r={10} fill={COLORS.bg} />
-            <circle cx={tw / 2} cy={0} r={10} fill={COLORS.bg} />
+            <circle cx={-tw / 2} cy={0} r={10} fill={WORLDS.night.shadow} />
+            <circle cx={tw / 2} cy={0} r={10} fill={WORLDS.night.shadow} />
             <line x1={-tw / 2 + 22} x2={tw / 2 - 22} y1={-8} y2={-8} stroke={col} strokeWidth={4} opacity={0.6} />
             <line x1={-tw / 2 + 22} x2={tw / 2 - 40} y1={10} y2={10} stroke={col} strokeWidth={4} opacity={0.4} />
           </g>

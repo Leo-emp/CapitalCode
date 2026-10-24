@@ -60,7 +60,8 @@ export const TOKENS = { FPS, W, H, COLORS, FONTS, MOTION }
 
 // # Slide / chapter / brand panel: navy like the Alux reference (≈ 12–16% brightness), lighter at the
 // # centre so the eye goes to the content (was #0A111C → #060A11, ≈ 6% — owner review 2026-10-24)
-export const PANEL_STOPS = ['#1C3150', '#13243C', '#0C1829'] as const
+// # living film: the panel is the night-flat sky (lit navy), a touch lighter in the middle
+export const PANEL_STOPS = ['#26446E', '#1E3A63', '#14284A'] as const
 export const PANEL_BG = `radial-gradient(ellipse 85% 75% at 50% 42%, ${PANEL_STOPS[0]} 0%, ${PANEL_STOPS[1]} 55%, ${PANEL_STOPS[2]} 100%)`
 
 // ------------------------------------------------------------

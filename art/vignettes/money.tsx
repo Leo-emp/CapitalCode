@@ -7,7 +7,7 @@
 // ============================================================
 import React from 'react'
 import { interpolate } from 'remotion'
-import { COLORS } from '../tokens'
+import { COLORS, WORLDS } from '../tokens'
 import { clamp, Coin, Glow, Ground, hash01, Label, list, makeVignette, num, ramp, settle, tone } from './kit'
 
 // ---------------------------------------------------------------- money-flow
@@ -55,7 +55,7 @@ const MoneyFlow: React.FC<{ frame: number; data: any; cues: number[] }> = ({ fra
               const lit = flowOn ? 0.55 + 0.45 * hash01(k, gi) : 0.25
               return (
                 <g key={k}>
-                  <rect x={x} y={y} width={w} height={hh} fill={COLORS.bgPanel} stroke={col} strokeWidth={2} rx={2} />
+                  <rect x={x} y={y} width={w} height={hh} fill={WORLDS.night.wall} stroke={col} strokeWidth={2} rx={2} />
                   {hh > 60 && Array.from({ length: Math.floor(hh / 46) }, (_, j) => (
                     <rect key={j} x={x + w * 0.25} y={y + 18 + j * 46} width={w * 0.5} height={14} fill={COLORS.warm} opacity={lit * 0.8} />
                   ))}
@@ -106,7 +106,7 @@ const Pie: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame, da
         const lx = cx + Math.cos(mid) * (r + 150), ly = cy + Math.sin(mid) * (r + 110)
         return (
           <g key={i}>
-            {a1 > a0 && <path d={arc(cx + dx, cy + dy, r, a0, a1)} fill={col} opacity={0.18 + 0.6 * out} stroke={COLORS.bg} strokeWidth={6} />}
+            {a1 > a0 && <path d={arc(cx + dx, cy + dy, r, a0, a1)} fill={col} opacity={0.18 + 0.6 * out} stroke={WORLDS.night.shadow} strokeWidth={6} />}
             <g opacity={out}>
               <Label x={Math.max(240, Math.min(1700, lx))} y={ly} size={52} weight={800} color={col}>{`${s.value}%`}</Label>
               <Label x={Math.max(240, Math.min(1700, lx))} y={ly + 48} size={34}>{s.label}</Label>
@@ -133,7 +133,7 @@ const Baskets: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame
         return (
           <g key={bi} opacity={show} transform={`translate(0 ${(1 - show) * 40})`}>
             <Glow id={`bk-${bi}`} x={cx} y={top + 60} r={220} opacity={allIn ? 0.3 : 0.15} color={allIn ? COLORS.warm : COLORS.blue} />
-            <path d={`M ${cx - 170} ${top} L ${cx + 170} ${top} L ${cx + 130} ${top + 190} L ${cx - 130} ${top + 190} Z`} fill={COLORS.bgPanel} stroke={col} strokeWidth={4} />
+            <path d={`M ${cx - 170} ${top} L ${cx + 170} ${top} L ${cx + 130} ${top + 190} L ${cx - 130} ${top + 190} Z`} fill={WORLDS.night.wall} stroke={col} strokeWidth={4} />
             {[0.33, 0.66].map((k) => <line key={k} x1={cx - 160 + 20 * k} x2={cx + 160 - 20 * k} y1={top + 190 * k} y2={top + 190 * k} stroke={col} strokeWidth={2} opacity={0.5} />)}
             <Label x={cx} y={top + 250} size={36} color={COLORS.text}>{b}</Label>
             {items.map((it, ii) => {
@@ -173,12 +173,12 @@ const Scale: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame, 
       <g>
         <line x1={e.x} y1={e.y} x2={e.x - 120} y2={e.y + 230} stroke={COLORS.line} strokeWidth={3} />
         <line x1={e.x} y1={e.y} x2={e.x + 120} y2={e.y + 230} stroke={COLORS.line} strokeWidth={3} />
-        <path d={`M ${e.x - 170} ${e.y + 230} Q ${e.x} ${e.y + 300} ${e.x + 170} ${e.y + 230} Z`} fill={COLORS.bgPanel} stroke={COLORS.blue} strokeWidth={4} />
+        <path d={`M ${e.x - 170} ${e.y + 230} Q ${e.x} ${e.y + 300} ${e.x + 170} ${e.y + 230} Z`} fill={WORLDS.night.wall} stroke={COLORS.blue} strokeWidth={4} />
         {t > 0.01 && (
           // # drops a short way onto its pan and fades in — never flies across the slide heading
           <g opacity={Math.min(1, t * 2.5)} transform={`translate(${e.x} ${interpolate(t, [0, 1], [e.y + 230 - size / 2 - 160, e.y + 230 - size / 2], clamp)})`}>
             <rect x={-size / 2} y={-size / 2} width={size} height={size} rx={10} fill={col} opacity={0.9} />
-            <Label x={0} y={14} size={44} weight={800} color={COLORS.bg}>{`${v.value}${unit}`}</Label>
+            <Label x={0} y={14} size={44} weight={800} color={WORLDS.night.shadow}>{`${v.value}${unit}`}</Label>
           </g>
         )}
         <Label x={e.x} y={e.y + 350} size={38} color={COLORS.text}>{v.label}</Label>
@@ -188,7 +188,7 @@ const Scale: React.FC<{ frame: number; data: any; cues: number[] }> = ({ frame, 
   return (
     <g opacity={show}>
       <Glow id="sc-g" x={px} y={py + 200} r={520} opacity={0.2} />
-      <path d={`M ${px} ${py} L ${px - 70} 900 L ${px + 70} 900 Z`} fill={COLORS.bgPanel} stroke={COLORS.line} strokeWidth={3} />
+      <path d={`M ${px} ${py} L ${px - 70} 900 L ${px + 70} 900 Z`} fill={WORLDS.night.wall} stroke={COLORS.line} strokeWidth={3} />
       <Ground y={900} />
       <line x1={px - arm * Math.cos((tilt * Math.PI) / 180)} y1={py + arm * Math.sin((tilt * Math.PI) / 180)} x2={px + arm * Math.cos((tilt * Math.PI) / 180)} y2={py - arm * Math.sin((tilt * Math.PI) / 180)}
         stroke={COLORS.champagne} strokeWidth={10} strokeLinecap="round" />

@@ -344,3 +344,9 @@ describe('kinetic text', () => {
     expect(gatePlan(p, words, opts()).problems).toContain('a: text anchor "vault" not in scene shop-street')
   })
 })
+
+test('a vignette heading is one short line', () => {
+  const p = good()
+  p.shots[1] = { id: 'b', kind: 'vignette', start: { sentence: 's3' }, vignette: 'pie', heading: 'A heading that is far too long to fit on a single line', data: { slices: [{ label: 'A', value: 1 }, { label: 'B', value: 2 }] }, at: [] } as any
+  expect(gatePlan(p, words, opts()).problems).toContain('b: vignette heading is longer than one line (max 36 characters)')
+})
