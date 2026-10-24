@@ -44,3 +44,11 @@ icons were most of the scene-shot "events"; 11 slams; slides heading-only for se
 ## Part D — re-render the first video
 - [x] D1 Re-plan "Your Index Fund…" with beats + vignettes + acting; hook opens on the $100 split vignette.
 - [ ] D2 Gates, render, Critic, package; side-by-side comparison for the owner.
+
+## Part E — art backlog from the Critic (v3, round 2: 7.9) — next pass
+- [ ] E1 `tracks` vignette: two horizon lines (e.g. 30 years vs 5 years) with one dip that only the long one recovers from.
+- [ ] E2 `slice-grows` vignette: one company's slice of a pie/bar grows step by step as new money flows in.
+- [ ] E3 Hero actions with oversized props (weighing two price tags; carrying a giant price tag) — new poses + prop scale.
+- [ ] E4 New props: oil barrel, pill bottle, router/server (sector shorthand for company names).
+- [ ] E5 Vignettes still planned: crowd-vs-giant, ladder/stairs, era skyline; desk-top prop placement.
+- [ ] E6 Scene variety: fewer "hero standing beside a set" shots — more two-person moments and full-frame vignettes.
