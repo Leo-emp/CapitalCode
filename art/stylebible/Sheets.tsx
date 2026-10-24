@@ -94,6 +94,7 @@ export const PropSheet: React.FC<{ page?: number }> = ({ page = 0 }) => {
   )
 }
 export const PropSheet2: React.FC = () => <PropSheet page={1} />
+export const PropSheet3: React.FC = () => <PropSheet page={2} />
 
 // # Scenes in a 4×3 grid at quarter size, hero at each scene's stand anchor
 export const SceneSheet: React.FC<{ page?: number }> = ({ page = 0 }) => {

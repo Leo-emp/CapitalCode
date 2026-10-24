@@ -16,6 +16,7 @@ export const STATIC_PAGES: StaticPage[] = [
   { name: 'page_04_PoseStrip', composition: 'PoseStrip' },
   { name: 'page_05_PropSheet', composition: 'PropSheet' },
   { name: 'page_06_PropSheet2', composition: 'PropSheet2' },
+  { name: 'page_06b_PropSheet3', composition: 'PropSheet3' },
   { name: 'page_07_SceneSheet', composition: 'SceneSheet' },
   { name: 'page_08_SceneSheet2', composition: 'SceneSheet2' },
   { name: 'page_09_SceneSheet3', composition: 'SceneSheet3' },
