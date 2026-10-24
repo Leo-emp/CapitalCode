@@ -3,7 +3,7 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, test } from 'vitest'
-import { isDone, latestJob, loadJob, markStep, newJob, nextStep, STEPS, unmarkFrom } from '../../agent/jobs'
+import { isDone, latestJob, loadJob, markStep, newJob, nextStep, readJson, STEPS, unmarkFrom, writeJson } from '../../agent/jobs'
 
 const root = () => mkdtempSync(join(tmpdir(), 'ccjobs-'))
 
@@ -37,4 +37,11 @@ describe('jobs', () => {
     const b = newJob('b', { root: r, now: new Date(2026, 0, 2, 1, 1) })
     expect(latestJob(r)).toBe(b)
   })
+})
+
+// # writeJson makes missing folders (research writes into temp/research on a fresh clone)
+test('writeJson creates missing parent folders', () => {
+  const file = join(mkdtempSync(join(tmpdir(), 'cc-')), 'a', 'b', 'x.json')
+  writeJson(file, { ok: 1 })
+  expect(readJson(file)).toEqual({ ok: 1 })
 })

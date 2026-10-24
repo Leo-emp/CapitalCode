@@ -4,7 +4,7 @@
 // first undone step; nothing is redone that already finished.
 // ============================================================
 import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { JOBS_DIR } from './paths'
 
 export const STEPS = ['topic', 'research', 'facts', 'script', 'gate_script', 'voice', 'plan', 'gate_plan', 'render', 'gate_video', 'critic', 'package', 'shorts'] as const
@@ -16,6 +16,7 @@ export const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-'
 
 // # Atomic write: never leave a half-written job.json after a crash
 export const writeJson = (file: string, data: unknown) => {
+  mkdirSync(dirname(file), { recursive: true })
   const tmp = `${file}.tmp`
   writeFileSync(tmp, JSON.stringify(data, null, 2))
   renameSync(tmp, file)
