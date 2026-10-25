@@ -49,10 +49,12 @@ export const brightness = (file: string): number => {
   return +(ys.reduce((a, b) => a + b, 0) / ys.length / 255 * 100).toFixed(1)
 }
 
-export const gateVideo = (file: string, o: { expectSeconds: number; cuts: number[]; lufs?: [number, number]; peakMax?: number; brightness?: [number, number]; maxChangeEvery?: number }): VideoGate => {
+export const gateVideo = (file: string, o: { expectSeconds: number; cuts: number[]; lufs?: [number, number]; peakMax?: number; brightness?: [number, number]; maxChangeEvery?: number; maxSeconds?: number }): VideoGate => {
   const problems: string[] = []
   const seconds = duration(file)
   if (Math.abs(seconds - o.expectSeconds) > 0.5) problems.push(`duration ${seconds.toFixed(1)} s, expected ${o.expectSeconds.toFixed(1)} s`)
+  // # a Short must stay under YouTube's 3:00 limit
+  if (o.maxSeconds && seconds > o.maxSeconds) problems.push(`duration ${seconds.toFixed(1)} s is over ${o.maxSeconds} s (YouTube Shorts end at 3:00)`)
   const l = loudness(file)
   const [lo, hi] = o.lufs ?? [-15, -13]
   if (l.lufs < lo || l.lufs > hi) problems.push(`loudness ${l.lufs} LUFS (want ${lo}…${hi})`)

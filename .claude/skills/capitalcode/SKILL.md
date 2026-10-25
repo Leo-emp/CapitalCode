@@ -197,14 +197,18 @@ screens), chunked resumable render, SFX mix, `final.mp4`. ~18 min for 8.6 min of
   titles, description with chapters + sources + "not financial advice", captions.srt,
   review_note.md). Open the thumbnails and check them at phone size.
 
-## 8b. Shorts (after the long video is packaged)
+## 8b. Shorts (made from scratch, never cut from a long video)
 
-`cc shorts <job> --n=3` picks 3–5 hook-first 30–58 s clips (never across the brand card), slices
-the timeline, adds big word-by-word captions and an end card, renders 1080×1920, checks loudness
-and length, and writes `output/shorts/<Title>_…/short_N.mp4` + `captions_for_posting.txt`.
-The automatic hook is the opening sentence; **write better ones**: run it once, edit
-`shorts/clips.json` (`hook` ≤ 42 chars, a promise or a shocking number, e.g. "NVIDIA GETS 59× MORE
-OF YOUR MONEY"; adjust `first`/`last`/`t0`/`t1` to sentence starts/ends), then run it again.
+A Short is its own job with its own script, voice and render: `cc new "<topic>" --short [--from=<long job>]`
+(`--from` copies that job's facts.json + sources, never its footage). Then the same steps as a long video.
+- **Script**: 360–530 words (2:00–2:58; YouTube Shorts end at 3:00). One idea told as a small story: a hook
+  (number or surprise) in the first sentence, tension, payoff, and a last line that loops back to the opening.
+- **Plan**: `"canvas": "tall"` and diorama pieces only, each made with `canvas: 'tall'` (1080×1920), in the same
+  continuous-illustration style, acting out every word as it is spoken, mixing light (cream) and dark (navy)
+  moods. Keep the top 220 px, the bottom 420 px and the right 140 px clear of anything important; the caption
+  band is y 1290–1490.
+- **Captions** are added automatically by gate-plan (word-by-word, spoken word in gold).
+- gate-video also refuses anything over 179 s. Package writes to `output/shorts/`.
 
 ## 9. Hand-off
 

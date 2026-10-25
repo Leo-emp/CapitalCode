@@ -11,6 +11,7 @@ import { SLIDE_SPECS } from './slides'
 import { VIGNETTES } from '../art/vignettes/registry'
 import { cueMap, type CueMap } from '../art/diorama/cues'
 import { findPiece } from '../art/diorama/registry'
+import type { CaptionChunk } from './captions'
 import '../art/diorama/pieces'
 
 // # Seconds where a cue's word starts — searched only inside its own sentence
@@ -34,9 +35,11 @@ const mapCues = (x: any, f: (c: Cue) => number): any =>
 export const STAGGER = 12 // # frames between padded slide cues
 export type TimedShot = { shot: Resolved<Shot>; from: number; to: number }
 // # speech: [from, to] frames of each spoken sentence — characters talk-gesture inside these (living film §5)
-export type Timeline = { fps: number; durationInFrames: number; shots: TimedShot[]; sfx: { name: string; t: number; volume: number }[]; speech?: [number, number][]; cues?: CueMap }
+export type Timeline = { fps: number; durationInFrames: number; shots: TimedShot[]; sfx: { name: string; t: number; volume: number }[]; speech?: [number, number][]; cues?: CueMap
+  canvas?: 'wide' | 'tall'; captions?: CaptionChunk[] }
 
-export const buildTimeline = (plan: PlanDoc, words: TimedWord[], duration: number, fps = FPS): Timeline => {
+// # captions: word-by-word captions for a Short (seconds)
+export const buildTimeline = (plan: PlanDoc, words: TimedWord[], duration: number, fps = FPS, captions?: CaptionChunk[]): Timeline => {
   const frame = (c: Cue) => Math.round(resolveCue(words, c) * fps)
   const total = Math.ceil(duration * fps)
   const starts = plan.shots.map((s, i) => (i === 0 ? 0 : frame(s.start)))
@@ -63,5 +66,5 @@ export const buildTimeline = (plan: PlanDoc, words: TimedWord[], duration: numbe
     const ws = words.filter((w) => w.sid === sid)
     speech.push([Math.round(ws[0].s * fps), Math.round(ws[ws.length - 1].e * fps)])
   }
-  return { fps, durationInFrames: total, shots, sfx, speech, cues }
+  return { fps, durationInFrames: total, shots, sfx, speech, cues, ...(plan.canvas === 'tall' ? { canvas: 'tall' as const } : {}), ...(captions ? { captions } : {}) }
 }

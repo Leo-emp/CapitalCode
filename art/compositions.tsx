@@ -7,7 +7,6 @@ import { Thumbnail } from './thumbnails/Thumbnail'
 import { DEMO_FRAMES, LibraryDemo } from './stylebible/Demo'
 import { FPS, H, W } from './tokens'
 import { Episode, type EpisodeProps, type EpisodeTimeline } from './episode/Episode'
-import { SH, Short, type ShortProps, SW } from './episode/Short'
 import { DioramaHook, type HookProps } from './diorama/Hook'
 
 // # Placeholder until the engine passes a real timeline via --props
@@ -38,10 +37,7 @@ export const ArtCompositions: React.FC = () => (
     <Composition id="VariantSheet" component={VariantSheet} durationInFrames={1} fps={FPS} width={W} height={H} />
     <Composition id="Episode" component={Episode} durationInFrames={90} fps={FPS} width={W} height={H}
       defaultProps={{ timeline: EMPTY_TIMELINE } as EpisodeProps}
-      calculateMetadata={({ props }) => ({ durationInFrames: props.timeline.durationInFrames, width: props.width ?? W, height: props.height ?? H })} />
-    <Composition id="Short" component={Short} durationInFrames={90} fps={FPS} width={SW} height={SH}
-      defaultProps={{ timeline: EMPTY_TIMELINE, captions: [], hook: '' } as ShortProps}
-      calculateMetadata={({ props }) => ({ durationInFrames: props.timeline.durationInFrames })} />
+      calculateMetadata={({ props }) => ({ durationInFrames: props.timeline.durationInFrames, ...(props.timeline.canvas === 'tall' ? { width: 1080, height: 1920 } : { width: props.width ?? W, height: props.height ?? H }) })} />
     <Composition id="DioramaHook" component={DioramaHook as React.FC<HookProps>} durationInFrames={1040} fps={FPS} width={W} height={H} defaultProps={{ cue: {} } as HookProps} />
     <Composition id="PoseStrip"component={PoseStrip} durationInFrames={1} fps={FPS} width={W} height={H} />
   </>

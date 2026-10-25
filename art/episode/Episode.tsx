@@ -24,7 +24,9 @@ import { ZOOM_INTO, zoomIntoAt } from '../motion/transition'
 import { KineticText } from '../motion/kinetic'
 import { cameraFor, OVERSCAN } from '../scenes/kit'
 import { type CueMap, reader } from '../diorama/cues'
-import { getPiece } from '../diorama/registry'
+import { type Canvas, CANVAS, getPiece } from '../diorama/registry'
+import type { CaptionChunk } from '../../agent/captions'
+import { Captions } from './Captions'
 import { type Mood, themeStyle, ZigZagWipe } from '../diorama/kit'
 import '../diorama/pieces'
 import { getProp } from '../props/registry'
@@ -46,7 +48,9 @@ type RChapter = { id: string; kind: 'chapter'; start: number; n: number; title: 
 type RBrand = { id: string; kind: 'brand'; start: number }
 type RPiece = { id: string; kind: 'piece'; start: number; piece: string; mood?: Mood }
 export type RShot = (RScene | RSlide | RVignette | RChapter | RBrand | RPiece) & { enter?: { zoomInto: string | { x: number; y: number } } }
-export type EpisodeTimeline = { fps: number; durationInFrames: number; shots: { shot: RShot; from: number; to: number }[]; sfx: { name: string; t: number; volume: number }[]; speech?: [number, number][]; cues?: CueMap }
+// # canvas: 'tall' = a 1080×1920 Short (pieces drawn for a phone, word-by-word captions); default wide 1920×1080
+export type EpisodeTimeline = { fps: number; durationInFrames: number; shots: { shot: RShot; from: number; to: number }[]; sfx: { name: string; t: number; volume: number }[]; speech?: [number, number][]; cues?: CueMap
+  canvas?: Canvas; captions?: CaptionChunk[] }
 export type EpisodeProps = { timeline: EpisodeTimeline; voice?: string; width?: number; height?: number }
 
 export const TRANSITION = 8 // # frames of zoom-through between shots
@@ -267,11 +271,11 @@ const ShotView: React.FC<{ s: RShot; f: number; from: number; to: number; speech
 
 // # A diorama piece: its own stage and choreography in one 1920×1080 SVG, reading cue words by name
 export const WIPE = 12
-const PieceView: React.FC<{ s: RPiece; f: number; from: number; to: number; cues: CueMap }> = ({ s, f, from, to, cues }) => {
-  const piece = getPiece(s.piece), P = piece.Component
+const PieceView: React.FC<{ s: RPiece; f: number; from: number; to: number; cues: CueMap; canvas: Canvas }> = ({ s, f, from, to, cues, canvas }) => {
+  const piece = getPiece(s.piece), P = piece.Component, { w, h } = CANVAS[canvas]
   return (
     <AbsoluteFill>
-      <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{ position: 'absolute', inset: 0 }}>
+      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ position: 'absolute', inset: 0 }}>
         {/* # the mood (light cream / dark navy) sets the stage and ink colours of everything inside */}
         <g style={themeStyle(s.mood ?? piece.mood ?? 'dark')}>
           <P f={f} c={reader(cues, `piece ${s.piece}`)} from={from} to={to} />
@@ -296,7 +300,7 @@ export const EpisodeFrame: React.FC<{ timeline: EpisodeTimeline; f: number }> = 
     const z = sh[i]?.shot.enter?.zoomInto
     return z !== undefined && i > 0 ? enterPoint(sh[i - 1], z, sh[i].from) : undefined
   }
-  const cues = timeline.cues ?? {}
+  const cues = timeline.cues ?? {}, canvas = timeline.canvas ?? 'wide', { w, h } = CANVAS[canvas]
   // # a piece that follows another piece comes in behind a zig-zag paper wipe (the reference's drawn transition):
   // # the paper covers the old picture in the last WIPE frames, the cut happens under it, then it uncovers the new one
   const wipeOf = (i: number) => (i > 0 && sh[i].shot.kind === 'piece' && sh[i - 1].shot.kind === 'piece' ? sh[i].from : undefined)
@@ -307,15 +311,15 @@ export const EpisodeFrame: React.FC<{ timeline: EpisodeTimeline; f: number }> = 
       if (x.shot.kind === 'piece') {
         // # pieces hand over at the cut itself (the wipe hides it): no zoom-through, no overlap
         if (f >= x.to) return null
-        return <PieceView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} cues={cues} />
+        return <PieceView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} cues={cues} canvas={canvas} />
       }
       return <ShotView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} speech={timeline.speech} enterAt={pointOf(i)} exitAt={pointOf(i + 1)} />
     })}
     {wipes.map((at) => (
-      <svg key={`w${at}`} width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>
-        <ZigZagWipe p={(f - (at - WIPE)) / WIPE} color={COLORS.champagne} mode="cover" />
-        <ZigZagWipe p={(f - at) / (WIPE + 4)} color={COLORS.champagne} mode="reveal" />
-        {f >= at - 1 && f < at + 1 && <rect width={1920} height={1080} fill={COLORS.champagne} />}
+      <svg key={`w${at}`} width={w} height={h} style={{ position: 'absolute', inset: 0 }}>
+        <ZigZagWipe p={(f - (at - WIPE)) / WIPE} color={COLORS.champagne} mode="cover" w={w} h={h} />
+        <ZigZagWipe p={(f - at) / (WIPE + 4)} color={COLORS.champagne} mode="reveal" w={w} h={h} />
+        {f >= at - 1 && f < at + 1 && <rect width={w} height={h} fill={COLORS.champagne} />}
       </svg>
     ))}
   </>
@@ -332,6 +336,7 @@ export const Episode: React.FC<EpisodeProps> = ({ timeline, voice }) => {
       {current && cornerLogo(current.shot.kind) && (
         <svg width={56} height={56} style={{ position: 'absolute', left: 48, top: 40, opacity: 0.85 }}><Emblem size={56} /></svg>
       )}
+      {timeline.captions && <Captions caps={timeline.captions} t={f / timeline.fps} />}
       <GrainOverlay frame={f} />
     </AbsoluteFill>
   )

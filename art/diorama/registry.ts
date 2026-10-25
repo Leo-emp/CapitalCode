@@ -15,7 +15,10 @@ export type Piece = {
   sfx: [cue: string, name: string, volume?: number][]
   Component: React.FC<PieceProps>
   mood?: Mood                                  // # the piece's usual mood (light/dark); a plan shot can override it
+  canvas?: Canvas                              // # 'wide' 1920×1080 (long videos, the default) or 'tall' 1080×1920 (Shorts)
 }
+export type Canvas = 'wide' | 'tall'
+export const CANVAS: Record<Canvas, { w: number; h: number }> = { wide: { w: 1920, h: 1080 }, tall: { w: 1080, h: 1920 } }
 export const makePiece = (id: string, title: string, p: Omit<Piece, 'id' | 'title'>): Piece => ({ id, title, ...p })
 
 const LIST: Piece[] = []

@@ -33,6 +33,8 @@ export type PlanGateOpts = {
   maxBare?: number; maxGap?: number
   // # living film (spec §12.6): most of the runtime is pictures — text (slides, slams, kinetic text) at most this share
   maxText?: number
+  // # Shorts: drawn for a phone — every shot is a diorama piece made for this canvas
+  canvas?: 'wide' | 'tall'; piecesOnly?: boolean
 }
 
 // # Living film framing: where each planned camera move lands, every (non-walking) person must be fully in
@@ -88,7 +90,10 @@ const median = (xs: number[]) => {
 }
 
 export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => {
+  // # a Short is drawn for a phone from the start: tall canvas, diorama pieces only (nothing reframed from 16:9)
   const problems: string[] = []
+  if (o.canvas && (plan.canvas ?? 'wide') !== o.canvas) problems.push(`plan.canvas must be "${o.canvas}"`)
+  if (o.piecesOnly) for (const s of plan.shots) if (s.kind !== 'piece') problems.push(`${s.id}: a Short uses diorama pieces only (got "${s.kind}")`)
   const [shareMin, shareMax] = o.slideShare ?? [0.35, 0.65]
   const [medMin, medMax] = o.median ?? [6, 14]
   const sfxNames = o.sfxNames ?? sfxAvailable()
@@ -176,6 +181,7 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
       // # a diorama piece: it must exist, and every cue it animates or sounds on must be a spoken word
       const p = findPiece(s.piece)
       if (!p) problems.push(`${s.id}: unknown piece "${s.piece}"`)
+      else if ((p.canvas ?? 'wide') !== (o.canvas ?? plan.canvas ?? 'wide')) problems.push(`${s.id}: piece ${p.id} is drawn for a ${p.canvas ?? 'wide'} canvas, this video is ${o.canvas ?? plan.canvas ?? 'wide'}`)
       else for (const k of [...new Set([...p.beats, ...p.sfx.map((x) => x[0])])]) if (spoken[k] === undefined) problems.push(`${s.id}: piece ${p.id}: cue "${k}" is not spoken`)
     } else if (s.kind === 'vignette') {
       if (s.heading && s.heading.length > 36) problems.push(`${s.id}: vignette heading is longer than one line (max 36 characters)`)

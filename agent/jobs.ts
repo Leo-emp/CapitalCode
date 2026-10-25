@@ -7,7 +7,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFile
 import { dirname, join } from 'node:path'
 import { JOBS_DIR } from './paths'
 
-export const STEPS = ['topic', 'research', 'facts', 'script', 'gate_script', 'voice', 'plan', 'gate_plan', 'render', 'gate_video', 'critic', 'package', 'shorts'] as const
+export const STEPS = ['topic', 'research', 'facts', 'script', 'gate_script', 'voice', 'plan', 'gate_plan', 'render', 'gate_video', 'critic', 'package'] as const
 export type Step = (typeof STEPS)[number]
 export type Job = { topic: string; kind: 'long' | 'short'; created: string; steps: Partial<Record<Step, Record<string, unknown> & { at: string }>> }
 

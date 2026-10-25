@@ -5,7 +5,7 @@
 // ============================================================
 import { allSentences, AREAS, countWords, type FactsDoc, FORMATS, type ScriptDoc } from '../schema'
 
-export type GateOpts = { sources: string[]; minWords?: number; maxWords?: number; banned?: string[] }
+export type GateOpts = { sources: string[]; minWords?: number; maxWords?: number; banned?: string[]; label?: string }
 
 const BANNED = ['welcome back', 'in this video', 'smash that like', 'like and subscribe', "don't forget to subscribe", 'without further ado', 'hey guys']
 const GUARDRAILS: [RegExp, string][] = [
@@ -38,7 +38,7 @@ export const gateScript = (script: ScriptDoc, facts: FactsDoc, opts: GateOpts) =
 
   // # length
   const words = sents.reduce((n, s) => n + countWords(s.text), 0)
-  if (words < min || words > max) problems.push(`script has ${words} words; needs ${min}–${max} for an 8–10 min video`)
+  if (words < min || words > max) problems.push(`script has ${words} words; needs ${min}–${max} for ${opts.label ?? 'an 8–10 min video'}`)
 
   // # identity: thesis, area, format
   if (countWords(script.thesis ?? '') < 6) problems.push('thesis missing or too thin — every video argues a clear point of view')

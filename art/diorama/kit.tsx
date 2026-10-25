@@ -52,7 +52,8 @@ export const themeStyle = (m: Mood): React.CSSProperties => {
 }
 
 // ------------------------------------------------------------ stage: soft lit background, vignette, drifting specks
-export const Stage: React.FC<{ id: string; tint?: 'navy' | 'teal'; frame: number }> = ({ id, tint = 'navy', frame }) => {
+// # w/h: the canvas (1920×1080 for long videos, 1080×1920 for Shorts)
+export const Stage: React.FC<{ id: string; tint?: 'navy' | 'teal'; frame: number; w?: number; h?: number }> = ({ id, tint = 'navy', frame, w = 1920, h = 1080 }) => {
   const [c0, c1] = tint === 'teal' ? ['var(--cc-alt0, #1A6B7C)', 'var(--cc-alt1, #0B3640)'] : ['var(--cc-bg0, #2B4A78)', 'var(--cc-bg1, #0E1B33)']
   return (
     <g>
@@ -61,11 +62,11 @@ export const Stage: React.FC<{ id: string; tint?: 'navy' | 'teal'; frame: number
         <radialGradient id={`${id}-vg`} cx="0.5" cy="0.5" r="0.72"><stop offset="70%" stopColor="#000" stopOpacity={0} /><stop offset="100%" stopColor={P.shadow} stopOpacity={'var(--cc-vg, 0.35)' as unknown as number} /></radialGradient>
       </defs>
       <rect x={-2000} y={-2000} width={6000} height={5000} fill={`url(#${id}-bg)`} />
-      {Array.from({ length: 26 }, (_, i) => <circle key={i} cx={((rnd(i) * 1920 + frame * (0.2 + rnd(i + 3) * 0.4)) % 2000) - 40} cy={rnd(i + 9) * 1080 - Math.sin(frame / 60 + i) * 6} r={1.5 + rnd(i + 5) * 2.5} fill="var(--cc-speck, #F0EAE1)" opacity={0.08 + rnd(i + 7) * 0.12} />)}
+      {Array.from({ length: 26 }, (_, i) => <circle key={i} cx={((rnd(i) * w + frame * (0.2 + rnd(i + 3) * 0.4)) % (w + 80)) - 40} cy={rnd(i + 9) * h - Math.sin(frame / 60 + i) * 6} r={1.5 + rnd(i + 5) * 2.5} fill="var(--cc-speck, #F0EAE1)" opacity={0.08 + rnd(i + 7) * 0.12} />)}
     </g>
   )
 }
-export const Vignette: React.FC<{ id: string }> = ({ id }) => <rect width={1920} height={1080} fill={`url(#${id}-vg)`} pointerEvents="none" />
+export const Vignette: React.FC<{ id: string; w?: number; h?: number }> = ({ id, w = 1920, h = 1080 }) => <rect width={w} height={h} fill={`url(#${id}-vg)`} pointerEvents="none" />
 
 // ------------------------------------------------------------ the island the city stands on
 export const Platform: React.FC<{ id: string; cx: number; cy: number; rx: number; ry: number }> = ({ id, cx, cy, rx, ry }) => (
@@ -184,11 +185,11 @@ export const Dome: React.FC<{ id: string; cx: number; cy: number; rx: number; ry
 // ------------------------------------------------------------ zig-zag paper wipe (the reference's drawn transition)
 // # p 0→1 sweeps a zig-zag paper edge from right to left. 'cover' fills behind the edge (the old picture
 // # disappears); 'reveal' fills ahead of it (the new picture appears behind it). Swap scenes between the two.
-export const ZigZagWipe: React.FC<{ p: number; color: string; mode: 'cover' | 'reveal' }> = ({ p, color, mode }) => {
+export const ZigZagWipe: React.FC<{ p: number; color: string; mode: 'cover' | 'reveal'; w?: number; h?: number }> = ({ p, color, mode, w = 1920, h = 1080 }) => {
   if (p <= 0 || p >= 1) return null
-  const x = lerp(2100, -300, easeInOut(p)), teeth = Array.from({ length: 23 }, (_, i) => `L${x + (i % 2 ? 40 : 0)} ${i * 50}`).join(' ')
-  const far = mode === 'cover' ? 2400 : -400
-  return <path d={`M${x} 0 ${teeth} L${x} 1100 L${far} 1100 L${far} 0 Z`} fill={color} />
+  const x = lerp(w + 180, -300, easeInOut(p)), n = Math.ceil(h / 50) + 2, teeth = Array.from({ length: n }, (_, i) => `L${x + (i % 2 ? 40 : 0)} ${i * 50}`).join(' ')
+  const far = mode === 'cover' ? w + 480 : -400, bottom = (n - 1) * 50
+  return <path d={`M${x} 0 ${teeth} L${x} ${bottom} L${far} ${bottom} L${far} 0 Z`} fill={color} />
 }
 
 // ------------------------------------------------------------ shorthand used by every piece

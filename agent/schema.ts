@@ -52,7 +52,8 @@ export type PieceShot = { id: string; start: Cue; kind: 'piece'; piece: string; 
 // # enter.zoomInto (living film): this shot grows out of a spot of the previous scene shot, or a screen point
 export type Enter = { enter?: { zoomInto: string | { x: number; y: number } } }
 export type Shot = (SceneShot | SlideShot | VignetteShot | ChapterShot | BrandShot | PieceShot) & Enter
-export type PlanDoc = { shots: Shot[]; sfx?: { at: Cue; name: string; volume?: number }[] }
+// # canvas: 'tall' for a Short (1080×1920, pieces drawn for a phone); default 'wide' (1920×1080)
+export type PlanDoc = { shots: Shot[]; sfx?: { at: Cue; name: string; volume?: number }[]; canvas?: 'wide' | 'tall' }
 
 // ------------------------------------------------------------ metadata.json (Publisher)
 export type ThumbSpec = Record<string, unknown>

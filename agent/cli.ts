@@ -4,17 +4,25 @@
 // and ends with RESULT_JSON. Usage:
 //   npx tsx agent/cli.ts <command> [job-dir] [options]
 // ============================================================
+import { copyFileSync, cpSync, existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { latestJob, loadJob, newJob, nextStep } from './jobs'
 import { refuse, result, runCommand } from './result'
 
 type Handler = (args: string[]) => Promise<void> | void
 export const COMMANDS: Record<string, { help: string; run: Handler }> = {
   new: {
-    help: 'new "<topic>" [--short]  — create a job folder',
+    help: 'new "<topic>" [--short] [--from=<long job>]  — create a job folder (--from copies that job’s sourced facts, never its footage)',
     run: (a) => {
+      const from = a.find((x) => x.startsWith('--from='))?.slice(7)
       const topic = a.filter((x) => !x.startsWith('--')).join(' ').trim() || refuse('give a topic: new "<topic>"')
+      if (from && !existsSync(join(from, 'facts.json'))) refuse(`--from: no facts.json in ${from}`)
       const dir = newJob(topic, { kind: a.includes('--short') ? 'short' : 'long' })
-      result({ ok: true, job: dir, next: nextStep(dir) })
+      if (from) {
+        copyFileSync(join(from, 'facts.json'), join(dir, 'facts.json'))
+        if (existsSync(join(from, 'sources'))) cpSync(join(from, 'sources'), join(dir, 'sources'), { recursive: true })
+      }
+      result({ ok: true, job: dir, from: from ?? null, next: nextStep(dir) })
     },
   },
   status: {
@@ -43,7 +51,6 @@ const loadCommands = async () => {
   await import('./commands/learn')
   await import('./commands/doctor')
   await import('./commands/run')
-  await import('./commands/shorts')
   await import('./commands/stylebible')
 }
 
