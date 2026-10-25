@@ -10,6 +10,7 @@ import { ACT4 } from './act4'
 import { ACT5 } from './act5'
 import { WHERE100 } from './shorts/where100'
 import { GIANTS2000 } from './shorts/giants2000'
+import { FOURPERCENT } from './shorts/fourpercent'
 // # pieces:end
 
 // # the mood of each piece (a plan shot can override it): dark for risk, bubbles and warnings; light (cream) for
@@ -18,6 +19,6 @@ const DARK = new Set(['hook', 'loop', 'bets', 'paid-off', 'dotcom', 'flip', 'sur
 export const moodOf = (id: string): Mood => (DARK.has(id) ? 'dark' : 'light')
 
 // # pieces:begin
-const ALL = [HOOK, ...ACT1, ...ACT2, ...ACT3, ...ACT4, ...ACT5, ...WHERE100, ...GIANTS2000]
+const ALL = [HOOK, ...ACT1, ...ACT2, ...ACT3, ...ACT4, ...ACT5, ...WHERE100, ...GIANTS2000, ...FOURPERCENT]
 // # pieces:end
 for (const p of ALL) registerPiece({ ...p, mood: p.mood ?? moodOf(p.id) })

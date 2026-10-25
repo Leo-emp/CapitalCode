@@ -14,12 +14,14 @@ const FILMS = [
   { name: 'index fund (long)', cues: cuesOf('tests/fixtures/indexfund/words.json'), pieces: PIECES.filter((p) => (p.canvas ?? 'wide') === 'wide') },
   { name: 'where your $100 goes (Short)', cues: cuesOf('tests/fixtures/where100/words.json'), pieces: PIECES.filter((p) => p.id.startsWith('w100-')) },
   { name: 'the giants of 2000 (Short)', cues: cuesOf('tests/fixtures/giants2000/words.json'), pieces: PIECES.filter((p) => p.id.startsWith('g2k-')) },
+  { name: '4 percent of stocks (Short)', cues: cuesOf('tests/fixtures/fourpercent/words.json'), pieces: PIECES.filter((p) => p.id.startsWith('f4-')) },
 ]
 
 test('the long film has its 24 pieces and the first Short its 7, all tall', () => {
   expect(FILMS[0].pieces.length).toBeGreaterThanOrEqual(24)
   expect(FILMS[1].pieces.length).toBe(7)
   expect(FILMS[2].pieces.length).toBe(7)
+  expect(FILMS[3].pieces.length).toBe(7)
   for (const film of FILMS.slice(1)) expect(film.pieces.every((p) => p.canvas === 'tall')).toBe(true)
 })
 
