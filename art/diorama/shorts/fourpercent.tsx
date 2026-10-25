@@ -40,7 +40,7 @@ const Hook: React.FC<PieceProps> = ({ f, c }) => {
       <TallStage id="fh" f={f} />
       {Array.from({ length: 100 }, (_, j) => {
         const p = cell(j), w = WIN.has(j), k = pop(f, since + j * 0.35, 10)
-        const h = w ? 40 + 380 * rise : 40
+        const h = w ? 40 + 230 * rise : 40
         return k > 0.01 ? <g key={j} transform={`translate(${p.x} ${p.y}) scale(${k})`}>
           {w && rise > 0.02 ? <Tower id="fh" i={j % 10} x={0} y={30} h={h} w={52} glow={on(f, gains)} /> :
             <rect x={-26} y={-26} width={52} height={52} rx={10} fill={w && f >= p4 ? P.gold : P.sky} opacity={w ? 1 : 1 - dim * 0.65} />}
@@ -174,7 +174,7 @@ const Every: React.FC<PieceProps> = ({ f, c }) => {
         const sx = 200 + (j % 6) * 136, sy = 470 + Math.floor(j / 6) * 80, t = easeInOut(span(f, every - 4 + j * 0.5, every + 20 + j * 0.5))
         return f < buys - 6 ? null : <Ticket key={j} x={lerp(sx, box.x, t)} y={lerp(sy, box.y - 60, t) - Math.sin(t * Math.PI) * 100} s={lerp(0.9, 0.3, t)} r={t * 200} kind={[5, 22, 31].includes(j) ? 'win' : 'lose'} o={(1 - t * 0.9) * on(f, buys - 6)} />
       })}
-      <FundBox id="fe" x={box.x} y={box.y} s={0.9} open={on(f, buys - 6) * (1 - sweep * 0.5)} label="INDEX FUND" />
+      <FundBox id="fe" x={box.x} y={box.y} s={0.9} open={on(f, buys - 6) * (1 - sweep * 0.5)} label="INDEX" />
       {/* # a future giant grows out of the fund: you own a slice of it already */}
       <g opacity={on(f, future)}><Tower id="fe" i={2} x={800} y={980} h={520 * easeOut(span(f, giant, own + 20))} w={100} glow={on(f, own)} />
         <g opacity={on(f, piece)} transform="translate(800 980)"><rect x={-50} y={-180} width={100} height={60} fill={P.gold} /><Label x={130} y={-140} text="yours" size={44} color={P.goldInk} /></g></g>
