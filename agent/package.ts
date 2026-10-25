@@ -77,7 +77,8 @@ const HYPE = ['guaranteed', 'get rich quick', 'overnight', 'secret they', 'you w
 export const LAYOUTS = ['hero-left', 'object-center', 'split']
 export const TONES = ['champagne', 'green', 'red', 'white']
 
-export const checkMeta = (m: MetaDoc): string[] => {
+// # Shorts have no thumbnails (the cover frame is picked in the YouTube app)
+export const checkMeta = (m: MetaDoc, o: { short?: boolean } = {}): string[] => {
   const p: string[] = []
   if (m.titles?.length !== 3) p.push(`need 3 titles (got ${m.titles?.length ?? 0})`)
   ;(m.titles ?? []).forEach((t, i) => {
@@ -89,7 +90,7 @@ export const checkMeta = (m: MetaDoc): string[] => {
   for (const h of HYPE) if ((m.description ?? '').toLowerCase().includes(h)) p.push(`description: hype word "${h}"`)
   if (!m.tags || m.tags.length < 3) p.push('need ≥ 3 tags')
   if ((m.tags ?? []).join(',').length > 480) p.push('tags over 480 chars')
-  if (m.thumbnails?.length !== 3) p.push(`need 3 thumbnails (got ${m.thumbnails?.length ?? 0})`)
+  if (!o.short && m.thumbnails?.length !== 3) p.push(`need 3 thumbnails (got ${m.thumbnails?.length ?? 0})`)
   ;(m.thumbnails ?? []).forEach((raw, i) => {
     const t = raw as Record<string, any>
     const n = `thumbnail ${i + 1}`

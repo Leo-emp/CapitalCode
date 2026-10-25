@@ -66,7 +66,7 @@ export const packageJob = async (dir: string, now = new Date()) => {
     })(),
     '## QA', qa ? `${JSON.stringify(qa.stats)} · flicker flags: ${qa.flags.length}` : 'not run', '',
     '## Upload checklist',
-    `- [ ] Pick a title (titles.txt) and ${short ? 'post as a Short (≤ 60 s, vertical)' : 'a thumbnail (thumb_1..3.jpg) — A/B test with "Test & compare"'}`,
+    `- [ ] Pick a title (titles.txt) and ${short ? 'post as a Short (vertical, under 3:00)' : 'a thumbnail (thumb_1..3.jpg) — A/B test with "Test & compare"'}`,
     '- [ ] Paste description.txt (chapters + sources included) and tags.txt',
     `- [ ] ${short ? 'Burned-in captions are in the video' : 'Upload captions.srt as English subtitles'}`,
     '- [ ] Altered/synthetic content: "No" (illustrated animation, no realistic people) — the voice is AI; mention it in the description if you prefer',
@@ -86,7 +86,7 @@ register('package', 'package <job>  — metadata.json → thumbnails, captions, 
   const dir = a[0] ?? refuse('give the job folder')
   if (!isDone(dir, 'critic')) refuse('run critic first (the Critic must pass the video)')
   if (!existsSync(join(dir, 'metadata.json'))) refuse('metadata.json missing')
-  const bad = checkMeta(readJson<MetaDoc>(join(dir, 'metadata.json')))
+  const bad = checkMeta(readJson<MetaDoc>(join(dir, 'metadata.json')), { short: loadJob(dir).kind === 'short' })
   if (bad.length) { for (const p of bad) console.log(`  - ${p}`); refuse(`metadata has ${bad.length} problem(s)`) }
   const r = await packageJob(dir)
   markStep(dir, 'package', r)

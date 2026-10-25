@@ -56,3 +56,9 @@ test('sources list is deduplicated by url', () => {
   ] }
   expect(sourcesTxt(facts)).toBe('Sources\n- BizBuySell (2025): https://a\n- Fed (2024): https://b — rates\n')
 })
+
+test('a Short needs no thumbnails (the cover frame is picked in the app); a long video still needs 3', () => {
+  const m = { ...meta(), thumbnails: [] }
+  expect(checkMeta(m, { short: true })).toEqual([])
+  expect(checkMeta(m)).toContain('need 3 thumbnails (got 0)')
+})
