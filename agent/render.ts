@@ -118,18 +118,23 @@ const reach = (entry: string, seen = new Set<string>()) => {
 }
 const hashFiles = (files: Iterable<string>, extra: string[] = []) => {
   const h = createHash('sha256')
-  for (const f of [...files].sort()) { h.update(f.slice(ROOT.length)); h.update(readFileSync(f)) }
+  for (const f of [...files].sort()) { h.update(f.slice(ROOT.length)); h.update(stripPieceList(readFileSync(f, 'utf8'))) }
   for (const d of extra) hashTree(d, h)
   return h.digest('hex').slice(0, 12)
 }
 
+// # The piece index lists every piece file between "pieces:begin" and "pieces:end"; adding a new Short's file
+// # there must not re-render every other video, so that block is left out of the shared hash
+export const stripPieceList = (src: string) => src.replace(/\/\/ # pieces:begin[\s\S]*?\/\/ # pieces:end/g, '')
+
 export const artFingerprint = (entry = join(ROOT, 'art', 'episode', 'Episode.tsx')): ArtFingerprint => {
   const all = reach(resolve(entry))
-  const lib = [...all].filter((f) => /make(Scene|Prop|Vignette)\('[\w-]+'/.test(readFileSync(f, 'utf8')))
+  // # library files (scenes, props, vignettes, diorama pieces) are hashed per id: a video re-renders only what it uses
+  const lib = [...all].filter((f) => /make(Scene|Prop|Vignette|Piece)\('[\w-]+'/.test(readFileSync(f, 'utf8')))
   const idFile: Record<string, string> = {}
   for (const f of lib) {
     const h = hashFiles(reach(f))
-    for (const [, id] of readFileSync(f, 'utf8').matchAll(/make(?:Scene|Prop|Vignette)\('([\w-]+)'/g)) idFile[id] = h
+    for (const [, id] of readFileSync(f, 'utf8').matchAll(/make(?:Scene|Prop|Vignette|Piece)\('([\w-]+)'/g)) idFile[id] = h
   }
   const base = hashFiles([...all].filter((f) => !lib.includes(f)), [join(PUBLIC_DIR, 'fonts'), join(PUBLIC_DIR, 'textures')])
   return { base, idFile }
@@ -137,8 +142,8 @@ export const artFingerprint = (entry = join(ROOT, 'art', 'episode', 'Episode.tsx
 
 // # Scene + prop ids a shot draws
 const artIds = (s: Timeline['shots'][number]['shot']): string[] => {
-  const x = s as { kind: string; scene?: string; vignette?: string; props?: { id: string }[]; data?: { icon?: string } }
-  return [...(x.kind === 'scene' && x.scene ? [x.scene] : []), ...(x.kind === 'vignette' && x.vignette ? [x.vignette] : []), ...(x.props ?? []).map((p) => p.id), ...(x.data?.icon ? [x.data.icon] : [])]
+  const x = s as { kind: string; scene?: string; vignette?: string; piece?: string; props?: { id: string }[]; data?: { icon?: string } }
+  return [...(x.kind === 'scene' && x.scene ? [x.scene] : []), ...(x.kind === 'piece' && x.piece ? [x.piece] : []), ...(x.kind === 'vignette' && x.vignette ? [x.vignette] : []), ...(x.props ?? []).map((p) => p.id), ...(x.data?.icon ? [x.data.icon] : [])]
 }
 
 // # A chunk's key: its range + every shot visible in it (incl. the outgoing transition) + the art it uses
@@ -162,31 +167,45 @@ export const countFrames = (file: string): number => {
 
 export type RenderRange = (from: number, to: number, out: string) => Promise<void>
 
-// # Render missing chunks; finished ones (right name + right frame count) are reused
-export const renderChunks = async (chunks: (Range & { key: string })[], dir: string, render: RenderRange, opts: { retries?: number; log?: (s: string) => void } = {}) => {
+// # Render missing chunks; finished ones (right name + right frame count) are reused. A chunk that still fails after
+// # its retries is rendered as two halves and joined (a long chunk can wear out the browser tab on a busy machine),
+// # down to `minSplit` frames
+export const renderChunks = async (chunks: (Range & { key: string })[], dir: string, render: RenderRange, opts: { retries?: number; log?: (s: string) => void; minSplit?: number } = {}) => {
   mkdirSync(dir, { recursive: true })
+  const tries = opts.retries ?? 2, minSplit = opts.minSplit ?? 120
+  // # one frame range into `out`, checked frame by frame count
+  const span = async (from: number, to: number, out: string): Promise<void> => {
+    const want = to - from, part = out.replace(/\.mp4$/, '.part.mp4')
+    for (let k = 1; ; k++) {
+      try {
+        await render(from, to, part)
+        const n = countFrames(part)
+        if (n !== want) throw new Error(`chunk ${from}-${to}: ${n} frames, expected ${want}`)
+        renameSync(part, out)
+        return
+      } catch (e) {
+        rmSync(part, { force: true })
+        if (k < tries) { opts.log?.(`chunk ${from}-${to} failed (${(e as Error).message.split('\n')[0]}) — retry ${k + 1}/${tries}`); continue }
+        if (want < 2 * minSplit) throw e
+        const mid = from + Math.floor(want / 2), a = out.replace(/\.mp4$/, '.a.mp4'), b = out.replace(/\.mp4$/, '.b.mp4')
+        opts.log?.(`chunk ${from}-${to} still failing — rendering it as two halves (${from}-${mid}, ${mid}-${to})`)
+        await span(from, mid, a)
+        await span(mid, to, b)
+        concatVideos([a, b], out)
+        rmSync(a, { force: true }); rmSync(b, { force: true })
+        if (countFrames(out) !== want) throw new Error(`chunk ${from}-${to}: joined halves have ${countFrames(out)} frames, expected ${want}`)
+        return
+      }
+    }
+  }
   const files: string[] = []
   for (const [i, c] of chunks.entries()) {
     const file = join(dir, `chunk_${String(c.from).padStart(6, '0')}_${String(c.to).padStart(6, '0')}_${c.key}.mp4`)
     const want = c.to - c.from
     if (existsSync(file) && countFrames(file) === want) { files.push(file); continue }
-    const part = file.replace(/\.mp4$/, '.part.mp4')
-    const tries = opts.retries ?? 2
-    for (let k = 1; ; k++) {
-      try {
-        const t0 = Date.now()
-        await render(c.from, c.to, part)
-        const n = countFrames(part)
-        if (n !== want) throw new Error(`chunk ${c.from}-${c.to}: ${n} frames, expected ${want}`)
-        renameSync(part, file)
-        opts.log?.(`chunk ${i + 1}/${chunks.length} (${c.from}-${c.to}) ${((Date.now() - t0) / want).toFixed(0)} ms/frame`)
-        break
-      } catch (e) {
-        rmSync(part, { force: true })
-        if (k >= tries) throw e
-        opts.log?.(`chunk ${c.from}-${c.to} failed (${(e as Error).message.split('\n')[0]}) — retry ${k + 1}/${tries}`)
-      }
-    }
+    const t0 = Date.now()
+    await span(c.from, c.to, file)
+    opts.log?.(`chunk ${i + 1}/${chunks.length} (${c.from}-${c.to}) ${((Date.now() - t0) / want).toFixed(0)} ms/frame`)
     files.push(file)
   }
   return files

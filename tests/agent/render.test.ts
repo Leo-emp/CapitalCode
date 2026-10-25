@@ -47,6 +47,16 @@ describe('renderChunks', () => {
     expect(calls.length).toBe(2)
   }, 120_000)
 
+  test('a chunk that keeps failing is rendered as two halves and joined', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'ccrender-'))
+    const calls: string[] = []
+    const flaky = async (from: number, to: number, out: string) => { if (to - from > 40) { calls.push(`x${from}-${to}`); throw new Error('tab gave up') } return fakeRender(calls)(from, to, out) }
+    const files = await renderChunks([{ from: 0, to: 90, key: 'k' }], dir, flaky, { minSplit: 20 })
+    expect(countFrames(files[0])).toBe(90)
+    expect(calls.filter((c) => !c.startsWith('x'))).toEqual(['0-22', '22-45', '45-67', '67-90'])
+    expect(readdirSync(dir).filter((f) => /\.(a|b|part)\.mp4$/.test(f))).toEqual([])
+  }, 120_000)
+
   test('concat list quotes paths safely and the joined video has every frame', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'ccrender-'))
     const files = await renderChunks(chunks, dir, fakeRender([]))
@@ -151,4 +161,16 @@ test('CC_RENDER_WORKERS caps the workers (never above what memory allows)', () =
     expect(renderConcurrency(3.5, 16)).toBe(1)
   } finally { delete process.env.CC_RENDER_WORKERS }
   expect(renderConcurrency(9.0, 16)).toBe(8)
+})
+
+// # a new Short's piece file is added to the piece index without re-rendering every other video
+test('the piece list block is left out of the shared art hash; pieces are cached per id', async () => {
+  const { stripPieceList } = await import('../../agent/render')
+  const a = "import x from './x'\n// # pieces:begin\nimport { A } from './a'\n// # pieces:end\nrun()"
+  const b = "import x from './x'\n// # pieces:begin\nimport { A } from './a'\nimport { B } from './b'\n// # pieces:end\nrun()"
+  expect(stripPieceList(a)).toBe(stripPieceList(b))
+  const fpr = artFingerprint()
+  expect(fpr.idFile['w100-hook']).toBeDefined()
+  expect(fpr.idFile['g2k-hook']).toBeDefined()
+  expect(fpr.idFile['w100-hook']).not.toBe(fpr.idFile['g2k-hook'])
 })
