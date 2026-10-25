@@ -26,14 +26,14 @@ const Promise: React.FC<PieceProps> = ({ f, c }) => {
       <Stage id="pr" tint="teal" frame={f} />
       <g transform={`translate(0 ${-slide * 330})`} opacity={1 - slide * 0.25}>
         <g transform={`translate(960 470) scale(${logo}) translate(-960 -470)`}><svg x={860} y={370} width={200} height={200}><Emblem size={200} /></svg></g>
-        <Label x={960} y={660} text="CAPITALCODE" size={64} font="Bebas Neue" color={P.champL} o={on(f, c('s9:capitalcode') + 6)} />
-        <Label x={960} y={730} text="how the money actually works" size={38} weight={500} color={P.white} o={on(f, c('s9:how'))} />
+        <Label x={960} y={660} text="CAPITALCODE" size={64} font="Bebas Neue" color={P.ink} o={on(f, c('s9:capitalcode') + 6)} />
+        <Label x={960} y={730} text="how the money actually works" size={38} weight={500} color={P.ink} o={on(f, c('s9:how'))} />
       </g>
       {items.map((it, i) => {
         const p = pop(f, q[i], 14), x = 480 + i * 480, cy = 660
         return p > 0.001 && (
           <g key={it.id} transform={`translate(${x} ${cy}) scale(${p}) translate(${-x} ${-cy})`}>
-            <circle cx={x} cy={cy} r={190} fill={P.navy1} opacity={0.55} /><circle cx={x} cy={cy} r={190} fill="none" stroke={P.champ} strokeWidth={4} />
+            <circle cx={x} cy={cy} r={190} fill={P.card} opacity={0.55} /><circle cx={x} cy={cy} r={190} fill="none" stroke={P.champ} strokeWidth={4} />
             <Prop id={it.id} x={x} y={cy} size={240} f={f} />
             <Label x={x} y={cy + 260} text={it.label} size={44} />
           </g>
@@ -68,7 +68,7 @@ const Weighting: React.FC<{ f: number; c: (k: string) => number }> = ({ f, c }) 
             </g>
           )
         })}
-        {equal > 0 && <Label x={960} y={200} text="THE SAME SHARE EACH?" size={72} font="Bebas Neue" color={P.champL} o={equal} />}
+        {equal > 0 && <Label x={960} y={200} text="THE SAME SHARE EACH?" size={72} font="Bebas Neue" color={P.ink} o={equal} />}
         {f >= c('s12:weigh') && <path d="M720 176 L1200 176" stroke={P.coral} strokeWidth={8} strokeLinecap="round" opacity={on(f, c('s12:weigh')) * (1 - on(f, c('s12:size') + 20))} />}
         {/* # a dollar on top splits by size into the coin stacks */}
         {f >= pourAt - 6 && f < recv + 20 && Array.from({ length: 20 }, (_, i) => {
@@ -82,11 +82,11 @@ const Weighting: React.FC<{ f: number; c: (k: string) => number }> = ({ f, c }) 
       {/* # market cap = share price × number of shares */}
       {eq > 0 && (
         <g opacity={eq}>
-          <Label x={960} y={240} text="MARKET CAP" size={84} font="Bebas Neue" color={P.champL} o={on(f, c('s14:market'))} />
+          <Label x={960} y={240} text="MARKET CAP" size={84} font="Bebas Neue" color={P.ink} o={on(f, c('s14:market'))} />
           <g transform={`translate(520 600) scale(${pop(f, c('s14:price'))})`}><PriceTag x={0} y={0} text="PRICE" s={2} /></g>
           <Label x={900} y={640} text="×" size={160} color={P.champ} o={on(f, c('s14:times'))} />
           {[0, 1, 2, 3, 4].map((k) => <g key={k} opacity={on(f, c('s14:number') + k * 3)}><Prop id="stock-certificate" x={1250 + k * 34} y={600 - k * 34} size={300} f={f} /></g>)}
-          <Label x={1330} y={860} text="SHARES" size={72} font="Bebas Neue" color={P.white} o={on(f, c('s14:shares'))} />
+          <Label x={1330} y={860} text="SHARES" size={72} font="Bebas Neue" color={P.ink} o={on(f, c('s14:shares'))} />
         </g>
       )}
     </g>
@@ -112,10 +112,10 @@ const History: React.FC<PieceProps> = ({ f, c }) => {
     <g>
       <Stage id="hi" tint="teal" frame={f} />
       <g opacity={axis}>
-        {[10, 20, 30, 40].map((p) => <g key={p}><rect x={X} y={v(p)} width={W} height={2} fill={P.white} opacity={0.08} /><Label x={X - 20} y={v(p) + 12} text={`${p}%`} size={30} anchor="end" color={P.white} o={0.55} /></g>)}
-        {[1995, 2000, 2005, 2010, 2015, 2020, 2025].map((y) => <Label key={y} x={yr(y)} y={Y + H + 52} text={`${y}`} size={30} color={P.white} o={0.6} />)}
-        <rect x={X} y={Y + H} width={W} height={4} rx={2} fill={P.champ} opacity={0.5} />
-        <Label x={X} y={Y - 50} text="Share of the index in the 10 biggest companies" size={36} anchor="start" color={P.champL} />
+        {[10, 20, 30, 40].map((p) => <g key={p}><rect x={X} y={v(p)} width={W} height={2} fill={P.ink} opacity={0.1} /><Label x={X - 20} y={v(p) + 12} text={`${p}%`} size={30} anchor="end" color={P.ink} o={0.55} /></g>)}
+        {[1995, 2000, 2005, 2010, 2015, 2020, 2025].map((y) => <Label key={y} x={yr(y)} y={Y + H + 52} text={`${y}`} size={30} color={P.ink} o={0.6} />)}
+        <rect x={X} y={Y + H} width={W} height={4} rx={2} fill={P.ink2} opacity={0.6} />
+        <Label x={X} y={Y - 50} text="Share of the index in the 10 biggest companies" size={36} anchor="start" color={P.ink} />
       </g>
       {/* # "big, but not that big": ten modest towers before the line */}
       {flat > 0 && Array.from({ length: 10 }, (_, k) => <g key={k} opacity={flat}><Tower id="hi" i={k} x={760 + k * 44} y={Y + H - 10} h={70 + rnd(k) * 40} w={34} /></g>)}
@@ -128,9 +128,9 @@ const History: React.FC<PieceProps> = ({ f, c }) => {
       {f >= c('s18:still') && <circle cx={yr(pts[3][0])} cy={v(pts[3][1])} r={20 + 40 * span(f, c('s18:still'), c('s18:still') + 20)} fill={P.gold} opacity={0.4 * (1 - span(f, c('s18:still'), c('s18:still') + 20))} />}
       {[[0, '≈ 19%', at[0] + 20], [1, '27%', at[1] + 18], [2, '40.7%', at[2] + 34], [3, '37.9%', at[3] + 18]].map(([i, t, a]) => {
         const k = i as number
-        return f >= (a as number) && <g key={k} transform={`translate(${yr(pts[k][0])} ${v(pts[k][1])})`}><circle r={12} fill={P.gold} /><Label x={k === 3 ? 60 : 0} y={k === 3 ? 50 : -30} text={t as string} size={k >= 2 ? 64 : 48} font="Bebas Neue" color={P.champL} o={on(f, a as number)} /></g>
+        return f >= (a as number) && <g key={k} transform={`translate(${yr(pts[k][0])} ${v(pts[k][1])})`}><circle r={12} fill={P.gold} /><Label x={k === 3 ? 60 : 0} y={k === 3 ? 50 : -30} text={t as string} size={k >= 2 ? 64 : 48} font="Bebas Neue" color={P.ink} o={on(f, a as number)} /></g>
       })}
-      {f >= c('s17:doubled') && <Label x={1100} y={520} text="DOUBLED" size={96} font="Bebas Neue" color={P.gold} o={between(f, c('s17:doubled') + 10, c('s18'))} />}
+      {f >= c('s17:doubled') && <Label x={1100} y={520} text="DOUBLED" size={96} font="Bebas Neue" color={P.goldInk} o={between(f, c('s17:doubled') + 10, c('s18'))} />}
       {f >= c('s17:record') && <g transform={`translate(${yr(2025.95)} ${v(40.7) - 110}) scale(${pop(f, c('s17:record'))})`}><Prop id="crown" x={0} y={0} size={110} f={f} /></g>}
       <Vignette id="hi" />
     </g>
@@ -143,12 +143,12 @@ const TOP10: [string, number, string][] = [['NVIDIA', 7.52, 's20:nvidia'], ['App
 const TopTen: React.FC<PieceProps> = ({ f, c }) => (
   <g>
     <Stage id="tt" frame={f} />
-    <Label x={960} y={140} text="THE TOP 10" size={84} font="Bebas Neue" color={P.champL} o={on(f, c('s19:10'))} />
+    <Label x={960} y={140} text="THE TOP 10" size={84} font="Bebas Neue" color={P.ink} o={on(f, c('s19:10'))} />
     {/* # ten towers line up on "who those 10 companies are", then each becomes its bar */}
     {Array.from({ length: 10 }, (_, k) => <g key={k} opacity={between(f, c('s19:companies') + k * 2, c('s20'))}><Tower id="tt" i={k} x={510 + k * 100} y={760} h={200 + (9 - k) * 30} w={60} /></g>)}
     {/* # a soft highlight sweeps the row being talked about; a bracket marks "between 1.5 and 3.6" */}
     {([['s20:whole', 0], ['s21:43', 3]] as const).map(([k, row]) => f >= c(k) && <rect key={k} x={590} y={210 + row * 74 + 2} width={1060} height={68} rx={34} fill={P.gold} opacity={0.22 * (1 - span(f, c(k) + 10, c(k) + 40))} />)}
-    {f >= c('s22:between') && <g opacity={on(f, c('s22:between'))}><path d={`M1680 ${210 + 4 * 74 + 10} h24 v${6 * 74 - 20} h-24`} stroke={P.champL} strokeWidth={5} fill="none" /><Label x={1730} y={210 + 7 * 74 + 10} text="1.5–3.6%" size={44} font="Bebas Neue" anchor="start" color={P.champL} o={on(f, c('s22:15'))} /><Label x={1730} y={210 + 7 * 74 + 56} text="each" size={32} anchor="start" o={on(f, c('s22:36'))} /></g>}
+    {f >= c('s22:between') && <g opacity={on(f, c('s22:between'))}><path d={`M1680 ${210 + 4 * 74 + 10} h24 v${6 * 74 - 20} h-24`} stroke={P.ink} strokeWidth={5} fill="none" /><Label x={1730} y={210 + 7 * 74 + 10} text="1.5–3.6%" size={44} font="Bebas Neue" anchor="start" color={P.ink} o={on(f, c('s22:15'))} /><Label x={1730} y={210 + 7 * 74 + 56} text="each" size={32} anchor="start" o={on(f, c('s22:36'))} /></g>}
     <g opacity={on(f, c('s20'))}><RankBars f={f} x={620} y={210} w={1000} rowH={74} max={8} rows={TOP10.map(([label, value, k], i) => ({ label, value, at: c(k), color: i === 0 ? P.gold : P.sky }))} /></g>
     <Vignette id="tt" />
   </g>
@@ -169,7 +169,7 @@ const Loop: React.FC<PieceProps> = ({ f, c }) => {
         <circle cx={960} cy={560} r={380} fill="none" stroke={P.champ} strokeWidth={6} strokeDasharray="40 30" opacity={0.6} />
         {[0, 120, 240].map((a) => <path key={a} d="M960 172 l26 16 l-26 16 Z" fill={P.gold} transform={`rotate(${a} 960 560)`} />)}
       </g>
-      <Label x={960} y={120} text="IT FEEDS ITSELF" size={72} font="Bebas Neue" color={P.champL} o={on(f, c('s22a:feeds'))} />
+      <Label x={960} y={120} text="IT FEEDS ITSELF" size={72} font="Bebas Neue" color={P.ink} o={on(f, c('s22a:feeds'))} />
       {/* # the giant: rises, its slice grows, new dollars pour in */}
       <Tower id="lp" i={1} x={820} y={820} h={180 + 260 * rise} w={110} glow={on(f, pour)} />
       <g opacity={on(f, c('s22b:weight'))}>
@@ -213,7 +213,7 @@ const Maths: React.FC<PieceProps> = ({ f, c }) => {
   return (
     <g>
       <Stage id="ma" frame={f} />
-      <Label x={960} y={170} text="THE MATHS" size={80} font="Bebas Neue" color={P.champL} o={on(f, c('s23:maths')) * (1 - on(f, n))} />
+      <Label x={960} y={170} text="THE MATHS" size={80} font="Bebas Neue" color={P.ink} o={on(f, c('s23:maths')) * (1 - on(f, n))} />
       {/* # one bar = your $100 split 37.9 / 62.1 */}
       <g opacity={1 - on(f, n)}>
         <rect x={X} y={Y} width={W * 0.379 * on(f, a, 24)} height={140} rx={20} fill={P.gold} />
@@ -229,7 +229,7 @@ const Maths: React.FC<PieceProps> = ({ f, c }) => {
         <Label x={X + W * 0.69} y={Y + 210} text="490 companies" size={40} o={on(f, c('s24:490')) * (1 - shatter)} />
         {/* # a shimmer runs along the 490 on "companies" */}
         <rect x={X + W * 0.385 + W * 0.6 * span(f, c('s24:companies#2'), c('s24:companies#2') + 20)} y={Y} width={60} height={140} fill={P.white} opacity={0.25 * (1 - shatter) * (f >= c('s24:companies#2') && f < c('s24:companies#2') + 20 ? 1 : 0)} />
-        <Label x={X + W * 0.69} y={Y + 420} text="0.13% EACH" size={90} font="Bebas Neue" color={P.champL} o={on(f, c('s25:013'))} />
+        <Label x={X + W * 0.69} y={Y + 420} text="0.13% EACH" size={90} font="Bebas Neue" color={P.ink} o={on(f, c('s25:013'))} />
       </g>
       {/* # NVIDIA's tower vs the average company's: ~60 times */}
       <g opacity={on(f, n)}>
@@ -237,7 +237,7 @@ const Maths: React.FC<PieceProps> = ({ f, c }) => {
         <Label x={760} y={970} text="NVIDIA" size={44} />
         <Building x={1200} y={900} s={0.9} seed={7} />
         <Label x={1200} y={970} text="the average other company" size={34} />
-        <Label x={1500} y={480} text={countTo(60, on(f, sixty, 30), 0, '≈ ', '×')} size={150} font="Bebas Neue" color={P.gold} o={on(f, sixty)} />
+        <Label x={1500} y={480} text={countTo(60, on(f, sixty, 30), 0, '≈ ', '×')} size={150} font="Bebas Neue" color={P.goldInk} o={on(f, sixty)} />
       </g>
       <Vignette id="ma" />
     </g>
@@ -255,17 +255,17 @@ const Bets: React.FC<PieceProps> = ({ f, c }) => {
       <Stage id="bt" tint="teal" frame={f} />
       {/* # on paper: a certificate listing 500 businesses (dots) */}
       <g opacity={1 - on(f, boats)}>
-        <rect x={560} y={150} width={800} height={720} rx={16} fill={P.cream} opacity={on(f, c('s27:paper'))} />
+        <rect x={560} y={150} width={800} height={720} rx={16} fill={P.paper} stroke={P.edge} strokeWidth={3} opacity={on(f, c('s27:paper'))} />
         <Label x={960} y={230} text="YOUR FUND: 500 BUSINESSES" size={46} font="Bebas Neue" color={P.navy0} o={on(f, c('s27:paper'))} />
         <DotGrid f={f} x={620} y={290} cols={25} rows={20} gap={28} at={names - 20} litAt={practice} lit={new Set([0, 1, 2, 3, 26, 27, 52, 53, 78, 104])} />
-        {f >= three && <Label x={960} y={940} text="really: 10 — and mostly 3 or 4" size={46} color={P.champL} o={on(f, three)} />}
+        {f >= three && <Label x={960} y={940} text="really: 10 — and mostly 3 or 4" size={46} color={P.ink} o={on(f, three)} />}
       </g>
       {/* # 500 little boats; ropes tie them to 3 big ships: when the ships move, everything moves */}
       <g opacity={on(f, boats)}>
         {ships.map(([x, y], i) => (
           <g key={i} transform={`translate(${sway * (i === 1 ? 1 : 0.7)} ${Math.sin(f / 15 + i) * 6})`}>
             <path d={`M${x - 120} ${y} L${x + 120} ${y} L${x + 90} ${y + 60} L${x - 90} ${y + 60} Z`} fill={P.coral} />
-            <rect x={x - 6} y={y - 170} width={12} height={170} fill={P.cream} /><path d={`M${x + 6} ${y - 160} L${x + 110} ${y - 30} L${x + 6} ${y - 30} Z`} fill={P.cream} />
+            <rect x={x - 6} y={y - 170} width={12} height={170} fill={P.paper} stroke={P.edge} strokeWidth={3} /><path d={`M${x + 6} ${y - 160} L${x + 110} ${y - 30} L${x + 6} ${y - 30} Z`} fill={P.paper} stroke={P.edge} strokeWidth={3} />
           </g>
         ))}
         {Array.from({ length: 60 }, (_, i) => {
@@ -273,15 +273,15 @@ const Bets: React.FC<PieceProps> = ({ f, c }) => {
           const k = on(f, ropes + (i % 15) * 1.5, 12), dx = sway * (i % 3 === 1 ? 1 : 0.7) * on(f, move) * 0.9
           return (
             <g key={i}>
-              {k > 0 && <path d={`M${sx + dx} ${sy - 10} L${s[0] + dx} ${s[1] + 50}`} stroke={P.champL} strokeWidth={2} opacity={0.35 * k} />}
+              {k > 0 && <path d={`M${sx + dx} ${sy - 10} L${s[0] + dx} ${s[1] + 50}`} stroke={P.ink} strokeWidth={2} opacity={0.35 * k} />}
               <g transform={`translate(${dx} ${Math.sin(f / 12 + i) * 3})`}><path d={`M${sx - 22} ${sy} L${sx + 22} ${sy} L${sx + 14} ${sy + 14} L${sx - 14} ${sy + 14} Z`} fill={[P.sky, P.cream, P.mint][i % 3]} /></g>
             </g>
           )
         })}
-        <Label x={960} y={150} text="500 NAMES" size={70} font="Bebas Neue" color={P.white} o={on(f, boats) * (1 - on(f, ropes))} />
+        <Label x={960} y={150} text="500 NAMES" size={70} font="Bebas Neue" color={P.ink} o={on(f, boats) * (1 - on(f, ropes))} />
         {/* # "not really about how many names": the count gets crossed out */}
         <rect x={840} y={124} width={240 * on(f, c('s29:not'), 10)} height={8} rx={4} fill={P.coral} opacity={1 - on(f, ropes)} />
-        <Label x={960} y={150} text="3 OR 4 BETS" size={80} font="Bebas Neue" color={P.champL} o={on(f, ropes)} />
+        <Label x={960} y={150} text="3 OR 4 BETS" size={80} font="Bebas Neue" color={P.ink} o={on(f, ropes)} />
       </g>
       <Vignette id="bt" />
     </g>

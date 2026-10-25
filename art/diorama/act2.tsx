@@ -34,9 +34,9 @@ const Price: React.FC<PieceProps> = ({ f, c }) => {
           </g>
         ))}
         <g opacity={between(f, c('s31:not'), c('s31:if'))}><circle cx={960} cy={300} r={80} fill={P.mint} opacity={0.9} /><path d="M920 300 l28 28 l52 -60" stroke={P.white} strokeWidth={16} fill="none" strokeLinecap="round" /></g>
-        <Label x={960} y={150} text="WHAT ARE YOU PAYING FOR?" size={80} font="Bebas Neue" color={P.champL} o={on(f, c('s32:question'))} />
+        <Label x={960} y={150} text="WHAT ARE YOU PAYING FOR?" size={80} font="Bebas Neue" color={P.ink} o={on(f, c('s32:question'))} />
         {/* # a big price tag swings down onto the towers */}
-        {f >= tag - 4 && <g transform={`translate(960 ${lerp(-200, 330, easeOut(span(f, tag - 4, tag + 14)))}) rotate(${swing})`}><path d="M0 -330 L0 -40" stroke={P.champL} strokeWidth={4} /><PriceTag x={0} y={40} text="$ ? ? ?" s={2.2} r={0} /></g>}
+        {f >= tag - 4 && <g transform={`translate(960 ${lerp(-200, 330, easeOut(span(f, tag - 4, tag + 14)))}) rotate(${swing})`}><path d="M0 -330 L0 -40" stroke={P.ink} strokeWidth={4} /><PriceTag x={0} y={40} text="$ ? ? ?" s={2.2} r={0} /></g>}
       </g>
       {f >= calc - 6 && <g transform={`translate(960 540) scale(${pop(f, calc)})`}><Prop id="calculator" x={0} y={0} size={300} f={f} /></g>}
       <Vignette id="pc" />
@@ -50,13 +50,13 @@ const ValueProfit: React.FC<PieceProps> = ({ f, c }) => {
   return (
     <g>
       <Stage id="vp" tint="teal" frame={f} />
-      <Label x={960} y={130} text="THE TOP 10, END OF 2025" size={64} font="Bebas Neue" color={P.champL} o={on(f, c('s34:end'))} />
+      <Label x={960} y={130} text="THE TOP 10, END OF 2025" size={64} font="Bebas Neue" color={P.ink} o={on(f, c('s34:end'))} />
       <BigBars f={f} x={560} y={760} w={800} h={500} max={45} unit="%" bars={[
         { label: 'of the index’s value', value: 40, color: P.gold, at: c('s34:40') },
         { label: 'of its profits', value: 27, color: P.mint, at: c('s35:27') },
       ]} />
       {/* # the gap between them */}
-      {f >= c('s35:only') && <g opacity={on(f, c('s35:only'))}><path d={`M900 ${760 - (40 / 45) * 500} L1060 ${760 - (40 / 45) * 500} M1060 ${760 - (40 / 45) * 500} L1060 ${760 - (27 / 45) * 500}`} stroke={P.coral} strokeWidth={6} strokeDasharray="14 10" /><Label x={1090} y={760 - (33.5 / 45) * 500} text="gap" size={40} anchor="start" color={P.coral} /></g>}
+      {f >= c('s35:only') && <g opacity={on(f, c('s35:only'))}><path d={`M900 ${760 - (40 / 45) * 500} L1060 ${760 - (40 / 45) * 500} M1060 ${760 - (40 / 45) * 500} L1060 ${760 - (27 / 45) * 500}`} stroke={P.coral} strokeWidth={6} strokeDasharray="14 10" /><Label x={1090} y={760 - (33.5 / 45) * 500} text="gap" size={40} anchor="start" color={P.coralInk} /></g>}
       {/* # "paying for 40 … getting 27": the investor hands over 40 coins and gets 27 back */}
       <g opacity={on(f, c('s36:put'))}>
         <Pedestal x={260} y={900} r={110} /><Mini look="investor" x={240} y={900} scale={1.3} frame={f} seed={3} mood={f > get + 20 ? 'sad' : 'neutral'} />
@@ -94,14 +94,14 @@ const FutureBet: React.FC<PieceProps> = ({ f, c }) => {
       <g transform={`translate(${lerp(960, 960, fly)} ${lerp(900, 470, fly)}) scale(${lerp(1, 0.4, fly)})`} opacity={between(f, gap - 4, grow + 6)}>
         <rect x={-110} y={-70} width={220} height={140} rx={20} fill={P.coral} /><Label x={0} y={18} text="13 pts" size={56} font="Bebas Neue" color={P.white} />
       </g>
-      <Label x={960} y={150} text="A BET ON THE FUTURE" size={80} font="Bebas Neue" color={P.champL} o={on(f, fut)} />
+      <Label x={960} y={150} text="A BET ON THE FUTURE" size={80} font="Bebas Neue" color={P.ink} o={on(f, fut)} />
       {/* # what the bet assumes: their profits climb much faster, for a long time (shape only, no data) */}
       <g opacity={on(f, grow)}>
         <BigLine f={f} x={360} y={240} w={1200} h={560} values={[1, 1.4, 2, 2.9, 4.2, 6]} min={0} max={6.5} from={grow} to={long + 20} color={P.gold} />
         <BigLine f={f} x={360} y={240} w={1200} h={560} values={[1, 1.15, 1.32, 1.5, 1.7, 1.95]} min={0} max={6.5} from={c('s38:everyone')} to={long + 20} color={P.sky} area={false} />
-        <Label x={1580} y={290} text="the giants (expected)" size={34} anchor="end" color={P.gold} o={on(f, c('s38:faster'))} />
-        <Label x={1580} y={700} text="everyone else" size={34} anchor="end" color={P.sky} o={on(f, c('s38:everyone'))} />
-        <Label x={960} y={880} text="FOR A LONG TIME →" size={50} font="Bebas Neue" color={P.white} o={on(f, long)} />
+        <Label x={1580} y={290} text="the giants (expected)" size={34} anchor="end" color={P.goldInk} o={on(f, c('s38:faster'))} />
+        <Label x={1580} y={700} text="everyone else" size={34} anchor="end" color={P.skyInk} o={on(f, c('s38:everyone'))} />
+        <Label x={960} y={880} text="FOR A LONG TIME →" size={50} font="Bebas Neue" color={P.ink} o={on(f, long)} />
       </g>
       {f >= val && <g transform={`translate(1600 560) scale(${pop(f, val)})`}><PriceTag x={0} y={0} text="PRICE" s={1.4} /></g>}
       <Vignette id="fb" />
@@ -117,37 +117,37 @@ const Valuations: React.FC<PieceProps> = ({ f, c }) => {
     <g>
       <Stage id="va" tint="teal" frame={f} />
       <g opacity={bars}>
-        <Label x={960} y={130} text="PRICE ÷ NEXT YEAR’S EXPECTED PROFIT" size={56} font="Bebas Neue" color={P.champL} o={on(f, c('s40:trading'))} />
+        <Label x={960} y={130} text="PRICE ÷ NEXT YEAR’S EXPECTED PROFIT" size={56} font="Bebas Neue" color={P.ink} o={on(f, c('s40:trading'))} />
         <BigBars f={f} x={560} y={800} w={800} h={540} max={30} bars={[
           { label: 'top 10', value: 28, color: P.gold, at: c('s40:28'), text: `${countTo(28, on(f, c('s40:28'), 22), 0)}×` },
           { label: 'the rest', value: 19.5, color: P.sky, at: c('s40:195'), text: `${countTo(19.5, on(f, c('s40:195'), 22), 1)}×` },
         ]} />
-        <Label x={760} y={940} text="× next year’s profit" size={34} color={P.white} o={on(f, c('s40:next'))} />
+        <Label x={760} y={940} text="× next year’s profit" size={34} color={P.ink} o={on(f, c('s40:next'))} />
       </g>
       {/* # plain money: pay $28 today for $1 of profit next year */}
       <g opacity={on(f, plain) * (1 - on(f, p44 - 8))}>
-        <Label x={960} y={130} text="IN PLAIN MONEY" size={72} font="Bebas Neue" color={P.champL} o={on(f, plain)} />
+        <Label x={960} y={130} text="IN PLAIN MONEY" size={72} font="Bebas Neue" color={P.ink} o={on(f, plain)} />
         <CoinStack x={500} y={820} n={28} p={span(f, pay - 6, c('s40b:28#2') + 10)} s={1.6} />
         <Label x={500} y={900} text={countTo(28, span(f, pay - 6, c('s40b:28#2') + 10), 0, '$', ' today')} size={52} font="Bebas Neue" o={on(f, pay - 6)} />
-        <Label x={760} y={600} text="for" size={50} color={P.white} o={on(f, c('s40b:for'))} />
+        <Label x={760} y={600} text="for" size={50} color={P.ink} o={on(f, c('s40b:for'))} />
         <g opacity={on(f, one)} transform={`translate(0 ${-Math.sin(span(f, c('s40b:expected'), c('s40b:expected') + 14) * Math.PI) * 40})`}><CoinStack x={1000} y={820} n={1} s={1.6} /><Label x={1000} y={900} text="$1 profit / year" size={44} font="Bebas Neue" /></g>
         {/* # if it never grew: one coin a year, 28 calendar pages to earn it back */}
         {f >= never && Array.from({ length: 28 }, (_, i) => {
           const t = on(f, years + i * 1.6, 8)
           return t > 0 && <g key={i} transform={`translate(${1180 + (i % 7) * 96} ${300 + Math.floor(i / 7) * 120}) scale(${0.55 * t})`}><Calendar x={0} y={0} text={`${i + 1}`} /></g>
         })}
-        {f >= years && <Label x={1470} y={860} text={countTo(28, span(f, years, years + 45), 0, '', ' YEARS')} size={70} font="Bebas Neue" color={P.coral} />}
+        {f >= years && <Label x={1470} y={860} text={countTo(28, span(f, years, years + 45), 0, '', ' YEARS')} size={70} font="Bebas Neue" color={P.coralInk} />}
         {/* # "they expect the profits to keep climbing": a staircase of coin stacks */}
         <g opacity={on(f, climb - 20)}>{[0, 1, 2, 3, 4].map((k) => <CoinStack key={k} x={1180 + k * 120} y={1000} n={2 + k * 3} p={span(f, climb - 20 + k * 4, climb + k * 4)} s={0.8} />)}</g>
       </g>
       {/* # each $1 of future profit from the giants costs 44% more */}
       <g opacity={on(f, p44 - 8)}>
-        <Label x={960} y={160} text="WHAT $1 OF FUTURE PROFIT COSTS" size={60} font="Bebas Neue" color={P.champL} />
+        <Label x={960} y={160} text="WHAT $1 OF FUTURE PROFIT COSTS" size={60} font="Bebas Neue" color={P.ink} />
         <g transform={`translate(620 560) scale(${pop(f, c('s41:dollar#2')) * (1 + 0.08 * Math.max(0, 1 - Math.abs(f - c('s41:everyone') - 6) / 8))})`}><PriceTag x={0} y={0} text="1.00" s={2.2} color={P.sky} /></g>
         <Label x={620} y={760} text="everyone else" size={40} o={on(f, c('s41:dollar#2'))} />
         <g transform={`translate(1300 520) scale(${pop(f, c('s41:giants'))})`}><PriceTag x={0} y={0} text={(1 + 0.44 * on(f, p44, 30)).toFixed(2)} s={2.8} color={P.gold} /></g>
         <Label x={1300} y={780} text="the giants" size={40} o={on(f, c('s41:giants'))} />
-        <Label x={1300} y={300} text={countTo(44, on(f, p44, 30), 0, '+', '%')} size={110} font="Bebas Neue" color={P.coral} o={on(f, p44)} />
+        <Label x={1300} y={300} text={countTo(44, on(f, p44, 30), 0, '+', '%')} size={110} font="Bebas Neue" color={P.coralInk} o={on(f, p44)} />
       </g>
       <Vignette id="va" />
     </g>
@@ -164,25 +164,25 @@ const PaidOff: React.FC<PieceProps> = ({ f, c }) => {
       <Stage id="po" frame={f} />
       <g opacity={A}>
         <BigLine f={f} x={260} y={250} w={700} h={520} values={[1, 1.1, 1.05, 1.5, 1.9, 2.6]} min={0.8} max={2.8} from={paid - 6} to={paid + 30} color={P.mint} />
-        <Label x={610} y={170} text="SO FAR, IT PAID OFF" size={64} font="Bebas Neue" color={P.champL} o={on(f, paid)} />
+        <Label x={610} y={170} text="SO FAR, IT PAID OFF" size={64} font="Bebas Neue" color={P.ink} o={on(f, paid)} />
         <g opacity={on(f, c('s43:2021'))}>
           <Donut cx={1400} cy={520} r={230} part={55} p={on(f, gain, 30)} />
-          <Label x={1400} y={545} text={countTo(55, on(f, gain, 30), 0, '', '%')} size={110} font="Bebas Neue" color={P.champL} />
+          <Label x={1400} y={545} text={countTo(55, on(f, gain, 30), 0, '', '%')} size={110} font="Bebas Neue" color={P.ink} />
           <Label x={1400} y={820} text="of the market’s whole gain since 2021" size={36} />
-          <Label x={1400} y={870} text="came from the top 10" size={36} color={P.gold} />
+          <Label x={1400} y={870} text="came from the top 10" size={36} color={P.goldInk} />
         </g>
       </g>
       <g opacity={B}>
         <BigBars f={f} x={560} y={800} w={800} h={500} max={10} bars={[{ label: 'their profits', value: 9, color: P.gold, at: faster - 10, text: '↑↑' }, { label: 'the rest', value: 5, color: P.sky, at: c('s44:rest') - 6, text: '↑' }]} />
-        <Label x={960} y={160} text="THEIR PROFITS REALLY GREW FASTER" size={64} font="Bebas Neue" color={P.champL} />
+        <Label x={960} y={160} text="THEIR PROFITS REALLY GREW FASTER" size={64} font="Bebas Neue" color={P.ink} />
       </g>
       {/* # the higher the price, the higher it stands on a thin stilt: no room for a stumble */}
       <g opacity={C} transform={`rotate(${wob} 960 980)`}>
         <rect x={944} y={980 - stilt} width={32} height={stilt} fill={P.navy4} />
         <Tower id="po" i={0} x={960} y={980 - stilt} h={220} w={110} glow={0.4} />
         <g transform={`translate(1150 ${980 - stilt - 160})`} opacity={on(f, price)}><PriceTag x={0} y={0} text="PRICE" s={1.2} /></g>
-        <Label x={500} y={560} text="LESS ROOM" size={96} font="Bebas Neue" color={P.coral} o={on(f, c('s45:less'))} />
-        <Label x={500} y={640} text="FOR DISAPPOINTMENT" size={64} font="Bebas Neue" color={P.coral} o={on(f, c('s45:less'))} />
+        <Label x={500} y={560} text="LESS ROOM" size={96} font="Bebas Neue" color={P.coralInk} o={on(f, c('s45:less'))} />
+        <Label x={500} y={640} text="FOR DISAPPOINTMENT" size={64} font="Bebas Neue" color={P.coralInk} o={on(f, c('s45:less'))} />
         <ellipse cx={960} cy={990} rx={120} ry={20} fill={P.navy2} />
       </g>
       {/* # growth paid for in advance has to show up, year after year */}
@@ -190,7 +190,7 @@ const PaidOff: React.FC<PieceProps> = ({ f, c }) => {
         <ellipse cx={520} cy={520} rx={160} ry={160} fill={P.gold} opacity={0.2 * on(f, c('s46:growth#2'))} />
         {[2026, 2027, 2028, 2029].map((y, i) => <g key={y} transform={`translate(${520 + i * 300} 520) scale(${pop(f, adv + i * 8)})`}><Calendar x={0} y={0} text={`${y}`} s={1.3} />
           <g opacity={on(f, yy + i * 4)}><circle cx={60} cy={-90} r={30} fill={P.mint} /><path d="M46 -90 l10 10 l20 -22" stroke={P.white} strokeWidth={7} fill="none" /></g></g>)}
-        <Label x={960} y={240} text="IT HAS TO SHOW UP" size={64} font="Bebas Neue" color={P.champL} o={on(f, c('s46:show'))} />
+        <Label x={960} y={240} text="IT HAS TO SHOW UP" size={64} font="Bebas Neue" color={P.ink} o={on(f, c('s46:show'))} />
       </g>
       {/* # history: the calendar spins back to 2000 */}
       <g opacity={D}>

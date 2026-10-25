@@ -14,7 +14,7 @@ our navy/teal colours, sound effects and big charts for numbers
 
 - A Short has its own pipeline: script → narration → illustrations → render → checks → package.
 - Length: **2–3 minutes**.
-- Style: the same continuous-illustration style as the long video, polished and coherent.
+- Style: the same continuous-illustration style as the long video, polished and coherent, mixing light (cream/beige) and dark (navy) moods.
 - Never sliced out of the long video.
 
 ## Goals

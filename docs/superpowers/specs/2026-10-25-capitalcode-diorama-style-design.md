@@ -60,3 +60,15 @@ Sound on every action. Rendered and reviewed before anything else is converted.
 ## 6. Left to the builder
 How dioramas are expressed in plan.json (a new shot kind with items + cued actions), the primitive set, easing
 curves, synthesized vs downloaded SFX, and how far rooms are reused.
+
+## Moods: light and dark (owner, 2026-10-25)
+
+The film is not always dark. Each piece has a mood:
+- **Light**: a cream/beige paper stage (`#F8EFDF` → `#E6D5B8`) with navy ink. Used for explaining, good news and the answer.
+- **Dark**: the navy/teal night stage with champagne ink. Used for risk, bubbles and warnings.
+
+Pieces are drawn once. The mood only changes the stage, the ink on the stage (labels, axes, grid lines), soft
+panels, paper objects (white with a soft edge by day) and coloured words (deeper by day so they stay readable).
+It works through CSS variables set on the piece's group (`themeStyle(mood)` in `art/diorama/kit.tsx`). Moods switch
+with the zig-zag wipe between pieces. Each piece's usual mood is in `art/diorama/pieces.ts`, and a plan shot can
+override it with `"mood": "light" | "dark"`.

@@ -25,7 +25,7 @@ const Tick: React.FC<{ x: number; y: number; o: number; ok?: boolean; r?: number
 // # a step badge: "1  Find your real bet"
 const Step: React.FC<{ n: number; text: string; o: number }> = ({ n, text, o }) => (
   <g opacity={o}><circle cx={250} cy={140} r={48} fill={P.champ} /><text x={250} y={160} textAnchor="middle" fill={P.navy0} style={{ font: '400 64px "Bebas Neue"' }}>{n}</text>
-    <Label x={320} y={162} text={text} size={60} font="Bebas Neue" anchor="start" color={P.champL} /></g>
+    <Label x={320} y={162} text={text} size={60} font="Bebas Neue" anchor="start" color={P.ink} /></g>
 )
 
 // ---------------------------------------------------------------- s74–s77b: step 1 — find your real bet (the same giants, three times over)
@@ -42,15 +42,23 @@ const Step1: React.FC<PieceProps> = ({ f, c }) => {
       <g opacity={A}>
         {['Find your real bet', 'Check your timeline', 'Know the other versions'].map((t, i) => (
           <g key={i} transform={`translate(${480 + i * 480} 560) scale(${pop(f, simple + i * 6)})`}>
-            <rect x={-200} y={-180} width={400} height={360} rx={30} fill={P.navy1} opacity={0.75} /><rect x={-200} y={-180} width={400} height={360} rx={30} fill="none" stroke={P.champ} strokeWidth={4} />
+            <rect x={-200} y={-180} width={400} height={360} rx={30} fill={P.card} opacity={0.75} /><rect x={-200} y={-180} width={400} height={360} rx={30} fill="none" stroke={P.champ} strokeWidth={4} />
             <circle cx={0} cy={-70} r={56} fill={P.champ} /><text x={0} y={-46} textAnchor="middle" fill={P.navy0} style={{ font: '400 76px "Bebas Neue"' }}>{i + 1}</text>
             <Label x={0} y={80} text={t} size={36} />
           </g>
         ))}
-        <Label x={960} y={940} text="no one telling you what to buy" size={40} color={P.champL} o={on(f, c('s74:without'))} />
+        <Label x={960} y={940} text="no one telling you what to buy" size={40} color={P.ink} o={on(f, c('s74:without'))} />
       </g>
       <g opacity={B}>
         <Step n={1} text="FIND YOUR REAL BET" o={on(f, first)} />
+        {/* # "find out what your real bet is": a face-down card under a magnifier turns over to show the bet */}
+        <g opacity={between(f, c('s75:find') - 4, c('s76:sp') - 2)} transform={`translate(960 ${lerp(600, 560, on(f, c('s75:real') - 4, 16))})`}>
+          <g transform={`scale(${Math.abs(Math.cos(Math.PI * on(f, c('s75:bet'), 10)) * 0.999) + 0.001} 1)`}>
+            <rect x={-150} y={-200} width={300} height={400} rx={26} fill={f < c('s75:bet') + 5 ? P.navy3 : P.paper} stroke={P.edge} strokeWidth={3} />
+            {f < c('s75:bet') + 5 ? <Label x={0} y={40} text="?" size={160} font="Bebas Neue" color={P.champL} /> : <Prop id="dice" x={0} y={0} size={170} f={f} />}
+          </g>
+          <g transform={`translate(${lerp(420, 150, on(f, c('s75:find'), 20))} ${lerp(-260, -150, on(f, c('s75:find'), 20))})`}><Prop id="magnifier" x={0} y={0} size={230} f={f} /></g>
+        </g>
         {FUNDS.map(([name, k], i) => {
           const x = lerp(xs[i], 960, merge), up = on(f, same + i * 4, 20) * (1 - merge)
           return (
@@ -61,7 +69,7 @@ const Step1: React.FC<PieceProps> = ({ f, c }) => {
             </g>
           )
         })}
-        <Label x={960} y={340} text="×3" size={150} font="Bebas Neue" color={P.gold} o={between(f, three, add)} />
+        <Label x={960} y={340} text="×3" size={150} font="Bebas Neue" color={P.goldInk} o={between(f, three, add)} />
         {/* # added up: one big pile in the same names */}
         <g opacity={on(f, add + 20)}><Platform id="s1m" cx={960} cy={920} rx={360} ry={60} /><Label x={960} y={1010} text="how much sits in the same names" size={36} /></g>
         <g opacity={on(f, surp)}><Pedestal x={1560} y={900} r={110} /><Mini look="hero" x={1540} y={900} scale={1.4} frame={f} seed={21} mood="sad" /><Prop id="exclamation" x={1560} y={560} size={110} f={f} /></g>
@@ -73,7 +81,7 @@ const Step1: React.FC<PieceProps> = ({ f, c }) => {
           const x = 480 + i * 480, o = on(f, (i === 0 ? pub : write) + i * 6)
           return (
             <g key={i} opacity={o} transform={`translate(0 ${(1 - o) * 40})`}>
-              <rect x={x - 190} y={260} width={380} height={560} rx={24} fill={P.cream} />
+              <rect x={x - 190} y={260} width={380} height={560} rx={24} fill={P.paper} stroke={P.edge} strokeWidth={3} />
               <rect x={x - 190} y={260} width={380} height={70} rx={24} fill={P.navy3} /><circle cx={x - 150} cy={295} r={9} fill={P.coral} /><circle cx={x - 122} cy={295} r={9} fill={P.gold} /><circle cx={x - 94} cy={295} r={9} fill={P.mint} />
               <Label x={x} y={380} text={`${FUNDS[i][0]}: TOP HOLDINGS`} size={34} font="Bebas Neue" color={P.navy0} />
               {list.map((n, r) => {
@@ -85,7 +93,7 @@ const Step1: React.FC<PieceProps> = ({ f, c }) => {
           )
         })}
         {f >= appear && [0, 1, 2].map((r) => <path key={r} d={`M670 ${439 + r * 76} L770 ${439 + r * 76} M1150 ${439 + r * 76} L1250 ${439 + r * 76}`} stroke={P.gold} strokeWidth={6} opacity={on(f, appear + r * 4)} strokeDasharray="10 8" />)}
-        <g opacity={on(f, five)} transform="translate(1720 900)"><Prop id="clock" x={0} y={0} size={140} f={f} /><Label x={0} y={110} text="5 MINUTES" size={44} font="Bebas Neue" color={P.champL} /></g>
+        <g opacity={on(f, five)} transform="translate(1720 900)"><Prop id="clock" x={0} y={0} size={140} f={f} /><Label x={0} y={110} text="5 MINUTES" size={44} font="Bebas Neue" color={P.ink} /></g>
       </g>
       <Vignette id="s1" />
     </g>
@@ -110,19 +118,19 @@ const Step2: React.FC<PieceProps> = ({ f, c }) => {
       <g opacity={on(f, c('s79:investing'))}>
         <path d={`M${pts(470, 1400, 1).join(' L')}`} stroke={P.navy4} strokeWidth={36} fill="none" strokeLinecap="round" />
         <path d={`M${pts(470, 1400, longP).join(' L')}`} stroke={P.mint} strokeWidth={14} fill="none" strokeLinecap="round" />
-        <Label x={1700} y={420} text="30 YEARS" size={56} font="Bebas Neue" color={P.mint} o={on(f, y30)} />
+        <Label x={1700} y={420} text="30 YEARS" size={56} font="Bebas Neue" color={P.mintInk} o={on(f, y30)} />
         <Mini look="hero" x={road(longP, 1400).x} y={470 + road(longP, 1400).dip - 10} scale={0.9} frame={f} seed={33} mood={longP > 0.6 ? 'happy' : 'neutral'} />
       </g>
-      <Label x={260 + 0.42 * 1400} y={700} text="a long sleepy decade" size={36} color={P.champL} o={on(f, sleepy)} />
+      <Label x={260 + 0.42 * 1400} y={700} text="a long sleepy decade" size={36} color={P.ink} o={on(f, sleepy)} />
       {/* # the 5-year road ends at the bottom of the dip */}
       <g opacity={on(f, needs - 10)}>
         <path d={`M${pts(820, 1400, 0.42).join(' L')}`} stroke={P.navy4} strokeWidth={36} fill="none" strokeLinecap="round" />
         <path d={`M${pts(820, 1400, shortP).join(' L')}`} stroke={P.coral} strokeWidth={14} fill="none" strokeLinecap="round" />
-        <Label x={260 + 0.46 * 1400} y={1000} text="NEEDS IT IN 5" size={50} font="Bebas Neue" color={P.coral} o={on(f, five)} />
+        <Label x={260 + 0.46 * 1400} y={1000} text="NEEDS IT IN 5" size={50} font="Bebas Neue" color={P.coralInk} o={on(f, five)} />
         <Mini look="owner" x={road(shortP, 1400).x} y={820 + road(shortP, 1400).dip - 10} scale={0.9} frame={f} seed={34} mood={shortP > 0.35 ? 'sad' : 'neutral'} />
         <g opacity={on(f, afford)}><Prop id="hourglass" x={260 + 0.42 * 1400 + 120} y={860} size={110} f={f} /></g>
       </g>
-      <Label x={960} y={260} text="MATTERS MOST IF YOU CAN’T WAIT" size={50} font="Bebas Neue" color={P.coral} o={on(f, c('s79a:concentration'))} />
+      <Label x={960} y={260} text="MATTERS MOST IF YOU CAN’T WAIT" size={50} font="Bebas Neue" color={P.coralInk} o={on(f, c('s79a:concentration'))} />
       <Vignette id="s2" />
       <g opacity={0}>{easily}</g>
     </g>
@@ -141,23 +149,23 @@ const Step3: React.FC<PieceProps> = ({ f, c }) => {
       <g opacity={A}>
         <Platform id="s3" cx={760} cy={860} rx={560} ry={90} />
         {H.map((h, k) => <Tower key={k} id="s3" i={k} x={330 + k * 66} y={850} h={lerp(h, 170, flat) * on(f, c('s80:versions') + k, 16)} w={48} glow={(1 - flat) * (k < 10 ? 0.4 : 0)} />)}
-        <Label x={760} y={260} text={flat < 0.5 ? 'WEIGHTED BY SIZE' : 'EQUAL WEIGHT: SAME SHARE EACH'} size={56} font="Bebas Neue" color={P.champL} o={on(f, c('s80:index'))} />
+        <Label x={760} y={260} text={flat < 0.5 ? 'WEIGHTED BY SIZE' : 'EQUAL WEIGHT: SAME SHARE EACH'} size={56} font="Bebas Neue" color={P.ink} o={on(f, c('s80:index'))} />
         <g opacity={on(f, c('s81:top'))}>
           <Donut cx={1520} cy={560} r={210} part={lerp(37.9, 3.2, easeInOut(span(f, ew, three + 20)))} p={1} />
-          <Label x={1520} y={585} text={`${lerp(37.9, 3.2, easeInOut(span(f, ew, three + 20))).toFixed(1)}%`} size={96} font="Bebas Neue" color={P.champL} />
+          <Label x={1520} y={585} text={`${lerp(37.9, 3.2, easeInOut(span(f, ew, three + 20))).toFixed(1)}%`} size={96} font="Bebas Neue" color={P.ink} />
           <Label x={1520} y={830} text="in the top 10" size={38} />
         </g>
       </g>
       <g opacity={B}>
         {[['WEIGHTED BY SIZE', P.gold, 560], ['EQUAL WEIGHT', P.sky, 1360]].map(([t, col, x], i) => (
           <g key={i} transform={`translate(${x} 560) scale(${pop(f, costs + i * 8)})`}>
-            <rect x={-260} y={-220} width={520} height={440} rx={30} fill={P.navy1} opacity={0.8} /><rect x={-260} y={-220} width={520} height={440} rx={30} fill="none" stroke={col as string} strokeWidth={5} />
+            <rect x={-260} y={-220} width={520} height={440} rx={30} fill={P.card} opacity={0.8} /><rect x={-260} y={-220} width={520} height={440} rx={30} fill="none" stroke={col as string} strokeWidth={5} />
             <Label x={0} y={-150} text={t as string} size={48} font="Bebas Neue" color={col as string} />
             <Prop id={i ? 'scale-balance' : 'crown'} x={0} y={0} size={170} f={f} />
             <g opacity={on(f, c('s82:tradeoffs'))}><PriceTag x={-60} y={150} text="COSTS" s={0.7} r={0} /><Label x={130} y={170} text="trade-offs" size={34} /></g>
           </g>
         ))}
-        <Label x={960} y={940} text="A GENUINELY DIFFERENT BET" size={64} font="Bebas Neue" color={P.champL} o={on(f, diff)} />
+        <Label x={960} y={940} text="A GENUINELY DIFFERENT BET" size={64} font="Bebas Neue" color={P.ink} o={on(f, diff)} />
       </g>
       <Vignette id="s3" />
     </g>
@@ -174,13 +182,13 @@ const Choose: React.FC<PieceProps> = ({ f, c }) => {
   return (
     <g>
       <Stage id="ch" frame={f} />
-      <Label x={960} y={150} text={f < bets ? 'NO CHOICE IS RIGHT FOR EVERYONE' : f < worst ? 'KNOW WHICH BET YOU ARE MAKING' : f < finding ? 'THE WORST OUTCOME ISN’T A WRONG PICK…' : '…IT’S FINDING OUT YEARS LATER'} size={60} font="Bebas Neue" color={f < finding ? P.champL : P.coral} o={on(f, none)} />
+      <Label x={960} y={150} text={f < bets ? 'NO CHOICE IS RIGHT FOR EVERYONE' : f < worst ? 'KNOW WHICH BET YOU ARE MAKING' : f < finding ? 'THE WORST OUTCOME ISN’T A WRONG PICK…' : '…IT’S FINDING OUT YEARS LATER'} size={60} font="Bebas Neue" color={f < finding ? P.ink : P.coralInk} o={on(f, none)} />
       {cards.map(([t, col], i) => {
         const chosen = i === 0, x = chosen ? lerp(560 + i * 400, 1180, pick) : 560 + i * 400, y = chosen ? lerp(560, 600, pick) : 560
         const o = chosen ? 1 : 1 - pick * 0.6
         return (
           <g key={t} opacity={on(f, none + i * 5) * o} transform={`translate(${x} ${y}) scale(${pop(f, none + i * 5) * (chosen ? 1 + pick * 0.15 : 1)})`}>
-            <rect x={-150} y={-200} width={300} height={400} rx={26} fill={P.cream} /><rect x={-150} y={-200} width={300} height={90} rx={26} fill={col} />
+            <rect x={-150} y={-200} width={300} height={400} rx={26} fill={P.paper} stroke={P.edge} strokeWidth={3} /><rect x={-150} y={-200} width={300} height={90} rx={26} fill={col} />
             <Label x={0} y={-140} text={t} size={44} font="Bebas Neue" color={P.navy0} />
             <Prop id={(['crown', 'scale-balance', 'dice'] as const)[i]} x={0} y={30} size={170} f={f} />
           </g>
@@ -204,7 +212,7 @@ const Answer: React.FC<PieceProps> = ({ f, c }) => {
     <g>
       <Stage id="an" frame={f} />
       <g opacity={A}>
-        <Label x={960} y={150} text="SO, IS YOUR INDEX FUND DIVERSIFIED?" size={64} font="Bebas Neue" color={P.champL} o={on(f, q)} />
+        <Label x={960} y={150} text="SO, IS YOUR INDEX FUND DIVERSIFIED?" size={64} font="Bebas Neue" color={P.ink} o={on(f, q)} />
         {/* # the fund itself, first, on "index fund" — then it gives way to the two answers */}
         <g opacity={between(f, c('s85:index'), num + 6)}><FundBox id="an0" x={960} y={560} s={1.2} open={on(f, q)} /></g>
         {/* # by number of companies: yes */}
@@ -230,15 +238,15 @@ const Answer: React.FC<PieceProps> = ({ f, c }) => {
           <circle r={250} fill={P.goldD} /><Donut cx={0} cy={0} r={250} part={37.9} p={on(f, d38, 24)} color={P.gold} rest={P.cream} thick={250} />
           <circle r={200} fill="none" stroke={P.goldD} strokeWidth={6} opacity={0.5} />
         </g>
-        <Label x={700} y={880} text={countTo(38, on(f, d38, 24), 0, '', '¢ of every $1')} size={80} font="Bebas Neue" color={P.champL} />
+        <Label x={700} y={880} text={countTo(38, on(f, d38, 24), 0, '', '¢ of every $1')} size={80} font="Bebas Neue" color={P.ink} />
         <g opacity={on(f, ten)}><Platform id="an3" cx={1400} cy={800} rx={260} ry={60} />{Array.from({ length: 10 }, (_, k) => <Tower key={k} id="an3" i={k} x={1220 + k * 40} y={790} h={180 + (k % 3) * 40} w={32} glow={0.6} />)}<Label x={1400} y={930} text="on 10 companies" size={40} /></g>
         {f >= priced - 4 && <g transform={`translate(1460 330) scale(${pop(f, priced)})`}><PriceTag x={0} y={0} text="PRICED FOR THE FUTURE" s={0.9} r={-4} /></g>}
-        <Label x={1400} y={190} text="a future that still has to arrive" size={38} color={P.champL} o={on(f, fut)} />
+        <Label x={1400} y={190} text="a future that still has to arrive" size={38} color={P.ink} o={on(f, fut)} />
       </g>
       {/* # might be a great bet — just choose it on purpose */}
       <g opacity={C}>
         <ellipse cx={960} cy={720} rx={700} ry={180} fill={P.gold} opacity={0.08 * on(f, great)} />
-        <Label x={960} y={190} text={f < chose ? 'IT MIGHT BE A GREAT BET' : 'JUST CHOOSE IT ON PURPOSE'} size={80} font="Bebas Neue" color={P.champL} o={on(f, great)} />
+        <Label x={960} y={190} text={f < chose ? 'IT MIGHT BE A GREAT BET' : 'JUST CHOOSE IT ON PURPOSE'} size={80} font="Bebas Neue" color={P.ink} o={on(f, great)} />
         <Pedestal x={960} y={860} r={180} />
         <Mini look="hero" x={880} y={860} scale={2} frame={f} seed={44} mood="happy" />
         {/* # the hero sets a bet chip down, deliberately */}
@@ -248,7 +256,7 @@ const Answer: React.FC<PieceProps> = ({ f, c }) => {
       {/* # brand */}
       <g opacity={D}>
         <g transform={`translate(960 470) scale(${pop(f, brand, 16)}) translate(-960 -470)`}><svg x={860} y={370} width={200} height={200}><Emblem size={200} /></svg></g>
-        <Label x={960} y={660} text="CAPITALCODE" size={72} font="Bebas Neue" color={P.champL} o={on(f, brand + 6)} />
+        <Label x={960} y={660} text="CAPITALCODE" size={72} font="Bebas Neue" color={P.ink} o={on(f, brand + 6)} />
         <Label x={960} y={730} text="how the money actually works" size={40} weight={500} o={on(f, c('s91:money'))} />
       </g>
       <Vignette id="an" />

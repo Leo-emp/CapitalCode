@@ -6,6 +6,7 @@
 // voice). Drawn into a 1920×1080 SVG by the Episode.
 // ============================================================
 import type React from 'react'
+import type { Mood } from './kit'
 
 export type PieceProps = { f: number; c: (k: string) => number; from: number; to: number }
 export type Piece = {
@@ -13,6 +14,7 @@ export type Piece = {
   beats: string[]                              // # cue keys where something meaningful happens
   sfx: [cue: string, name: string, volume?: number][]
   Component: React.FC<PieceProps>
+  mood?: Mood                                  // # the piece's usual mood (light/dark); a plan shot can override it
 }
 export const makePiece = (id: string, title: string, p: Omit<Piece, 'id' | 'title'>): Piece => ({ id, title, ...p })
 

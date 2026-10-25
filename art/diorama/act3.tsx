@@ -45,7 +45,7 @@ const DotCom: React.FC<PieceProps> = ({ f, c }) => {
         {/* # the bubble swells around them */}
         {bub > 0 && <g><ellipse cx={960} cy={560} rx={880 * bub} ry={460 * bub} fill="#9FD8FF" opacity={0.1} /><ellipse cx={960} cy={560} rx={880 * bub} ry={460 * bub} fill="none" stroke="#CFEFFF" strokeWidth={5} opacity={0.5} />
           <path d={`M${960 - 700 * bub} ${560 - 260 * bub} A${760 * bub} ${400 * bub} 0 0 1 ${960 - 300 * bub} ${560 - 420 * bub}`} stroke="#FFFFFF" strokeWidth={12} strokeLinecap="round" fill="none" opacity={0.35} /></g>}
-        <Label x={960} y={170} text={countTo(27, on(f, c('s49:27'), 24), 0, '', '% OF THE INDEX')} size={80} font="Bebas Neue" color={P.champL} o={on(f, c('s49:27')) * (1 - on(f, names - 10))} />
+        <Label x={960} y={170} text={countTo(27, on(f, c('s49:27'), 24), 0, '', '% OF THE INDEX')} size={80} font="Bebas Neue" color={P.ink} o={on(f, c('s49:27')) * (1 - on(f, names - 10))} />
         <g opacity={between(f, c('s49:record'), names - 10)}><Prop id="crown" x={960} y={250} size={100} f={f} /></g>
         <g opacity={between(f, c('s50:safe'), c('s51'))}><Prop id="shield" x={1700} y={560} size={190} f={f} /><Label x={1700} y={700} text="felt safe" size={40} /></g>
         {/* # not fake start-ups: a flimsy dot-com tent, crossed out */}
@@ -53,15 +53,15 @@ const DotCom: React.FC<PieceProps> = ({ f, c }) => {
           <path d="M150 720 L260 560 L370 720 Z" fill={P.coral} opacity={0.85} /><Label x={260} y={770} text="dot-com start-up" size={30} />
           <path d={`M170 590 L350 740 M350 590 L170 740`} stroke={P.white} strokeWidth={12} strokeLinecap="round" opacity={on(f, c('s51:startups'))} />
         </g>
-        <Label x={960} y={170} text="REAL BUSINESSES, REAL PROFITS" size={72} font="Bebas Neue" color={P.champL} o={on(f, c('s52:real'))} />
+        <Label x={960} y={170} text="REAL BUSINESSES, REAL PROFITS" size={72} font="Bebas Neue" color={P.ink} o={on(f, c('s52:real'))} />
       </g>
       {/* # their price: 23.6× vs ~16× */}
       <g opacity={on(f, val - 6)}>
-        <Label x={960} y={150} text="2000: PRICE ÷ EXPECTED PROFIT" size={60} font="Bebas Neue" color={P.champL} />
+        <Label x={960} y={150} text="2000: PRICE ÷ EXPECTED PROFIT" size={60} font="Bebas Neue" color={P.ink} />
         {[['top 10', 23.6, c('s53:236'), P.gold], ['the rest', 16, c('s53:16'), P.sky]].map(([l, v, a, col], i) => {
           const h = ((v as number) / 26) * 520 * pop(f, a as number, 22), x = 760 + i * 400
           return <g key={i} opacity={f >= (a as number) - 2 ? 1 : 0}><rect x={x - 80} y={820 - h} width={160} height={h} rx={14} fill={col as string} />
-            <Label x={x} y={800 - h} text={`${countTo(v as number, on(f, a as number, 22), i ? 0 : 1)}×`} size={60} font="Bebas Neue" color={P.champL} /><Label x={x} y={880} text={l as string} size={38} /></g>
+            <Label x={x} y={800 - h} text={`${countTo(v as number, on(f, a as number, 22), i ? 0 : 1)}×`} size={60} font="Bebas Neue" color={P.ink} /><Label x={x} y={880} text={l as string} size={38} /></g>
         })}
       </g>
       <Vignette id="dc" />
@@ -86,24 +86,24 @@ const Flip: React.FC<PieceProps> = ({ f, c }) => {
         <g opacity={0.9}><Platform id="fl" cx={1300} cy={560} rx={170} ry={40} />{[0, 1, 2, 3, 4].map((k) => <Tower key={k} id="fl" i={k} x={1210 + k * 45} y={555} h={90 + k * 12} w={32} />)}<Label x={1300} y={650} text="2000" size={34} font="Bebas Neue" /></g>
         <g opacity={0.9}><Platform id="fl2" cx={1640} cy={560} rx={170} ry={40} />{[0, 1, 2, 3, 4].map((k) => <Tower key={k} id="fl2" i={k} x={1550 + k * 45} y={555} h={110 + k * 16} w={32} glow={0.5} />)}<Label x={1640} y={650} text="TODAY" size={34} font="Bebas Neue" /></g>
         <Actor who="hero" pose={poseAt(f, 30, keys)} expression={ex.expression} blend={ex.from ? { from: ex.from, mix: ex.mix! } : undefined} x={560} y={1300} scale={1.7} frame={f} life={5} />
-        <Label x={1470} y={300} text="SOUND FAMILIAR?" size={84} font="Bebas Neue" color={P.champL} o={on(f, fam)} />
+        <Label x={1470} y={300} text="SOUND FAMILIAR?" size={84} font="Bebas Neue" color={P.ink} o={on(f, fam)} />
       </g>
       {/* # five years later: the see-saw flips */}
       <g opacity={B}>
         <g transform={`translate(1560 180) scale(${pop(f, c('s55:five'))})`}><Calendar x={0} y={0} text="2005" s={1.1} /></g>
         <path d="M900 860 L960 720 L1020 860 Z" fill={P.champ} />
         <g transform={`rotate(${tilt} 960 720)`}>
-          <rect x={360} y={704} width={1200} height={30} rx={15} fill={P.cream} />
-          <g transform="translate(520 700)"><Tower id="fl" i={0} x={0} y={0} h={200} w={110} glow={0.5} /><Label x={0} y={-260} text={f < flip ? '23.6×' : `${countTo(11.5, on(f, c('s55:115'), 20), 1)}×`} size={60} font="Bebas Neue" color={P.gold} /><Label x={0} y={70} text="the giants" size={36} /></g>
-          <g transform={`translate(1400 ${700 - Math.sin(span(f, c('s55:against'), c('s55:against') + 12) * Math.PI) * 24})`}>{[0, 1, 2].map((k) => <rect key={k} x={-90 + k * 62} y={-110 - (k % 2) * 20} width={56} height={110 + (k % 2) * 20} rx={6} fill={P.sky} />)}<Label x={0} y={-180} text="16×" size={60} font="Bebas Neue" color={P.sky} /><Label x={0} y={70} text="the rest" size={36} /></g>
+          <rect x={360} y={704} width={1200} height={30} rx={15} fill={P.paper} stroke={P.edge} strokeWidth={3} />
+          <g transform="translate(520 700)"><Tower id="fl" i={0} x={0} y={0} h={200} w={110} glow={0.5} /><Label x={0} y={-260} text={f < flip ? '23.6×' : `${countTo(11.5, on(f, c('s55:115'), 20), 1)}×`} size={60} font="Bebas Neue" color={P.goldInk} /><Label x={0} y={70} text="the giants" size={36} /></g>
+          <g transform={`translate(1400 ${700 - Math.sin(span(f, c('s55:against'), c('s55:against') + 12) * Math.PI) * 24})`}>{[0, 1, 2].map((k) => <rect key={k} x={-90 + k * 62} y={-110 - (k % 2) * 20} width={56} height={110 + (k % 2) * 20} rx={6} fill={P.sky} />)}<Label x={0} y={-180} text="16×" size={60} font="Bebas Neue" color={P.skyInk} /><Label x={0} y={70} text="the rest" size={36} /></g>
         </g>
-        <Label x={960} y={160} text={f < flip ? 'THE PREMIUM DID NOT JUST SHRINK…' : 'IT FLIPPED'} size={f < flip ? 64 : 110} font="Bebas Neue" color={f < flip ? P.champL : P.coral} o={on(f, c('s56:premium'))} />
+        <Label x={960} y={160} text={f < flip ? 'THE PREMIUM DID NOT JUST SHRINK…' : 'IT FLIPPED'} size={f < flip ? 64 : 110} font="Bebas Neue" color={f < flip ? P.ink : P.coralInk} o={on(f, c('s56:premium'))} />
       </g>
       {/* # the people who bought at the top of the biggest, most famous names — and slid down */}
       <g opacity={C}>
         <path d="M200 1000 L960 330 L1720 1000 Z" fill={P.navy3} /><path d="M960 330 L1720 1000 L1300 1000 Z" fill={P.navy2} />
         <g opacity={on(f, c('s57b:famous'))}><Prop id="crown" x={960} y={280} size={120} f={f} /></g>
-        <Label x={960} y={150} text="BIGGEST · MOST FAMOUS · SAFEST-LOOKING" size={54} font="Bebas Neue" color={P.champL} o={on(f, c('s57b:biggest'))} />
+        <Label x={960} y={150} text="BIGGEST · MOST FAMOUS · SAFEST-LOOKING" size={54} font="Bebas Neue" color={P.ink} o={on(f, c('s57b:biggest'))} />
         {Array.from({ length: 9 }, (_, i) => {
           const side = i % 2 ? 1 : -1, start = { x: 960 + side * (700 - i * 30), y: 990 }, top = { x: 960 + side * (40 + i * 14), y: 380 + i * 8 }
           const up = easeOut(span(climb, i * 0.05, 0.6 + i * 0.05)), down = easeInOut(span(slide, i * 0.06, 0.7 + i * 0.03))
@@ -129,8 +129,8 @@ const Survivors: React.FC<PieceProps> = ({ f, c }) => {
     <g>
       <Stage id="sv" tint="teal" frame={f} />
       <g opacity={A}>
-        <Label x={560} y={150} text="TOP 10 IN 2000" size={60} font="Bebas Neue" color={P.champL} o={on(f, c('s58:leaders'))} />
-        <Label x={1360} y={150} text="TOP 10 TODAY" size={60} font="Bebas Neue" color={P.champL} o={on(f, ng)} />
+        <Label x={560} y={150} text="TOP 10 IN 2000" size={60} font="Bebas Neue" color={P.ink} o={on(f, c('s58:leaders'))} />
+        <Label x={1360} y={150} text="TOP 10 TODAY" size={60} font="Bebas Neue" color={P.ink} o={on(f, ng)} />
         {BEFORE.map((n, i) => {
           const ms = n === 'Microsoft', drop = ms ? 0 : easeInOut(span(f, slid + i * 2, slid + 26 + i * 2))
           const toRight = ms ? easeInOut(span(f, c('s59:microsoft'), c('s59:microsoft') + 20)) : 0
@@ -142,25 +142,25 @@ const Survivors: React.FC<PieceProps> = ({ f, c }) => {
         })}
         {AFTER.map((n, i) => n === 'Microsoft' ? null : <g key={n} opacity={on(f, ng + i * 3)} transform={`translate(${(1 - on(f, ng + i * 3)) * 80} 0)`}>
           <rect x={1130} y={row(i) - 44} width={460} height={58} rx={29} fill={P.sky} opacity={0.85} /><Label x={1360} y={row(i)} text={n} size={34} color={P.navy0} /></g>)}
-        <Label x={960} y={1000} text={`only ${f >= c('s58:one') ? '1' : '…'} of 10 is still there`} size={44} color={P.champL} o={on(f, c('s58:only'))} />
+        <Label x={960} y={1000} text={`only ${f >= c('s58:one') ? '1' : '…'} of 10 is still there`} size={44} color={P.ink} o={on(f, c('s58:only'))} />
       </g>
       {/* # the lesson: a great company is not a great investment at any price */}
       <g opacity={B}>
-        <Label x={960} y={160} text="THE LESSON" size={84} font="Bebas Neue" color={P.champL} o={on(f, lesson)} />
-        <g transform={`translate(560 560) scale(${pop(f, great)})`}><circle r={200} fill={P.navy1} opacity={0.6} /><Prop id="crown" x={0} y={-20} size={200} f={f} />
+        <Label x={960} y={160} text="THE LESSON" size={84} font="Bebas Neue" color={P.ink} o={on(f, lesson)} />
+        <g transform={`translate(560 560) scale(${pop(f, great)})`}><circle r={200} fill={P.card} opacity={0.6} /><Prop id="crown" x={0} y={-20} size={200} f={f} />
           <Label x={0} y={150} text="GREAT COMPANY" size={50} font="Bebas Neue" /><g transform="translate(140 -150)"><circle r={36} fill={P.mint} /><path d="M-16 0 l11 11 l22 -24" stroke={P.white} strokeWidth={8} fill="none" /></g></g>
-        <Label x={960} y={570} text="≠" size={140} color={P.coral} o={on(f, c('s62:great#2'))} />
-        <g transform={`translate(1360 560) scale(${pop(f, inv)})`}><circle r={200} fill={P.navy1} opacity={0.6} /><PriceTag x={-10} y={-10} text="ANY $" s={1.15} />
+        <Label x={960} y={570} text="≠" size={140} color={P.coralInk} o={on(f, c('s62:great#2'))} />
+        <g transform={`translate(1360 560) scale(${pop(f, inv)})`}><circle r={200} fill={P.card} opacity={0.6} /><PriceTag x={-10} y={-10} text="ANY $" s={1.15} />
           <Label x={0} y={150} text="GREAT INVESTMENT?" size={50} font="Bebas Neue" /><g transform="translate(140 -150)" opacity={on(f, c('s62:any'))}><circle r={36} fill={P.coral} /><path d="M-14 -14 L14 14 M14 -14 L-14 14" stroke={P.white} strokeWidth={8} /></g></g>
       </g>
       {/* # bought at the wrong price: down, then years of crawling back to where you started */}
       <g opacity={C}>
         <BigLine f={f} x={300} y={260} w={1100} h={520} values={[100, 62, 55, 60, 68, 76, 84, 92, 100]} min={40} max={110} from={c('s63:bought') - 4} to={back + 20} color={P.coral} />
-        <rect x={300} y={260 + 520 * (1 - (100 - 40) / 70)} width={1100} height={3} fill={P.champL} opacity={0.6} />
-        <Label x={1410} y={260 + 520 * (1 - 60 / 70) - 14} text="where you started" size={32} anchor="end" color={P.champL} o={on(f, c('s63:started'))} />
+        <rect x={300} y={260 + 520 * (1 - (100 - 40) / 70)} width={1100} height={3} fill={P.ink} opacity={0.6} />
+        <Label x={1410} y={260 + 520 * (1 - 60 / 70) - 14} text="where you started" size={32} anchor="end" color={P.ink} o={on(f, c('s63:started'))} />
         <g opacity={on(f, wait)}><Pedestal x={1640} y={860} r={110} /><Mini look="hero" x={1620} y={860} scale={1.3} frame={f} seed={9} mood="sad" /><Prop id="hourglass" x={1730} y={780} size={130} f={f} /></g>
-        <Label x={1640} y={300} text={countTo(Math.max(1, Math.round(1 + 9 * span(f, c('s63:years'), back + 30))), 1, 0, '', ' YEARS')} size={70} font="Bebas Neue" color={P.coral} o={on(f, c('s63:years'))} />
-        <Label x={850} y={180} text="A WONDERFUL BUSINESS, AT THE WRONG PRICE" size={56} font="Bebas Neue" color={P.champL} o={on(f, wonder)} />
+        <Label x={1640} y={300} text={countTo(Math.max(1, Math.round(1 + 9 * span(f, c('s63:years'), back + 30))), 1, 0, '', ' YEARS')} size={70} font="Bebas Neue" color={P.coralInk} o={on(f, c('s63:years'))} />
+        <Label x={850} y={180} text="A WONDERFUL BUSINESS, AT THE WRONG PRICE" size={56} font="Bebas Neue" color={P.ink} o={on(f, wonder)} />
       </g>
       <Vignette id="sv" />
     </g>

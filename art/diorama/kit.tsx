@@ -26,19 +26,42 @@ export const P = {
   teal0: '#0B3640', teal1: '#11505F', teal2: '#1A6B7C',
   champ: COLORS.champagne, champL: COLORS.champagneLight, gold: '#E9C25A', goldD: '#B88A2E',
   sky: '#5BCBFF', skyD: '#2A8FD0', coral: '#F06B5B', coralD: '#C94A3E', mint: '#3DDC97', cream: '#F2E6CC', white: '#F7FAFF',
+  // # mood-aware colours (set by the piece's mood, see THEMES): words and lines drawn on the stage, and soft shadows
+  ink: 'var(--cc-ink, #F0EAE1)', ink2: 'var(--cc-ink2, #C2B9B1)', shadow: 'var(--cc-shadow, #000)',
+  // # a soft panel/medallion on the stage, and coloured words that stay readable on cream (darker by day)
+  card: 'var(--cc-card, #16294A)', goldInk: 'var(--cc-gold, #E9C25A)', skyInk: 'var(--cc-sky, #5BCBFF)', mintInk: 'var(--cc-mint, #3DDC97)', coralInk: 'var(--cc-coral, #F06B5B)',
+  // # paper objects (tags, calendars, cards, sails): cream at night, white with a soft edge by day so they stand off the cream stage
+  paper: 'var(--cc-paper, #F2E6CC)', edge: 'var(--cc-edge, none)',
+}
+
+// ------------------------------------------------------------ moods: light (cream/beige paper) and dark (navy night)
+// # A piece is drawn once; its mood only changes the stage and the ink. Light = explaining, good news, the answer;
+// # dark = risk, bubbles, warnings. bg = the main stage, alt = the second stage a piece cuts to (teal at night, sand by day).
+export type Mood = 'light' | 'dark'
+type Theme = { bg: [string, string]; alt: [string, string]; ink: string; ink2: string; shadow: string; speck: string; vignette: number; card: string; gold: string; sky: string; mint: string; coral: string; paper: string; edge: string }
+export const THEMES: Record<Mood, Theme> = {
+  dark: { bg: [P.navy3, P.navy0], alt: [P.teal2, P.teal0], ink: COLORS.champagneLight, ink2: COLORS.champagne, shadow: '#000', speck: COLORS.champagneLight, vignette: 0.35,
+    card: P.navy1, gold: P.gold, sky: P.sky, mint: P.mint, coral: P.coral, paper: P.cream, edge: 'none' },
+  light: { bg: ['#F8EFDF', '#E6D5B8'], alt: ['#F2E4CA', '#DAC39E'], ink: '#16294A', ink2: '#5C6F8E', shadow: '#5A4426', speck: '#B79E78', vignette: 0.12,
+    card: '#FFFDF8', gold: '#B4821C', sky: '#1F7FC0', mint: '#1E9A63', coral: '#D9483A', paper: '#FFFFFF', edge: '#CDB58C' },
+}
+// # the CSS variables a piece's <g> carries so every colour below follows its mood
+export const themeStyle = (m: Mood): React.CSSProperties => {
+  const t = THEMES[m]
+  return { '--cc-bg0': t.bg[0], '--cc-bg1': t.bg[1], '--cc-alt0': t.alt[0], '--cc-alt1': t.alt[1], '--cc-ink': t.ink, '--cc-ink2': t.ink2, '--cc-shadow': t.shadow, '--cc-speck': t.speck, '--cc-vg': String(t.vignette), '--cc-card': t.card, '--cc-gold': t.gold, '--cc-sky': t.sky, '--cc-mint': t.mint, '--cc-coral': t.coral, '--cc-paper': t.paper, '--cc-edge': t.edge } as React.CSSProperties
 }
 
 // ------------------------------------------------------------ stage: soft lit background, vignette, drifting specks
 export const Stage: React.FC<{ id: string; tint?: 'navy' | 'teal'; frame: number }> = ({ id, tint = 'navy', frame }) => {
-  const [c0, c1] = tint === 'teal' ? [P.teal2, P.teal0] : [P.navy3, P.navy0]
+  const [c0, c1] = tint === 'teal' ? ['var(--cc-alt0, #1A6B7C)', 'var(--cc-alt1, #0B3640)'] : ['var(--cc-bg0, #2B4A78)', 'var(--cc-bg1, #0E1B33)']
   return (
     <g>
       <defs>
         <radialGradient id={`${id}-bg`} cx="0.5" cy="0.42" r="0.75"><stop offset="0%" stopColor={c0} /><stop offset="100%" stopColor={c1} /></radialGradient>
-        <radialGradient id={`${id}-vg`} cx="0.5" cy="0.5" r="0.72"><stop offset="70%" stopColor="#000" stopOpacity={0} /><stop offset="100%" stopColor="#000" stopOpacity={0.35} /></radialGradient>
+        <radialGradient id={`${id}-vg`} cx="0.5" cy="0.5" r="0.72"><stop offset="70%" stopColor="#000" stopOpacity={0} /><stop offset="100%" stopColor={P.shadow} stopOpacity={'var(--cc-vg, 0.35)' as unknown as number} /></radialGradient>
       </defs>
       <rect x={-2000} y={-2000} width={6000} height={5000} fill={`url(#${id}-bg)`} />
-      {Array.from({ length: 26 }, (_, i) => <circle key={i} cx={((rnd(i) * 1920 + frame * (0.2 + rnd(i + 3) * 0.4)) % 2000) - 40} cy={rnd(i + 9) * 1080 - Math.sin(frame / 60 + i) * 6} r={1.5 + rnd(i + 5) * 2.5} fill={P.champL} opacity={0.08 + rnd(i + 7) * 0.12} />)}
+      {Array.from({ length: 26 }, (_, i) => <circle key={i} cx={((rnd(i) * 1920 + frame * (0.2 + rnd(i + 3) * 0.4)) % 2000) - 40} cy={rnd(i + 9) * 1080 - Math.sin(frame / 60 + i) * 6} r={1.5 + rnd(i + 5) * 2.5} fill="var(--cc-speck, #F0EAE1)" opacity={0.08 + rnd(i + 7) * 0.12} />)}
     </g>
   )
 }
@@ -51,7 +74,7 @@ export const Platform: React.FC<{ id: string; cx: number; cy: number; rx: number
       <linearGradient id={`${id}-top`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={P.navy4} /><stop offset="100%" stopColor={P.navy3} /></linearGradient>
       <linearGradient id={`${id}-side`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={P.navy2} /><stop offset="100%" stopColor={P.navy1} /></linearGradient>
     </defs>
-    <ellipse cx={cx} cy={cy + 70} rx={rx * 1.02} ry={ry * 0.9} fill="#000" opacity={0.22} />
+    <ellipse cx={cx} cy={cy + 70} rx={rx * 1.02} ry={ry * 0.9} fill={P.shadow} opacity={0.22} />
     <path d={`M${cx - rx} ${cy} L${cx - rx} ${cy + 46} A${rx} ${ry} 0 0 0 ${cx + rx} ${cy + 46} L${cx + rx} ${cy} Z`} fill={`url(#${id}-side)`} />
     <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill={`url(#${id}-top)`} />
     <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill="none" stroke={P.champL} strokeOpacity={0.18} strokeWidth={3} />
@@ -64,7 +87,7 @@ export const Building: React.FC<{ x: number; y: number; s: number; seed: number;
   const w = (26 + rnd(seed) * 18) * s, h = (34 + rnd(seed + 1) * 46) * s, c = BODY[Math.floor(rnd(seed + 2) * BODY.length)]
   return (
     <g opacity={1 - dim * 0.55}>
-      <ellipse cx={x} cy={y} rx={w * 0.75} ry={w * 0.18} fill="#000" opacity={0.18} />
+      <ellipse cx={x} cy={y} rx={w * 0.75} ry={w * 0.18} fill={P.shadow} opacity={0.18} />
       <rect x={x - w / 2} y={y - h} width={w} height={h} fill={c} />
       <rect x={x + w * 0.12} y={y - h} width={w * 0.38} height={h} fill="#0E1B33" opacity={0.22} />
       <rect x={x - w / 2 - 2 * s} y={y - h - 4 * s} width={w + 4 * s} height={5 * s} fill={P.white} opacity={0.85} />
@@ -78,7 +101,7 @@ export const Building: React.FC<{ x: number; y: number; s: number; seed: number;
 export const Tower: React.FC<{ id: string; x: number; y: number; h: number; w?: number; glow?: number; i: number }> = ({ id, x, y, h, w = 74, glow = 0, i }) => (
   <g>
     <defs><linearGradient id={`${id}-t${i}`} x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#9FDCFF" /><stop offset="55%" stopColor={P.sky} /><stop offset="100%" stopColor={P.skyD} /></linearGradient></defs>
-    <ellipse cx={x} cy={y} rx={w * 0.8} ry={w * 0.2} fill="#000" opacity={0.2} />
+    <ellipse cx={x} cy={y} rx={w * 0.8} ry={w * 0.2} fill={P.shadow} opacity={0.2} />
     <rect x={x - w / 2} y={y - h} width={w} height={h} rx={6} fill={`url(#${id}-t${i})`} />
     {Array.from({ length: Math.max(0, Math.floor(h / 26)) }, (_, k) => <rect key={k} x={x - w / 2 + 8} y={y - h + 14 + k * 26} width={w - 16} height={4} rx={2} fill={P.white} opacity={0.35} />)}
     <path d={`M${x - w / 2 - 4} ${y - h} L${x} ${y - h - w * 0.45} L${x + w / 2 + 4} ${y - h} Z`} fill={P.gold} />
@@ -91,7 +114,7 @@ export const Tower: React.FC<{ id: string; x: number; y: number; h: number; w?: 
 export const FundBox: React.FC<{ id: string; x: number; y: number; s?: number; open?: number; label?: string }> = ({ id, x, y, s = 1, open = 0, label = 'S&P 500' }) => (
   <g transform={`translate(${x} ${y}) scale(${s})`}>
     <defs><linearGradient id={`${id}-box`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={P.navy4} /><stop offset="100%" stopColor={P.navy2} /></linearGradient></defs>
-    <ellipse cx={0} cy={118} rx={190} ry={22} fill="#000" opacity={0.25} />
+    <ellipse cx={0} cy={118} rx={190} ry={22} fill={P.shadow} opacity={0.25} />
     <rect x={-160} y={-100} width={320} height={216} rx={22} fill={`url(#${id}-box)`} />
     <rect x={-160} y={-100} width={320} height={216} rx={22} fill="none" stroke={P.champ} strokeWidth={4} />
     <rect x={-140} y={-80} width={280} height={8} rx={4} fill={P.white} opacity={0.12} />
@@ -178,7 +201,7 @@ export const between = (f: number, a: number, b: number) => Math.min(easeOut(spa
 // # a round pedestal a small figure or an object stands on
 export const Pedestal: React.FC<{ x: number; y: number; r?: number; color?: string }> = ({ x, y, r = 70, color = P.navy4 }) => (
   <g>
-    <ellipse cx={x} cy={y + 18} rx={r * 1.05} ry={r * 0.3} fill="#000" opacity={0.2} />
+    <ellipse cx={x} cy={y + 18} rx={r * 1.05} ry={r * 0.3} fill={P.shadow} opacity={0.2} />
     <path d={`M${x - r} ${y} L${x - r} ${y + 14} A${r} ${r * 0.28} 0 0 0 ${x + r} ${y + 14} L${x + r} ${y} Z`} fill={P.navy2} />
     <ellipse cx={x} cy={y} rx={r} ry={r * 0.28} fill={color} />
   </g>

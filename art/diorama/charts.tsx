@@ -11,7 +11,7 @@ import { clamp01, easeOut, lerp, P, rnd, settle } from './kit'
 // # "37.9%" shown at progress p (same decimals as the target)
 export const countTo = (v: number, p: number, dec = 0, pre = '', post = '') => `${pre}${(v * clamp01(p)).toFixed(dec)}${post}`
 
-export const Label: React.FC<{ x: number; y: number; text: string; size?: number; color?: string; anchor?: 'start' | 'middle' | 'end'; weight?: number; o?: number; font?: 'Inter' | 'Bebas Neue' }> = ({ x, y, text, size = 40, color = P.white, anchor = 'middle', weight = 700, o = 1, font = 'Inter' }) => (
+export const Label: React.FC<{ x: number; y: number; text: string; size?: number; color?: string; anchor?: 'start' | 'middle' | 'end'; weight?: number; o?: number; font?: 'Inter' | 'Bebas Neue' }> = ({ x, y, text, size = 40, color = P.ink, anchor = 'middle', weight = 700, o = 1, font = 'Inter' }) => (
   <text x={x} y={y} textAnchor={anchor} fill={color} opacity={o} style={{ font: `${weight} ${size}px "${font}"`, letterSpacing: font === 'Bebas Neue' ? 1 : 0 }}>{text}</text>
 )
 
@@ -21,16 +21,16 @@ export const BigBars: React.FC<{ f: number; x: number; y: number; w: number; h: 
   const gap = w / bars.length, bw = Math.min(160, gap * 0.62)
   return (
     <g>
-      <rect x={x - 20} y={y} width={w + 40} height={6} rx={3} fill={P.champ} opacity={0.5} />
+      <rect x={x - 20} y={y} width={w + 40} height={6} rx={3} fill={P.ink2} opacity={0.6} />
       {bars.map((b, i) => {
         const p = settle(clamp01((f - b.at) / 22)), bh = (b.value / max) * h * p, cx = x + gap * (i + 0.5)
         return (
           <g key={i} opacity={f >= b.at - 2 ? 1 : 0}>
-            <ellipse cx={cx} cy={y + 4} rx={bw * 0.65} ry={10} fill="#000" opacity={0.18} />
+            <ellipse cx={cx} cy={y + 4} rx={bw * 0.65} ry={10} fill={P.shadow} opacity={0.18} />
             <rect x={cx - bw / 2} y={y - bh} width={bw} height={bh} rx={14} fill={b.color ?? P.sky} />
             <rect x={cx - bw / 2} y={y - bh} width={bw * 0.3} height={bh} rx={14} fill="#FFFFFF" opacity={0.18} />
-            <Label x={cx} y={y - bh - 22} text={b.text ?? countTo(b.value, easeOut(clamp01((f - b.at) / 22)), dec, pre, unit)} size={52} font="Bebas Neue" color={P.champL} o={p} />
-            <Label x={cx} y={y + 56} text={b.label} size={34} color={P.white} o={clamp01((f - b.at) / 10)} />
+            <Label x={cx} y={y - bh - 22} text={b.text ?? countTo(b.value, easeOut(clamp01((f - b.at) / 22)), dec, pre, unit)} size={52} font="Bebas Neue" color={P.ink} o={p} />
+            <Label x={cx} y={y + 56} text={b.label} size={34} color={P.ink} o={clamp01((f - b.at) / 10)} />
           </g>
         )
       })}
@@ -48,7 +48,7 @@ export const RankBars: React.FC<{ f: number; x: number; y: number; w: number; ro
           <Label x={x - 24} y={yy + rowH * 0.62} text={r.label} size={34} anchor="end" />
           <rect x={x} y={yy + 8} width={Math.max(8, bw)} height={rowH - 20} rx={(rowH - 20) / 2} fill={r.color ?? P.sky} />
           <rect x={x} y={yy + 8} width={Math.max(8, bw)} height={(rowH - 20) * 0.35} rx={(rowH - 20) / 4} fill="#FFFFFF" opacity={0.2} />
-          <Label x={x + bw + 18} y={yy + rowH * 0.64} text={countTo(r.value, easeOut(clamp01((f - r.at) / 18)), dec, '', unit)} size={36} anchor="start" font="Bebas Neue" color={P.champL} />
+          <Label x={x + bw + 18} y={yy + rowH * 0.64} text={countTo(r.value, easeOut(clamp01((f - r.at) / 18)), dec, '', unit)} size={36} anchor="start" font="Bebas Neue" color={P.ink} />
         </g>
       )
     })}
@@ -65,8 +65,8 @@ export const BigLine: React.FC<{ f: number; x: number; y: number; w: number; h: 
   const d = pts.map((q, i) => `${i ? 'L' : 'M'}${q.x.toFixed(1)} ${q.y.toFixed(1)}`).join(' '), head = pts[pts.length - 1]
   return (
     <g opacity={f >= from ? 1 : 0}>
-      {[0.25, 0.5, 0.75].map((g) => <rect key={g} x={x} y={y + h * g} width={w} height={2} fill={P.white} opacity={0.08} />)}
-      <rect x={x} y={y + h} width={w} height={4} rx={2} fill={P.champ} opacity={0.5} />
+      {[0.25, 0.5, 0.75].map((g) => <rect key={g} x={x} y={y + h * g} width={w} height={2} fill={P.ink} opacity={0.1} />)}
+      <rect x={x} y={y + h} width={w} height={4} rx={2} fill={P.ink2} opacity={0.6} />
       {area && pts.length > 1 && <path d={`${d} L${head.x} ${y + h} L${x} ${y + h} Z`} fill={color} opacity={0.18} />}
       <path d={d} stroke={color} strokeWidth={width} fill="none" strokeLinecap="round" strokeLinejoin="round" />
       <circle cx={head.x} cy={head.y} r={width * 2.6} fill={color} opacity={0.25} /><circle cx={head.x} cy={head.y} r={width * 1.1} fill={P.white} />
@@ -84,7 +84,7 @@ export const Donut: React.FC<{ cx: number; cy: number; r: number; part: number; 
   }
   return (
     <g>
-      <circle cx={cx} cy={cy + 10} r={r} fill="#000" opacity={0.15} />
+      <circle cx={cx} cy={cy + 10} r={r} fill={P.shadow} opacity={0.15} />
       <path d={arcD(0, Math.PI * 2 - 0.0001)} fill={rest} />
       {a > 0.001 && <path d={arcD(0, a)} fill={color} />}
     </g>
@@ -106,16 +106,16 @@ export const CoinStack: React.FC<{ x: number; y: number; n: number; p?: number; 
   const k = Math.round(n * clamp01(p))
   return (
     <g>
-      <ellipse cx={x} cy={y + 6 * s} rx={30 * s} ry={9 * s} fill="#000" opacity={0.2} />
+      <ellipse cx={x} cy={y + 6 * s} rx={30 * s} ry={9 * s} fill={P.shadow} opacity={0.2} />
       {Array.from({ length: k }, (_, i) => <g key={i}><ellipse cx={x} cy={y - i * 9 * s} rx={26 * s} ry={9 * s} fill={P.goldD} /><ellipse cx={x} cy={y - i * 9 * s - 3 * s} rx={26 * s} ry={9 * s} fill={P.gold} /></g>)}
     </g>
   )
 }
 
 // ------------------------------------------------------------ a price tag with a hole and string
-export const PriceTag: React.FC<{ x: number; y: number; text: string; s?: number; r?: number; color?: string }> = ({ x, y, text, s = 1, r = -8, color = P.cream }) => (
+export const PriceTag: React.FC<{ x: number; y: number; text: string; s?: number; r?: number; color?: string }> = ({ x, y, text, s = 1, r = -8, color = P.paper }) => (
   <g transform={`translate(${x} ${y}) rotate(${r}) scale(${s})`}>
-    <path d="M-110 -50 L80 -50 L130 0 L80 50 L-110 50 Q-120 50 -120 40 L-120 -40 Q-120 -50 -110 -50 Z" fill={color} />
+    <path d="M-110 -50 L80 -50 L130 0 L80 50 L-110 50 Q-120 50 -120 40 L-120 -40 Q-120 -50 -110 -50 Z" fill={color} stroke={P.edge} strokeWidth={3} />
     <circle cx={86} cy={0} r={10} fill={P.navy1} />
     <text x={-20} y={18} textAnchor="middle" fill={P.navy0} style={{ font: '400 60px "Bebas Neue"' }}>{text}</text>
   </g>
@@ -144,10 +144,10 @@ export const Panels: React.FC<{ f: number; n: number; at: number[]; colors: stri
 // ------------------------------------------------------------ a little calendar page that flips (years / months passing)
 export const Calendar: React.FC<{ x: number; y: number; text: string; s?: number; flip?: number }> = ({ x, y, text, s = 1, flip = 0 }) => (
   <g transform={`translate(${x} ${y}) scale(${s})`}>
-    <rect x={-70} y={-80} width={140} height={160} rx={14} fill={P.cream} />
+    <rect x={-70} y={-80} width={140} height={160} rx={14} fill={P.paper} stroke={P.edge} strokeWidth={3} />
     <rect x={-70} y={-80} width={140} height={42} rx={14} fill={P.coral} />
     <text x={0} y={46} textAnchor="middle" fill={P.navy0} style={{ font: '400 64px "Bebas Neue"' }}>{text}</text>
-    {flip > 0 && flip < 1 && <rect x={-70} y={-38} width={140} height={118 * (1 - flip)} fill={P.cream} opacity={0.9} />}
+    {flip > 0 && flip < 1 && <rect x={-70} y={-38} width={140} height={118 * (1 - flip)} fill={P.paper} opacity={0.9} />}
   </g>
 )
 

@@ -25,7 +25,7 @@ import { KineticText } from '../motion/kinetic'
 import { cameraFor, OVERSCAN } from '../scenes/kit'
 import { type CueMap, reader } from '../diorama/cues'
 import { getPiece } from '../diorama/registry'
-import { ZigZagWipe } from '../diorama/kit'
+import { type Mood, themeStyle, ZigZagWipe } from '../diorama/kit'
 import '../diorama/pieces'
 import { getProp } from '../props/registry'
 import { Actor, holdsInHand, propBox } from '../rig/Actor'
@@ -44,7 +44,7 @@ type RScene = { id: string; kind: 'scene'; start: number; scene: string; time?: 
 type RSlide = { id: string; kind: 'slide'; start: number; slide: string; heading?: string; kicker?: string; source?: string; data: any; at: number[] }
 type RChapter = { id: string; kind: 'chapter'; start: number; n: number; title: string }
 type RBrand = { id: string; kind: 'brand'; start: number }
-type RPiece = { id: string; kind: 'piece'; start: number; piece: string }
+type RPiece = { id: string; kind: 'piece'; start: number; piece: string; mood?: Mood }
 export type RShot = (RScene | RSlide | RVignette | RChapter | RBrand | RPiece) & { enter?: { zoomInto: string | { x: number; y: number } } }
 export type EpisodeTimeline = { fps: number; durationInFrames: number; shots: { shot: RShot; from: number; to: number }[]; sfx: { name: string; t: number; volume: number }[]; speech?: [number, number][]; cues?: CueMap }
 export type EpisodeProps = { timeline: EpisodeTimeline; voice?: string; width?: number; height?: number }
@@ -268,11 +268,14 @@ const ShotView: React.FC<{ s: RShot; f: number; from: number; to: number; speech
 // # A diorama piece: its own stage and choreography in one 1920×1080 SVG, reading cue words by name
 export const WIPE = 12
 const PieceView: React.FC<{ s: RPiece; f: number; from: number; to: number; cues: CueMap }> = ({ s, f, from, to, cues }) => {
-  const P = getPiece(s.piece).Component
+  const piece = getPiece(s.piece), P = piece.Component
   return (
     <AbsoluteFill>
       <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{ position: 'absolute', inset: 0 }}>
-        <P f={f} c={reader(cues, `piece ${s.piece}`)} from={from} to={to} />
+        {/* # the mood (light cream / dark navy) sets the stage and ink colours of everything inside */}
+        <g style={themeStyle(s.mood ?? piece.mood ?? 'dark')}>
+          <P f={f} c={reader(cues, `piece ${s.piece}`)} from={from} to={to} />
+        </g>
       </svg>
     </AbsoluteFill>
   )

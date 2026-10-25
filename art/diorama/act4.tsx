@@ -30,15 +30,15 @@ const Evidence: React.FC<PieceProps> = ({ f, c }) => {
       <g opacity={A}>
         <FundBox id="ev" x={960} y={560} s={1.3} />
         {[[880, 450, 940, 560, 900, 680], [1040, 470, 1000, 580, 1050, 690]].map((l, k) => <path key={k} d={`M${l[0]} ${l[1]} L${l[2]} ${l[3]} L${l[4]} ${l[5]}`} stroke={P.white} strokeWidth={6} fill="none" strokeDasharray="400" strokeDashoffset={400 * (1 - crack)} opacity={crack} />)}
-        <Label x={960} y={190} text="BROKEN?" size={110} font="Bebas Neue" color={P.coral} o={between(f, c('s64:mean'), ev)} />
-        <Label x={960} y={190} text="THE EVIDENCE" size={96} font="Bebas Neue" color={P.champL} o={on(f, ev)} />
+        <Label x={960} y={190} text="BROKEN?" size={110} font="Bebas Neue" color={P.coralInk} o={between(f, c('s64:mean'), ev)} />
+        <Label x={960} y={190} text="THE EVIDENCE" size={96} font="Bebas Neue" color={P.ink} o={on(f, ev)} />
         <g opacity={on(f, ev)} transform={`translate(${lerp(-200, 0, on(f, ev, 20))} 0)`}><Prop id="magnifier" x={1300} y={560} size={260} f={f} /></g>
       </g>
       {/* # the professor and every US stock since 1926: one dot per company */}
       <g opacity={B}>
         <g opacity={on(f, prof)}><Pedestal x={220} y={900} r={110} /><Mini look="investor" x={200} y={900} scale={1.4} frame={f} seed={14} /><Prop id="graduation-cap" x={200} y={600} size={90} f={f} /><Label x={220} y={1000} text="Hendrik Bessembinder" size={30} o={on(f, c('s66:hendrik'))} /></g>
-        <Label x={1060} y={150} text={f < best ? 'EVERY US STOCK SINCE 1926' : f < half ? 'THE BEST 4% MADE ALL THE NET GAIN' : '≈ 57% DID WORSE THAN T-BILLS'} size={60} font="Bebas Neue" color={f < half ? P.champL : P.coral} o={on(f, every)} />
-        <Label x={1600} y={240} text="1926 → 2016" size={40} font="Bebas Neue" color={P.white} o={on(f, y1926)} />
+        <Label x={1060} y={150} text={f < best ? 'EVERY US STOCK SINCE 1926' : f < half ? 'THE BEST 4% MADE ALL THE NET GAIN' : '≈ 57% DID WORSE THAN T-BILLS'} size={60} font="Bebas Neue" color={f < half ? P.ink : P.coralInk} o={on(f, every)} />
+        <Label x={1600} y={240} text="1926 → 2016" size={40} font="Bebas Neue" color={P.ink} o={on(f, y1926)} />
         <DotGrid f={f} x={600} y={300} cols={COLS} rows={ROWS} gap={38} lit={LIT4} at={every} litAt={best} />
         {/* # more than half: dots turn coral, left of a T-bill line */}
         {f >= half && Array.from({ length: COLS * ROWS }, (_, i) => {
@@ -78,19 +78,19 @@ const Lottery: React.FC<PieceProps> = ({ f, c }) => {
       <g opacity={A}>
         {[0, 1, 2, 3].map((k) => <g key={k}><rect x={200} y={400 + k * 150} width={1520} height={140} fill={k % 2 ? P.teal1 : P.teal2} /><rect x={1600} y={400 + k * 150} width={14} height={140} fill={P.white} opacity={0.6} />
           <Mini look={['hero', 'buyer', 'owner', 'worker'][k]} x={320 + Math.min(1180, (f - c('s68a')) * 5.5 + k * 30)} y={530 + k * 150} scale={0.85} frame={f} seed={k + 40} /></g>)}
-        <Label x={960} y={300} text="A FAIR RACE?" size={90} font="Bebas Neue" color={P.champL} o={on(f, c('s68a:fair'))} />
+        <Label x={960} y={300} text="A FAIR RACE?" size={90} font="Bebas Neue" color={P.ink} o={on(f, c('s68a:fair'))} />
         <path d="M600 260 L1320 320" stroke={P.coral} strokeWidth={14} strokeLinecap="round" opacity={on(f, c('s68a:more'))} />
       </g>
       {/* # a lottery: tickets, a few enormous prizes */}
       <g opacity={on(f, lot - 2)}>
-        <Label x={960} y={170} text={f < nobody ? 'A LOTTERY WITH A FEW ENORMOUS PRIZES' : f < hidden ? 'NOBODY KNOWS WHICH IN ADVANCE' : 'SO AN INDEX FUND OWNS THEM ALL'} size={64} font="Bebas Neue" color={P.champL} o={on(f, lot)} />
+        <Label x={960} y={170} text={f < nobody ? 'A LOTTERY WITH A FEW ENORMOUS PRIZES' : f < hidden ? 'NOBODY KNOWS WHICH IN ADVANCE' : 'SO AN INDEX FUND OWNS THEM ALL'} size={64} font="Bebas Neue" color={P.ink} o={on(f, lot)} />
         {Array.from({ length: TICKETS }, (_, i) => {
           const w = WIN.includes(i), p = pos(i), appear = pop(f, lot + i * 0.6, 10)
           const lost = !w && f >= lose ? on(f, lose + (i % 9) * 1.2, 10) : 0, glow = w ? on(f, prizes) * (1 - shuffle * (f < hidden ? 1 : 0)) : 0
           const faceDown = shuffle > 0.05 && shuffle < 1 ? 1 : f >= nobody + 30 ? 1 : 0
           return appear > 0.01 && (
             <g key={i} transform={`translate(${p.x} ${p.y}) scale(${appear * p.s * (1 + glow * 0.25)})`} opacity={1 - lost * 0.55 * (1 - faceDown)}>
-              <rect x={-58} y={-38} width={116} height={76} rx={10} fill={faceDown ? P.navy4 : w && glow > 0.3 ? P.gold : P.cream} />
+              <rect x={-58} y={-38} width={116} height={76} rx={10} fill={faceDown ? P.navy4 : w && glow > 0.3 ? P.gold : P.paper} stroke={faceDown ? 'none' : P.edge} strokeWidth={3} />
               {!faceDown && <><circle cx={-58} cy={0} r={12} fill={P.teal1} /><circle cx={58} cy={0} r={12} fill={P.teal1} /><rect x={-30} y={-6} width={60} height={12} rx={6} fill={w && glow > 0.3 ? P.goldD : '#C9B48A'} /></>}
               {faceDown > 0 && <text x={0} y={14} textAnchor="middle" fill={P.champL} style={{ font: '400 40px "Bebas Neue"' }}>?</text>}
             </g>
@@ -104,7 +104,7 @@ const Lottery: React.FC<PieceProps> = ({ f, c }) => {
         {/* # the fund swallows every ticket */}
         <g opacity={on(f, hidden - 6)}><FundBox id="lt" x={960} y={820} s={lerp(0.6, 0.9, gulp)} open={on(f, hidden)} /></g>
         {f >= own && Array.from({ length: 10 }, (_, k) => { const t = ((f - own) / 20 + k / 10) % 1; return <ellipse key={k} cx={lerp(780, 1140, (k % 5) / 4)} cy={760 - Math.sin(t * Math.PI) * 120} rx={14} ry={6} fill={P.gold} opacity={on(f, losers - 10)} /> })}
-        <Label x={960} y={1020} text="the winners pay for the losers" size={44} color={P.champL} o={on(f, c('s70:winners'))} />
+        <Label x={960} y={1020} text="the winners pay for the losers" size={44} color={P.ink} o={on(f, c('s70:winners'))} />
       </g>
       <Vignette id="lt" />
     </g>
@@ -127,11 +127,11 @@ const PricedIn: React.FC<PieceProps> = ({ f, c }) => {
           <Tower id="pi" i={k} x={x} y={850} h={(300 + k * 80) * morph} w={140} glow={on(f, won)} />
         </g>
       ))}
-      <Label x={960} y={150} text="AFTER THE WINNERS HAVE ALREADY WON" size={60} font="Bebas Neue" color={P.champL} o={on(f, conc) * (1 - on(f, risk))} />
-      <Label x={960} y={150} text="THE RISK IS NOT OWNING WINNERS…" size={64} font="Bebas Neue" color={P.champL} o={between(f, risk, paying)} />
-      <Label x={960} y={150} text="…IT IS WHAT YOU PAY FOR THEM" size={72} font="Bebas Neue" color={P.coral} o={on(f, paying)} />
+      <Label x={960} y={150} text="AFTER THE WINNERS HAVE ALREADY WON" size={60} font="Bebas Neue" color={P.ink} o={on(f, conc) * (1 - on(f, risk))} />
+      <Label x={960} y={150} text="THE RISK IS NOT OWNING WINNERS…" size={64} font="Bebas Neue" color={P.ink} o={between(f, risk, paying)} />
+      <Label x={960} y={150} text="…IT IS WHAT YOU PAY FOR THEM" size={72} font="Bebas Neue" color={P.coralInk} o={on(f, paying)} />
       {/* # years of future winning, stacked on top as price */}
-      {f >= fut - 6 && Array.from({ length: 8 }, (_, k) => <g key={k} opacity={on(f, fut + k * 3)} transform={`translate(${960 + (k % 2 ? 40 : -40)} ${440 - k * 34})`}><rect x={-70} y={-16} width={140} height={30} rx={6} fill={P.cream} /><rect x={-70} y={-16} width={140} height={10} rx={4} fill={P.coral} /><text x={0} y={10} textAnchor="middle" fill={P.navy0} style={{ font: '400 22px "Bebas Neue"' }}>{2027 + k}</text></g>)}
+      {f >= fut - 6 && Array.from({ length: 8 }, (_, k) => <g key={k} opacity={on(f, fut + k * 3)} transform={`translate(${960 + (k % 2 ? 40 : -40)} ${440 - k * 34})`}><rect x={-70} y={-16} width={140} height={30} rx={6} fill={P.paper} stroke={P.edge} strokeWidth={3} /><rect x={-70} y={-16} width={140} height={10} rx={4} fill={P.coral} /><text x={0} y={10} textAnchor="middle" fill={P.navy0} style={{ font: '400 22px "Bebas Neue"' }}>{2027 + k}</text></g>)}
       {f >= priced - 4 && <g transform={`translate(1340 340) scale(${pop(f, priced)})`}><PriceTag x={0} y={0} text="PRICED IN" s={1.1} /></g>}
       {/* # the investor pays, without knowing */}
       <g opacity={on(f, paying)}>

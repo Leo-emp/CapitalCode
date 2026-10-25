@@ -48,7 +48,7 @@ export type VignetteShot = { id: string; start: Cue; kind: 'vignette'; vignette:
 export type ChapterShot = { id: string; start: Cue; kind: 'chapter'; n: number; title: string }
 export type BrandShot = { id: string; start: Cue; kind: 'brand' }
 // # A choreographed illustration (diorama style, art/diorama): animates on named cue words, brings its own sounds
-export type PieceShot = { id: string; start: Cue; kind: 'piece'; piece: string }
+export type PieceShot = { id: string; start: Cue; kind: 'piece'; piece: string; mood?: 'light' | 'dark' }
 // # enter.zoomInto (living film): this shot grows out of a spot of the previous scene shot, or a screen point
 export type Enter = { enter?: { zoomInto: string | { x: number; y: number } } }
 export type Shot = (SceneShot | SlideShot | VignetteShot | ChapterShot | BrandShot | PieceShot) & Enter
