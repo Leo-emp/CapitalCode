@@ -252,7 +252,9 @@ export const autoSfx = (tl: Pick<Timeline, 'fps' | 'shots' | 'sfx'>): Sfx[] => {
 
 // # voice + every SFX at its time → exactly `seconds` long → −14 LUFS.
 // # The filter graph goes in a script file (Windows command lines cap at 32k chars).
-export const mixAudio = (voice: string, sfx: Sfx[], seconds: number, out: string, sfxDir = join(PUBLIC_DIR, 'sfx', 'cc')) => {
+// # Shorts play on phones next to loud content: louder master and the voice a little further above the SFX
+export const MIX = { long: { lufs: -14, sfxGain: 1 }, short: { lufs: -11, sfxGain: 0.8 } }
+export const mixAudio = (voice: string, sfx: Sfx[], seconds: number, out: string, sfxDir = join(PUBLIC_DIR, 'sfx', 'cc'), o: { lufs: number; sfxGain: number } = MIX.long) => {
   const names = [...new Set(sfx.map((x) => x.name))]
   const inputs = ['-i', voice, ...names.flatMap((n) => ['-i', join(sfxDir, `${n}.wav`)])]
   const lines: string[] = [`[0:a]aformat=sample_rates=48000:channel_layouts=mono,apad,atrim=0:${seconds.toFixed(3)}[v]`]
@@ -261,7 +263,7 @@ export const mixAudio = (voice: string, sfx: Sfx[], seconds: number, out: string
     const uses = sfx.filter((x) => x.name === n)
     lines.push(`[${ni + 1}:a]aformat=sample_rates=48000:channel_layouts=mono,asplit=${uses.length}${uses.map((_, k) => `[i${ni}_${k}]`).join('')}`)
     uses.forEach((x, k) => {
-      lines.push(`[i${ni}_${k}]adelay=${Math.max(0, Math.round(x.t * 1000))}:all=1,volume=${x.volume.toFixed(3)}[s${ni}_${k}]`)
+      lines.push(`[i${ni}_${k}]adelay=${Math.max(0, Math.round(x.t * 1000))}:all=1,volume=${(x.volume * o.sfxGain).toFixed(3)}[s${ni}_${k}]`)
       labels.push(`[s${ni}_${k}]`)
     })
   })
@@ -270,7 +272,7 @@ export const mixAudio = (voice: string, sfx: Sfx[], seconds: number, out: string
   writeFileSync(script, lines.join(';\n'))
   const pre = out.replace(/\.wav$/, '.pre.wav')
   ff([...inputs, '-/filter_complex', script, '-map', '[out]', '-ar', '48000', '-ac', '1', pre], 'mix audio')
-  normalize(pre, out, -14)
+  normalize(pre, out, o.lufs)
   rmSync(script, { force: true })
   rmSync(pre, { force: true })
 }

@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { register } from '../cli'
 import { isDone, loadJob, markStep, readJson, unmarkFrom } from '../jobs'
-import { artFingerprint, autoSfx, chunkKeys, concatVideos, countFrames, mixAudio, mux, pruneChunks, remotionRange, renderChunks, renderStills, splitChunks } from '../render'
+import { artFingerprint, autoSfx, MIX, chunkKeys, concatVideos, countFrames, mixAudio, mux, pruneChunks, remotionRange, renderChunks, renderStills, splitChunks } from '../render'
 import { refuse, result } from '../result'
 import { renderKeyFor } from '../run'
 import type { Timeline } from '../timeline'
@@ -45,8 +45,8 @@ export const renderVideo = async (dir: string, tl: Timeline, voiceWav: string, o
   // # 4. audio: voice + planned SFX + soft whooshes on cuts, −14 LUFS, 5. mux
   const audio = join(dir, 'render', 'audio.wav')
   const sfx = autoSfx(tl)
-  const aKey = `${fileHash(voiceWav)}:${JSON.stringify(sfx)}:${tl.durationInFrames}`
-  if (!stamped(audio, aKey)) { log(`mix: voice + ${sfx.length} sfx`); mixAudio(voiceWav, sfx, tl.durationInFrames / tl.fps, audio); stamp(audio, aKey) }
+  const aKey = `${fileHash(voiceWav)}:${JSON.stringify(sfx)}:${tl.durationInFrames}:${tl.canvas ?? 'wide'}:v2`
+  if (!stamped(audio, aKey)) { log(`mix: voice + ${sfx.length} sfx`); mixAudio(voiceWav, sfx, tl.durationInFrames / tl.fps, audio, undefined, tl.canvas === 'tall' ? MIX.short : MIX.long); stamp(audio, aKey) }
   mux(video, audio, out)
   const secs = (Date.now() - t0) / 1000
   return { file: out, frames: tl.durationInFrames, seconds: Math.round(secs), chunks: chunks.length }
