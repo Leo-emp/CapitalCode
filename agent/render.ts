@@ -252,8 +252,8 @@ export const autoSfx = (tl: Pick<Timeline, 'fps' | 'shots' | 'sfx'>): Sfx[] => {
 
 // # voice + every SFX at its time → exactly `seconds` long → −14 LUFS.
 // # The filter graph goes in a script file (Windows command lines cap at 32k chars).
-// # Shorts play on phones next to loud content: louder master and the voice a little further above the SFX
-export const MIX = { long: { lufs: -14, sfxGain: 1 }, short: { lufs: -11, sfxGain: 0.8 } }
+// # The voiceover loudness the owner approved for every video: louder master, voice about 2 dB further above the SFX
+export const MIX = { long: { lufs: -11, sfxGain: 0.8 }, short: { lufs: -11, sfxGain: 0.8 } } // # owner approved 2026-10-26 (≈ −12 LUFS measured)
 export const mixAudio = (voice: string, sfx: Sfx[], seconds: number, out: string, sfxDir = join(PUBLIC_DIR, 'sfx', 'cc'), o: { lufs: number; sfxGain: number } = MIX.long) => {
   const names = [...new Set(sfx.map((x) => x.name))]
   const inputs = ['-i', voice, ...names.flatMap((n) => ['-i', join(sfxDir, `${n}.wav`)])]

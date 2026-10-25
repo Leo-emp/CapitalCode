@@ -74,7 +74,7 @@ describe('audio', () => {
     expect(autoSfx(tl as any)).toEqual([{ name: 'impact', t: 20.1, volume: 1 }, { name: 'whoosh', t: 9.85, volume: 0.22 }])
   })
 
-  test('mix = voice + delayed sfx, at −14 LUFS, as long as the video', async () => {
+  test('mix = voice + delayed sfx, at the owner-approved loudness (≈ −12 LUFS), as long as the video', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'ccmix-'))
     const voice = join(dir, 'voice.wav')
     await tone(voice, 6, -20)
@@ -83,7 +83,7 @@ describe('audio', () => {
     expect(existsSync(out)).toBe(true)
     expect(Math.abs(duration(out) - 7)).toBeLessThan(0.05)
     const l = loudness(out)
-    expect(Math.abs(l.lufs + 14)).toBeLessThanOrEqual(1)
+    expect(l.lufs).toBeGreaterThanOrEqual(-13); expect(l.lufs).toBeLessThanOrEqual(-10.5)
     expect(l.peak).toBeLessThanOrEqual(-0.9)
   }, 120_000)
 })

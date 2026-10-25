@@ -74,7 +74,7 @@ register('gate-video', 'gate-video <job>  — duration, loudness, flicker scan, 
   const file = join(dir, 'final.mp4')
   // # brightness: moods mix cream days and navy nights now, so only a near-black or blown-out video fails
   const short = loadJob(dir).kind === 'short'
-  const r = gateVideo(file, { expectSeconds: tl.durationInFrames / tl.fps, cuts: plannedMotion(tl), brightness: [12, 88], maxChangeEvery: 1.5, ...(short ? { maxSeconds: 179 } : {}) })
+  const r = gateVideo(file, { expectSeconds: tl.durationInFrames / tl.fps, cuts: plannedMotion(tl), brightness: [12, 88], maxChangeEvery: 1.5, lufs: [-13, -10.5], ...(short ? { maxSeconds: 179 } : {}) })
   const qa = join(dir, 'qa')
   const sheets = frameSheets(file, qa, loadJob(dir).kind === 'short' ? 3 : 10)
   const flags = flagSheets(file, r.flags, tl.fps, qa)
