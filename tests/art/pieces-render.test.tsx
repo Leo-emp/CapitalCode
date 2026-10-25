@@ -8,19 +8,25 @@ import { cueMap, reader } from '../../art/diorama/cues'
 import { PIECES } from '../../art/diorama/registry'
 import '../../art/diorama/pieces'
 
-const words = JSON.parse(readFileSync('tests/fixtures/indexfund/words.json', 'utf8'))
-const cues = cueMap(words, 30)
+const cuesOf = (file: string) => cueMap(JSON.parse(readFileSync(file, 'utf8')), 30)
+// # each film's pieces with the real voice timings of that film (long video: wide; Shorts: tall, by id prefix)
+const FILMS = [
+  { name: 'index fund (long)', cues: cuesOf('tests/fixtures/indexfund/words.json'), pieces: PIECES.filter((p) => (p.canvas ?? 'wide') === 'wide') },
+  { name: 'where your $100 goes (Short)', cues: cuesOf('tests/fixtures/where100/words.json'), pieces: PIECES.filter((p) => p.id.startsWith('w100-')) },
+]
 
-test('the film has its 24 pieces', () => {
-  expect(PIECES.length).toBeGreaterThanOrEqual(24)
+test('the long film has its 24 pieces and the first Short its 7, all tall', () => {
+  expect(FILMS[0].pieces.length).toBeGreaterThanOrEqual(24)
+  expect(FILMS[1].pieces.length).toBe(7)
+  expect(FILMS[1].pieces.every((p) => p.canvas === 'tall')).toBe(true)
 })
 
-test('every beat and sound cue of every piece is spoken', () => {
-  for (const p of PIECES) for (const k of [...p.beats, ...p.sfx.map((x) => x[0])]) expect(cues[k], `${p.id}: ${k}`).toBeDefined()
+test.each(FILMS)('$name: every beat and sound cue of every piece is spoken', ({ cues, pieces }) => {
+  for (const p of pieces) for (const k of [...p.beats, ...p.sfx.map((x) => x[0])]) expect(cues[k], `${p.id}: ${k}`).toBeDefined()
 })
 
-test('every piece renders across its whole span', () => {
-  for (const p of PIECES) {
+test.each(FILMS)('$name: every piece renders across its whole span', ({ cues, pieces }) => {
+  for (const p of pieces) {
     const fr = p.beats.map((k) => cues[k])
     const a = Math.min(...fr) - 20, b = Math.max(...fr) + 60
     for (const f of [a, Math.round((a + b) / 2), b, b + 90]) {
