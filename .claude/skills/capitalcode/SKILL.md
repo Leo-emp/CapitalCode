@@ -28,6 +28,9 @@ only job is the final review, so run the whole pipeline without asking.
 3. `cc doctor` → keys, ffmpeg, fonts, sfx, disk, Node in seconds. Fix anything BAD first.
 4. `cc status` → if the newest job is unfinished, **resume it** with `cc run <job>`
    instead of starting a new one (unless the owner gave a new topic).
+5. `cc hub pull` (when the Content Hub is set up) → the owner's verdicts from the hub land in each
+   job's `hub_feedback.json`. A `fix` note on a packaged job is owner feedback: `cc learn` it, apply it to that
+   job, re-render and re-package; the package step sends it to the hub as the next version.
 
 **`cc run <job>` is the engine:** it runs every automatic step in order (gate-script →
 voice → gate-plan → render → gate-video → critic check → package), re-gates any edited
@@ -196,6 +199,8 @@ screens), chunked resumable render, SFX mix, `final.mp4`. ~18 min for 8.6 min of
 - `cc package <job>` → `output/long/<Title>_YYYY-MM-DD_HH-MM/` (video, thumb_1..3,
   titles, description with chapters + sources + "not financial advice", captions.srt,
   review_note.md). Open the thumbnails and check them at phone size.
+- When the Content Hub is set up (`HUB_URL`, `HUB_TOKEN` in `.env.local`), package also sends the video to the
+  hub's CapitalCode tab (`hub` in its RESULT_JSON). If it says not sent, run `cc hub push <job>`.
 
 ## 8b. Shorts (made from scratch, never cut from a long video)
 
