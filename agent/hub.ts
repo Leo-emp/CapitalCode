@@ -36,6 +36,8 @@ export const hubConfig = (env?: Record<string, string | undefined>): { url: stri
 }
 
 const read = (file: string) => readFileSync(file, 'utf8').trim()
+// # the hub takes plain file names only (letters, digits, dot, dash, underscore): spaces etc. become '-'
+export const hubName = (name: string) => name.replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^[^A-Za-z0-9]+/, '')
 const hubOf = (dir: string): HubRecord | undefined => (readJson<{ hub?: HubRecord }>(join(dir, 'job.json'))).hub
 
 // # job.hub records what was pushed; it is not a pipeline step, so STEPS / nextStep never see it
@@ -49,7 +51,7 @@ export const pieceFor = (dir: string, round: number): HubPiece => {
   if (!out || !existsSync(out)) throw new Error(`package folder missing for ${basename(dir)}`)
   const meta = readJson<MetaDoc>(join(dir, 'metadata.json'))
   const video = readdirSync(out).find((f) => f.endsWith('.mp4')) ?? (() => { throw new Error(`no video in ${out}`) })()
-  const file = (name: string, kind: HubFile['kind'], order: number): HubFile => ({ path: name, kind, order, url: '', pathname: '', size: statSync(join(out, name)).size })
+  const file = (name: string, kind: HubFile['kind'], order: number): HubFile => ({ path: hubName(name), kind, order, url: '', pathname: '', size: statSync(join(out, name)).size })
   const long = job.kind === 'long'
   const spare = long ? ['thumb_2.jpg', 'thumb_3.jpg'].filter((t) => existsSync(join(out, t))) : []
   const critic = existsSync(join(dir, 'critic.json')) ? readJson<CriticDoc>(join(dir, 'critic.json')) : null
@@ -95,10 +97,12 @@ export const pushJob = async (dir: string, deps: Deps = {}): Promise<{ pushed: b
   const round = (prev?.round ?? 0) + 1
   const piece = pieceFor(dir, round)
   const out = String((loadJob(dir).steps.package as { folder?: string } | undefined)?.folder ?? "")
+  // # hub name -> the real file in the package folder
+  const local = new Map(readdirSync(out).map((n) => [hubName(n), n]))
   const upload = async (h: HubFile) => {
     const pathname = `${BRAND}/${piece.id}/r${round}/${h.path}`
     const { token } = await call(cfg, f, 'upload-token', { pathname, size: h.size })
-    const res = await put(pathname, readFileSync(join(out, h.path)), { access: 'private', token, multipart: h.size > MULTIPART_BYTES })
+    const res = await put(pathname, readFileSync(join(out, local.get(h.path) ?? h.path)), { access: 'private', token, multipart: h.size > MULTIPART_BYTES })
     Object.assign(h, { url: res.url, pathname: res.pathname })
   }
   for (const p of piece.platforms) for (const h of [...p.files, ...(p.thumbnail ? [p.thumbnail] : [])]) await upload(h)

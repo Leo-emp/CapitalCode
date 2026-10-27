@@ -35,6 +35,8 @@ const fakeHub = (events: unknown[] = [], fail?: string) => {
     const body = init.body ? JSON.parse(String(init.body)) : null
     calls.push({ method: init.method ?? 'GET', url, body, auth: new Headers(init.headers).get('authorization') })
     if (fail && url.endsWith(fail)) return new Response('down', { status: 503 })
+    // # the hub's own rule: plain path segments only (letters, digits, dot, dash, underscore)
+    if (url.endsWith('/upload-token') && !String(body.pathname).split('/').every((seg: string) => /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(seg))) return Response.json({ error: 'bad pathname' }, { status: 400 })
     if (url.endsWith('/upload-token')) return Response.json({ token: `client-token-for-${body.pathname}`, pathname: body.pathname })
     if (url.endsWith('/events')) return Response.json({ events })
     return Response.json({ ok: true })
@@ -54,7 +56,8 @@ test('builds a long piece: video, thumb_1 as thumbnail, title, description, tags
   expect(p.format).toBe('long')
   const yt = p.platforms[0]
   expect(yt.platform).toBe('youtube')
-  expect(yt.files.map((f) => [f.path, f.kind])).toEqual([['The Minimum Payment Trap_2026-10-28_01-00_long.mp4', 'video'], ['thumb_2.jpg', 'image'], ['thumb_3.jpg', 'image']])
+  // # file names with spaces (the package folder's video) become plain names the hub accepts
+  expect(yt.files.map((f) => [f.path, f.kind])).toEqual([['The-Minimum-Payment-Trap_2026-10-28_01-00_long.mp4', 'video'], ['thumb_2.jpg', 'image'], ['thumb_3.jpg', 'image']])
   expect(yt.thumbnail?.path).toBe('thumb_1.jpg')
   expect([yt.title, yt.description, yt.tags]).toEqual(['The Minimum Payment Trap', 'A plain guide.\n\nChapters\n0:00 Start', ['credit cards', 'debt']])
   expect(yt.caption).toBe('Title options:\n1. The Minimum Payment Trap\n2. Why Minimums Cost You\n3. Pay More, Pay Less')
