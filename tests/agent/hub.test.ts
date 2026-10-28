@@ -27,26 +27,32 @@ const packaged = (kind: 'long' | 'short', at = '2026-10-28T01:00:00.000Z') => {
   return { root, dir, out }
 }
 
-// # a fake hub: records calls, hands out upload tokens, serves queued events
-const fakeHub = (events: unknown[] = [], fail?: string) => {
+// # a fake hub: records calls, hands out signed R2 uploads, serves queued events; the fake R2 records each PUT
+const fakeHub = (events: unknown[] = [], fail?: string, putStatus = 200) => {
   const calls: { method: string; url: string; body: any; auth: string | null }[] = []
+  const uploads: { url: string; method: string; headers: Headers; bytes: number }[] = []
   const fetch = vi.fn(async (input: string | URL | Request, init: RequestInit = {}) => {
     const url = String(input)
+    if (url.startsWith('https://r2.example/')) {
+      uploads.push({ url, method: init.method ?? 'GET', headers: new Headers(init.headers), bytes: (await new Response(init.body).arrayBuffer()).byteLength })
+      return new Response(putStatus === 200 ? '' : '<Error/>', { status: putStatus })
+    }
     const body = init.body ? JSON.parse(String(init.body)) : null
     calls.push({ method: init.method ?? 'GET', url, body, auth: new Headers(init.headers).get('authorization') })
     if (fail && url.endsWith(fail)) return new Response('down', { status: 503 })
     // # the hub's own rule: plain path segments only (letters, digits, dot, dash, underscore)
     if (url.endsWith('/upload-token') && !String(body.pathname).split('/').every((seg: string) => /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(seg))) return Response.json({ error: 'bad pathname' }, { status: 400 })
-    if (url.endsWith('/upload-token')) return Response.json({ token: `client-token-for-${body.pathname}`, pathname: body.pathname })
+    if (url.endsWith('/upload-token')) {
+      const key = String(body.pathname).replace(/(\.[a-z0-9]+)$/, '-k3x9q2mz$1')
+      return Response.json({
+        upload: { method: 'PUT', url: `https://r2.example/content-hub/${key}?X-Amz-Signature=abc`, headers: { 'content-type': 'video/mp4', 'content-length': String(body.size) } },
+        file: { url: `https://acct.r2.cloudflarestorage.com/content-hub/${key}`, pathname: key },
+      })
+    }
     if (url.endsWith('/events')) return Response.json({ events })
     return Response.json({ ok: true })
   })
-  const uploads: { pathname: string; token: string; multipart: boolean }[] = []
-  const put = vi.fn(async (pathname: string, _body: unknown, o: { token: string; multipart?: boolean }) => {
-    uploads.push({ pathname, token: o.token, multipart: !!o.multipart })
-    return { pathname, url: `https://store.private.blob.vercel-storage.com/${pathname}` } as Awaited<ReturnType<typeof import('@vercel/blob/client').put>>
-  })
-  return { calls, fetch, put, uploads }
+  return { calls, fetch, uploads }
 }
 
 test('builds a long piece: video, thumb_1 as thumbnail, title, description, tags, title options as caption', () => {
@@ -73,27 +79,41 @@ test('builds a short piece with captions_for_posting as caption and no thumbnail
   expect(yt.caption).toBe('The Minimum Payment Trap\n\nd\n\n#creditcards #debt')
 })
 
-test('asks for an upload token per file, inside capitalcode/, then pushes the manifest last', async () => {
+test('uploads each file straight to R2 with the signed headers, inside capitalcode/, then pushes the manifest last', async () => {
   const { dir } = packaged('long')
   const hub = fakeHub()
-  const r = await pushJob(dir, { fetch: hub.fetch, put: hub.put, env: ENV })
+  const r = await pushJob(dir, { fetch: hub.fetch, env: ENV })
   expect(r).toEqual({ pushed: true, round: 1 })
   const tokenCalls = hub.calls.filter((c) => c.url === 'https://hub.example/api/capitalcode/engine/upload-token')
   expect(tokenCalls.length).toBe(4)
-  for (const u of hub.uploads) {
-    expect(u.pathname.startsWith(`capitalcode/long/${basename(dir)}/r1/`)).toBe(true)
-    expect(u.token).toBe(`client-token-for-${u.pathname}`)
+  for (const c of tokenCalls) expect(c.body.pathname.startsWith(`capitalcode/long/${basename(dir)}/r1/`)).toBe(true)
+  expect(hub.uploads.length).toBe(4)
+  for (const [i, u] of hub.uploads.entries()) {
+    expect(u.method).toBe('PUT')
+    // # exactly the size the hub signed, and the hub key never goes to R2
+    expect(u.headers.get('content-length')).toBe(String(tokenCalls[i].body.size))
+    expect(u.bytes).toBe(tokenCalls[i].body.size)
+    expect(u.headers.get('authorization')).toBeNull()
   }
   const last = hub.calls.at(-1)!
   expect(last.url).toBe('https://hub.example/api/capitalcode/engine/pieces')
-  expect(last.body.platforms[0].files[0].url).toContain('/capitalcode/long/')
+  expect(last.body.platforms[0].files[0].url).toMatch(/^https:\/\/acct\.r2\.cloudflarestorage\.com\/content-hub\/capitalcode\/long\/.+-k3x9q2mz\.mp4$/)
+  expect(last.body.platforms[0].files[0].pathname).toMatch(/-k3x9q2mz\.mp4$/)
   expect(hub.calls.every((c) => c.auth === `Bearer ${KEY}`)).toBe(true)
+})
+
+test('a refused upload stops the push and leaves job.hub unchanged', async () => {
+  const { dir } = packaged('long')
+  const hub = fakeHub([], undefined, 403)
+  await expect(pushJob(dir, { fetch: hub.fetch, env: ENV })).rejects.toThrow(/upload .*403/)
+  expect(hub.calls.some((c) => c.url.endsWith('/pieces'))).toBe(false)
+  expect(JSON.parse(readFileSync(join(dir, 'job.json'), 'utf8')).hub).toBeUndefined()
 })
 
 test('pushes round 1, then nothing for the same package, then round 2 after a re-package', async () => {
   const { dir } = packaged('long')
   const hub = fakeHub()
-  const deps = { fetch: hub.fetch, put: hub.put, env: ENV }
+  const deps = { fetch: hub.fetch, env: ENV }
   expect(await pushJob(dir, deps)).toEqual({ pushed: true, round: 1 })
   expect(await pushJob(dir, deps)).toEqual({ pushed: false, round: 1 })
   const job = JSON.parse(readFileSync(join(dir, 'job.json'), 'utf8'))
@@ -106,14 +126,14 @@ test('pushes round 1, then nothing for the same package, then round 2 after a re
 test('a failed upload or push leaves job.hub unchanged', async () => {
   const { dir } = packaged('long')
   const hub = fakeHub([], '/pieces')
-  await expect(pushJob(dir, { fetch: hub.fetch, put: hub.put, env: ENV })).rejects.toThrow()
+  await expect(pushJob(dir, { fetch: hub.fetch, env: ENV })).rejects.toThrow()
   expect(JSON.parse(readFileSync(join(dir, 'job.json'), 'utf8')).hub).toBeUndefined()
 })
 
 test('without HUB_URL nothing is sent', async () => {
   const { dir } = packaged('long')
   const hub = fakeHub()
-  expect(await pushJob(dir, { fetch: hub.fetch, put: hub.put, env: {} })).toEqual({ pushed: false, round: 0 })
+  expect(await pushJob(dir, { fetch: hub.fetch, env: {} })).toEqual({ pushed: false, round: 0 })
   expect(hub.calls).toEqual([])
 })
 
@@ -126,7 +146,7 @@ test('pull applies a fix note for the current round and refuses an older round; 
     { id: 3, type: 'verdict', piece_id: 'long/20990101-0000_not-here', payload: { round: 1, verdict: 'approve' } },
     { id: 4, type: 'posted', piece_id: id, payload: {} },
   ])
-  const deps = { fetch: hub.fetch, put: hub.put, env: ENV }
+  const deps = { fetch: hub.fetch, env: ENV }
   await pushJob(dir, deps)
   const r = await pullFeedback({ ...deps, jobsDir: join(root, 'jobs') })
   expect(r).toEqual({ applied: 2, stale: 1 })
@@ -140,7 +160,7 @@ test('never prints the key', async () => {
   const { dir } = packaged('long')
   const hub = fakeHub([], '/pieces')
   const spies = [vi.spyOn(console, 'log'), vi.spyOn(console, 'warn'), vi.spyOn(console, 'error')]
-  await pushJob(dir, { fetch: hub.fetch, put: hub.put, env: ENV }).catch((e: Error) => console.error(e.message))
+  await pushJob(dir, { fetch: hub.fetch, env: ENV }).catch((e: Error) => console.error(e.message))
   for (const s of spies) for (const call of s.mock.calls) expect(JSON.stringify(call)).not.toContain(KEY)
   for (const s of spies) s.mockRestore()
 })

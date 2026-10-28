@@ -1,14 +1,14 @@
 // ============================================================
 // HUB — sends a packaged video to the owner's Content Hub
 // (CapitalCode tab) and brings the owner's fix notes back.
-//   push: upload-token per file → straight to Blob → manifest
+//   push: signed upload per file → straight to R2 → manifest
 //   pull: owner events → <job>/hub_feedback.json → ack
 // Nothing is sent unless HUB_URL and HUB_TOKEN are set.
 // The key is never printed or written to job files.
 // ============================================================
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { createReadStream, existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { basename, join } from 'node:path'
-import { put as blobPut } from '@vercel/blob/client'
+import { Readable } from 'node:stream'
 import { readEnv } from './azure'
 import { loadJob, readJson, writeJson } from './jobs'
 import { JOBS_DIR } from './paths'
@@ -16,8 +16,6 @@ import type { MetaDoc } from './schema'
 import type { CriticDoc } from './commands/qa'
 
 const BRAND = 'capitalcode'
-// # big videos go up in parts (each part retried on its own)
-const MULTIPART_BYTES = 50 * 1024 * 1024
 
 type HubFile = { path: string; kind: 'video' | 'image'; order: number; url: string; pathname: string; size: number }
 type HubPlatform = { platform: 'youtube'; files: HubFile[]; caption: string; caption_edited: boolean; title?: string; description?: string; tags?: string[]; thumbnail?: HubFile }
@@ -27,7 +25,7 @@ export type HubPiece = {
   history: never[]; owner_note: null; components: never[]
 }
 type HubRecord = { round: number; package_at: string }
-type Deps = { fetch?: typeof fetch; put?: typeof blobPut; env?: Record<string, string | undefined> }
+type Deps = { fetch?: typeof fetch; env?: Record<string, string | undefined> }
 
 // # HUB_URL / HUB_TOKEN from the process, then .env.local; null when the hub is not set up
 export const hubConfig = (env?: Record<string, string | undefined>): { url: string; token: string } | null => {
@@ -93,7 +91,6 @@ export const pushJob = async (dir: string, deps: Deps = {}): Promise<{ pushed: b
   if (!packageAt) throw new Error(`${basename(dir)} is not packaged yet`)
   if (prev?.package_at === packageAt) return { pushed: false, round: prev.round }
   const f = deps.fetch ?? fetch
-  const put = deps.put ?? blobPut
   const round = (prev?.round ?? 0) + 1
   const piece = pieceFor(dir, round)
   const out = String((loadJob(dir).steps.package as { folder?: string } | undefined)?.folder ?? "")
@@ -101,9 +98,12 @@ export const pushJob = async (dir: string, deps: Deps = {}): Promise<{ pushed: b
   const local = new Map(readdirSync(out).map((n) => [hubName(n), n]))
   const upload = async (h: HubFile) => {
     const pathname = `${BRAND}/${piece.id}/r${round}/${h.path}`
-    const { token } = await call(cfg, f, 'upload-token', { pathname, size: h.size })
-    const res = await put(pathname, readFileSync(join(out, local.get(h.path) ?? h.path)), { access: 'private', token, multipart: h.size > MULTIPART_BYTES })
-    Object.assign(h, { url: res.url, pathname: res.pathname })
+    // # the hub signs one PUT for a new file of exactly this size; the file is streamed (a long video never sits in memory)
+    const { upload: up, file } = await call(cfg, f, 'upload-token', { pathname, size: h.size })
+    const body = Readable.toWeb(createReadStream(join(out, local.get(h.path) ?? h.path))) as ReadableStream
+    const r = await f(up.url, { method: up.method, headers: up.headers, body, duplex: 'half' } as RequestInit)
+    if (!r.ok) throw new Error(`upload ${h.path}: R2 answered ${r.status}`)
+    Object.assign(h, { url: file.url, pathname: file.pathname })
   }
   for (const p of piece.platforms) for (const h of [...p.files, ...(p.thumbnail ? [p.thumbnail] : [])]) await upload(h)
   await call(cfg, f, 'pieces', piece)
