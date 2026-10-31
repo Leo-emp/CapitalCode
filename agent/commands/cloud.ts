@@ -1,6 +1,7 @@
 // # CLI: cloud — one-time cloud render setup (S3 bucket, Lambda function, art site, GitHub secrets) and a status check
 import { spawnSync } from 'node:child_process'
 import { register } from '../cli'
+import { readEnv } from '../azure'
 import { ensureBucket, ensureFunction, ensureSite, GH_REPO, LAMBDA, loadAws } from '../cloud'
 import { refuse, result } from '../result'
 
@@ -23,9 +24,12 @@ register('cloud', 'cloud setup|status  — prepare AWS Lambda + GitHub Actions r
     log(`lambda ${functionName} (${LAMBDA.memorySizeInMb} MB, ${LAMBDA.timeoutInSeconds} s)`)
     const { serveUrl } = await ensureSite(log)
     log('art site ready')
-    setSecret('CC_AWS_ACCESS_KEY_ID', aws.keyId)
-    setSecret('CC_AWS_SECRET_ACCESS_KEY', aws.secret)
-    log(`github secrets set on ${GH_REPO}`)
+    // # the runners get their own key that can only read/write the gh/ parts (docs/aws/runner-policy.json), never the main one
+    const e = readEnv()
+    if (!e.CC_RUNNER_AWS_ACCESS_KEY_ID || !e.CC_RUNNER_AWS_SECRET_ACCESS_KEY) return refuse('CC_RUNNER_AWS_ACCESS_KEY_ID / CC_RUNNER_AWS_SECRET_ACCESS_KEY missing in .env.local — see docs/cloud-render.md (runner key)')
+    setSecret('CC_AWS_ACCESS_KEY_ID', e.CC_RUNNER_AWS_ACCESS_KEY_ID)
+    setSecret('CC_AWS_SECRET_ACCESS_KEY', e.CC_RUNNER_AWS_SECRET_ACCESS_KEY)
+    log(`github secrets set on ${GH_REPO} (runner key: gh/ parts only)`)
     return result({ ok: true, region: aws.region, bucketName, functionName, site: serveUrl.split('/sites/')[1] ?? '' })
   }
   if (sub === 'status') {

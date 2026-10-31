@@ -27,6 +27,10 @@ the same cloud render (`render/cloud.json`) instead of paying for a new one.
    REMOTION_AWS_SECRET_ACCESS_KEY=...
    REMOTION_AWS_REGION=ap-southeast-2   # the only region this account allows
    ```
+5b. **Runner key** (GitHub Actions only) — IAM → Users → Create user `capitalcode-runner` (no console
+   access) → inline policy from `docs/aws/runner-policy.json` (read/write the `gh/` parts only) → access key →
+   add to `.env.local` as `CC_RUNNER_AWS_ACCESS_KEY_ID=` / `CC_RUNNER_AWS_SECRET_ACCESS_KEY=`. The main key never
+   goes to GitHub.
 6. **Quota** — Service Quotas → AWS Lambda → "Concurrent executions" → request 1000 (free; new
    accounts start at 10). Until it is raised, set `CC_LAMBDA_MAX=9`.
 7. Tell Claude "run cloud setup" → it creates the bucket, function and site and stores the keys as
