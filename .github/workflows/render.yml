@@ -1,0 +1,46 @@
+# CapitalCode cloud render: one video split across free runners (started by `render <job> --on=github`)
+name: Render
+run-name: render ${{ inputs.job }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      job: { description: 'Render id (S3 folder gh/<job>)', required: true }
+      serve_url: { description: 'Remotion site URL on S3', required: true }
+      bucket: { description: 'S3 bucket', required: true }
+      region: { description: 'AWS region', required: true }
+      parts: { description: 'JSON list of [from, to] frame ranges', required: true }
+
+permissions:
+  contents: read
+
+jobs:
+  part:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: true
+      matrix:
+        range: ${{ fromJSON(inputs.parts) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/render
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install renderer
+        working-directory: .github/render
+        run: npm install --no-audit --no-fund
+      - name: Render frames ${{ matrix.range[0] }}–${{ matrix.range[1] }}
+        working-directory: .github/render
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.CC_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CC_AWS_SECRET_ACCESS_KEY }}
+          SERVE_URL: ${{ inputs.serve_url }}
+          BUCKET: ${{ inputs.bucket }}
+          REGION: ${{ inputs.region }}
+          JOB: ${{ inputs.job }}
+          FROM: ${{ matrix.range[0] }}
+          TO: ${{ matrix.range[1] }}
+        run: node render.mjs
