@@ -16,6 +16,8 @@ permissions:
 
 jobs:
   part:
+    # # only the default branch may use the AWS secrets
+    if: github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     timeout-minutes: 300
     strategy:
@@ -31,7 +33,8 @@ jobs:
           node-version: 22
       - name: Install renderer
         working-directory: .github/render
-        run: npm install --no-audit --no-fund
+        # # pinned versions from package-lock.json; no package install scripts run (none are needed)
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Render frames ${{ matrix.range[0] }}–${{ matrix.range[1] }}
         working-directory: .github/render
         env:
