@@ -10,3 +10,7 @@ drizzle/meta/
 output/
 
 .superpowers/
+
+# render jobs (videos live on R2) and TypeScript cache
+temp/
+tsconfig.tsbuildinfo
