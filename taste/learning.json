@@ -189,7 +189,9 @@
       "evidence": "kurzgesagt-banking-2026-10-24",
       "strength": 1,
       "added": "2026-10-24T12:31:53.639Z",
-      "status": "active"
+      "status": "retired",
+      "retired": "2026-10-31T13:29:30.996Z",
+      "why": "owner 2026-10-31: cream is the main colour (r57)"
     },
     {
       "id": "r20",
@@ -199,6 +201,718 @@
       "evidence": "kurzgesagt-measured-2026-10-24",
       "strength": 1,
       "added": "2026-10-24T12:32:59.524Z",
+      "status": "active"
+    },
+    {
+      "id": "r21",
+      "area": "visual",
+      "rule": "Shorts 1-3 (2026-10-25) are the quality floor: no video may look worse; every new video must aim for better-looking illustrations than the last.",
+      "source": "feedback",
+      "evidence": "20261025-1859_where-your-100-dollars-in-an-index-fund-really-goes",
+      "strength": 1,
+      "added": "2026-10-27T17:54:56.707Z",
+      "status": "active"
+    },
+    {
+      "id": "r22",
+      "area": "pacing",
+      "rule": "Every illustration is in sync with the voiceover: what is said is shown at that moment, landing on its word, never early or late.",
+      "source": "feedback",
+      "evidence": "20261025-1859_where-your-100-dollars-in-an-index-fund-really-goes",
+      "strength": 1,
+      "added": "2026-10-27T17:55:04.819Z",
+      "status": "active"
+    },
+    {
+      "id": "r23",
+      "area": "visual",
+      "rule": "Draw a specific, good-looking illustration for what each line actually says — not a generic picture that only roughly fits.",
+      "source": "feedback",
+      "evidence": "20261025-1859_where-your-100-dollars-in-an-index-fund-really-goes",
+      "strength": 1,
+      "added": "2026-10-27T17:55:12.863Z",
+      "status": "active"
+    },
+    {
+      "id": "r24",
+      "area": "script",
+      "rule": "Every script must make complete sense: each sentence follows logically from the one before, every claim and number is explained, no jumps, gaps or vague lines. Read it aloud start to finish as a viewer before voicing.",
+      "source": "feedback",
+      "evidence": "20261025-1859_where-your-100-dollars-in-an-index-fund-really-goes",
+      "strength": 1,
+      "added": "2026-10-27T17:58:36.151Z",
+      "status": "active"
+    },
+    {
+      "id": "r25",
+      "area": "script",
+      "rule": "Zero wrong information: every number comes from a real source in facts.json, and every finance concept (how index funds, interest, inflation, markets etc. work) is explained correctly and checked against a reputable source before voicing. If unsure, cut it or rewrite it until it is certainly true; never simplify into something false.",
+      "source": "feedback",
+      "evidence": "20261025-1859_where-your-100-dollars-in-an-index-fund-really-goes",
+      "strength": 1,
+      "added": "2026-10-27T18:00:31.384Z",
+      "status": "active"
+    },
+    {
+      "id": "r26",
+      "area": "visual",
+      "rule": "Clean layout: no text may ever overlap other text or art, including during transitions and crossfades; every label has its own clear space.",
+      "source": "feedback",
+      "evidence": "20261025-1943_in-2000-the-safest-stocks-were-the-giants-too",
+      "strength": 1,
+      "added": "2026-10-27T20:32:59.522Z",
+      "status": "active"
+    },
+    {
+      "id": "r27",
+      "area": "pacing",
+      "rule": "Nothing appears before it is spoken: a name, number or item shows in the caption and the illustration only when the voice says it — never ahead, especially in fast lists of names. Check list timings against the actual audio.",
+      "source": "feedback",
+      "evidence": "20261025-1943_in-2000-the-safest-stocks-were-the-giants-too",
+      "strength": 1,
+      "added": "2026-10-27T20:33:08.044Z",
+      "status": "active"
+    },
+    {
+      "id": "r28",
+      "area": "script",
+      "rule": "Every video passes a line-by-line accuracy audit before voicing (audit.json, gate-enforced): each sentence checked against its source and for logical sense, every own calculation re-done independently, and the headline result reality-checked against an outside source.",
+      "source": "feedback",
+      "evidence": "20261028-0426_the-minimum-payment-trap",
+      "strength": 1,
+      "added": "2026-10-27T23:32:44.402Z",
+      "status": "active"
+    },
+    {
+      "id": "r29",
+      "area": "visual",
+      "rule": "Make every video noticeably more alive: the HD cast acts out the key story beats (signing, paying, counting, reading a bill, reacting, running, celebrating) with the acting pose library and props in hand, synced word by word; objects-only scenes and tiny static pedestal figures are not enough",
+      "source": "feedback",
+      "evidence": "20261028-1609_what-your-car-really-costs",
+      "strength": 1,
+      "added": "2026-10-28T18:38:04.261Z",
+      "status": "active"
+    },
+    {
+      "id": "r30",
+      "area": "script",
+      "rule": "When a big total is made of many small payments (fees, interest, cuts), say the per-transaction amount first (e.g. about 1.7 cents per dollar) and then what it added up to over the year; never state a yearly total so it sounds like one payment, and never credit a total to only part of its source",
+      "source": "feedback",
+      "evidence": "20261029-0149_the-business-behind-buy-now-pay-later",
+      "strength": 1,
+      "added": "2026-10-29T12:00:21.049Z",
+      "status": "active"
+    },
+    {
+      "id": "r31",
+      "area": "script",
+      "rule": "When writing a script, make sure it is all correct, makes sense and is easy to understand for viewers",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-10-29T12:01:51.486Z",
+      "status": "active"
+    },
+    {
+      "id": "r32",
+      "area": "visual",
+      "rule": "Make everything right the first time (script, drawings, illustrations, text, layout); we cannot fix and re-render again and again",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-10-29T12:02:00.112Z",
+      "status": "active"
+    },
+    {
+      "id": "r33",
+      "area": "topic",
+      "rule": "Pick topics viewers can't help clicking: a surprising, personal stake (their money, a thing they use daily, a hidden cost or trick) proven by outlier videos at 2x+ channel median; never a dry or textbook subject",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-10-29T16:03:37.753Z",
+      "status": "active"
+    },
+    {
+      "id": "r34",
+      "area": "topic",
+      "rule": "Shorts need one-idea topics (one object, one number, one twist, e.g. why prices end in .99); bigger how-it-works system stories are long-form material",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-10-29T16:38:34.386Z",
+      "status": "active"
+    },
+    {
+      "id": "r35",
+      "area": "thumbnail",
+      "rule": "Every Short gets 3 drawn covers (ThumbShort): sticker title top third with ONE large key word, a stake object cut from the Short's own art in the middle, a cast close-up with a clear expression at the bottom, plain saturated background — never a raw video frame.",
+      "source": "reference",
+      "evidence": "2026-10-30 study: Kurzgesagt, Two Cents, Infographics Show, Economics Explained Shorts",
+      "strength": 1,
+      "added": "2026-10-29T21:22:32.024Z",
+      "status": "active"
+    },
+    {
+      "id": "r36",
+      "area": "visual",
+      "rule": "Illustration means a drawing: objects, characters acting, charts with pictures — never headline text. Every spoken line needs a picture that explains it with the text removed; captions are small labels only, and kinetic text never fills an illustration gap.",
+      "source": "feedback",
+      "evidence": "owner 2026-10-30 on Costco 0:25-1:20: too much text, not enough illustration",
+      "strength": 1,
+      "added": "2026-10-30T15:50:46.018Z",
+      "status": "active"
+    },
+    {
+      "id": "r37",
+      "area": "visual",
+      "rule": "Keep every frame clean: one main picture group at a time, centred in the stage area, the previous group cleared before the next arrives; presenter left, main picture middle-right, headline top; at most 3-4 objects at once, big, with space between them and no overlaps.",
+      "source": "feedback",
+      "evidence": "owner 2026-10-30",
+      "strength": 1,
+      "added": "2026-10-30T15:50:55.451Z",
+      "status": "retired",
+      "retired": "2026-10-31T13:29:46.582Z",
+      "why": "owner 2026-10-31: presenter only where it fits (r45); replaced without 'presenter left'"
+    },
+    {
+      "id": "r38",
+      "area": "visual",
+      "rule": "Text boxes do not count as illustrations either: quote cards, number tags, labelled pills and caption boxes are text. Only drawings count — objects, characters acting, and charts built from pictures (piles, jars, people, coins); a quote or number must sit beside a drawing that shows the idea.",
+      "source": "feedback",
+      "evidence": "owner 2026-10-30: the Costco 10-K quote card is text, not an illustration",
+      "strength": 1,
+      "added": "2026-10-30T16:02:32.147Z",
+      "status": "retired",
+      "retired": "2026-10-30T16:03:46.360Z",
+      "why": "owner clarified: short number tags and labels are fine; only long text standing in for a picture is banned"
+    },
+    {
+      "id": "r39",
+      "area": "visual",
+      "rule": "Short text is fine as a label (numbers like $65, tags like SUPPLIERS ≈ $89) next to a drawing. Never let long text stand in for the picture: no sentence-long quote cards or caption-only moments; keep on-screen text short and few, the drawing carries the line.",
+      "source": "feedback",
+      "evidence": "owner 2026-10-30 clarification on the 10-K quote card",
+      "strength": 1,
+      "added": "2026-10-30T16:03:57.895Z",
+      "status": "active"
+    },
+    {
+      "id": "r40",
+      "area": "shorts",
+      "rule": "Shorts are mastered louder: about -10 LUFS integrated, true peak about -1 dB, with a gentle voice compressor (owner picked it over -12 on 2026-10-31). Long videos stay at the approved -12.",
+      "source": "feedback",
+      "evidence": "20261030-2125_why-airlines-sell-seats-that-don-t-exist",
+      "strength": 1,
+      "added": "2026-10-30T20:04:09.543Z",
+      "status": "active"
+    },
+    {
+      "id": "r41",
+      "area": "visual",
+      "rule": "The story's main character must act out every key beat of the money story (signing, receiving cash, paying, panicking, carrying, handing over) on its word; objects popping in around a standing figure is not enough, and the presenter must not repeat the same few gestures",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "strength": 1,
+      "added": "2026-10-30T21:12:52.068Z",
+      "status": "active"
+    },
+    {
+      "id": "r42",
+      "area": "visual",
+      "rule": "A maths beat (e.g. a sale split into what was paid and the gain, then the tax bite) is ONE big object that splits and moves on the spoken numbers, with each label stuck to its part; never several loose pieces and floating labels around the stage",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "strength": 1,
+      "added": "2026-10-30T22:26:26.056Z",
+      "status": "active"
+    },
+    {
+      "id": "r43",
+      "area": "visual",
+      "rule": "No sticker videos: never pop a separate small object or label in for each spoken word. Each beat is a proper illustration: one drawn scene whose parts move, grow, split and transform on the words; new things enter from somewhere in the scene and never land on top of other objects or people",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "strength": 1,
+      "added": "2026-10-30T22:31:27.311Z",
+      "status": "retired",
+      "retired": "2026-10-30T23:07:45.488Z",
+      "why": "owner clarified 2026-10-31: pop-ins are allowed with limits (relevant, natural, never covering)"
+    },
+    {
+      "id": "r44",
+      "area": "visual",
+      "rule": "The presenter is not on screen all the time: show him only where he adds something (opening, a direct question, the ending); the story's own characters and the illustration fill the frame the rest of the time",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "strength": 1,
+      "added": "2026-10-30T22:31:34.286Z",
+      "status": "retired",
+      "retired": "2026-10-30T22:40:00.341Z",
+      "why": "owner clarified 2026-10-31: the hero is welcome where relevant, not limited to opening/question/ending"
+    },
+    {
+      "id": "r45",
+      "area": "visual",
+      "rule": "Show the presenter (hero) only where he is relevant and fits naturally in the story, never standing in every scene by default; the rest of the time the illustration and the story's characters fill the frame",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "strength": 1,
+      "added": "2026-10-30T22:40:07.870Z",
+      "status": "active"
+    },
+    {
+      "id": "r46",
+      "area": "visual",
+      "rule": "Premium bar: continuous transforming polished illustrations, synced in real time to the voiceover; one clear idea per frame with few elements, generous empty space and a calm, centred, balanced layout; nothing messy, crowded or overlapping",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "strength": 1,
+      "added": "2026-10-30T22:48:05.305Z",
+      "status": "active"
+    },
+    {
+      "id": "r47",
+      "area": "visual",
+      "rule": "Clean is not empty: every frame is a full, rich illustration (a drawn setting plus the main subject and its parts) that fills the stage and keeps transforming; never a near-empty stage with one small object, but never a cluttered pile of unrelated icons either",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "strength": 1,
+      "added": "2026-10-30T22:51:19.603Z",
+      "status": "active"
+    },
+    {
+      "id": "r48",
+      "area": "visual",
+      "rule": "Objects may pop in, with limits: only when relevant to the line, only where it fits naturally in the drawing, never one per word as stickers, and never covering any other object, label or person; the main story is told by the illustration transforming",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "strength": 1,
+      "added": "2026-10-30T23:07:52.363Z",
+      "status": "active"
+    },
+    {
+      "id": "r49",
+      "area": "script",
+      "rule": "Trace every step for the viewer: each line states who does what, with what money, and what happens (e.g. 'you bet 10 dollars on red; the ball lands on red; you win 10 dollars'), never a shorthand that skips a step ('every red wins you 10'). Connect each number to the action that produced it, explain why before giving the result, avoid jargon and money metaphors that mislead (toll, cut, handle, hold), and keep numbers few. Before voicing, read the script as a first-time viewer and fix any line that needs the viewer to fill a gap.",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-0625_how-casinos-win-even-when-you-win",
+      "strength": 1,
+      "added": "2026-10-31T06:40:35.537Z",
+      "status": "retired",
+      "retired": "2026-10-31T07:15:44.384Z",
+      "why": "reworded 2026-10-31: drop 'avoid jargon' (owner: common terms are fine, only explain where it matters)"
+    },
+    {
+      "id": "r50",
+      "area": "script",
+      "rule": "Assume the viewer knows nothing. We make explainers: every term, rule, step and number is explained in the script before it is used (what a roulette pocket is, what 'bet on red' pays, where a percentage comes from). If a line relies on something the script has not said yet, add the missing line first.",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-0625_how-casinos-win-even-when-you-win",
+      "strength": 1,
+      "added": "2026-10-31T06:50:28.537Z",
+      "status": "retired",
+      "retired": "2026-10-31T07:15:11.292Z",
+      "why": "owner 2026-10-31: too strict — not every jargon word needs explaining; explain only where it matters to follow the point"
+    },
+    {
+      "id": "r51",
+      "area": "script",
+      "rule": "The explanation of the main concept must be easy to follow for someone new to it: build the idea step by step with nothing skipped, so viewers are never confused. Do NOT define every jargon word (that makes videos too long); use common finance words freely and explain a term only where it is central to the point or where a short explanation clearly helps.",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-0625_how-casinos-win-even-when-you-win",
+      "strength": 1,
+      "added": "2026-10-31T07:15:22.571Z",
+      "status": "active"
+    },
+    {
+      "id": "r52",
+      "area": "script",
+      "rule": "Trace every step for the viewer: each line says who does what, with what money, and what happens (e.g. 'you bet 10 dollars on red; the ball lands on red; you get your 10 back plus 10 more'), never a shorthand that skips a step ('every red wins you 10'). Show why before the result, tie each number to the action that produced it, keep numbers few, and avoid metaphors that mislead (e.g. calling a built-in disadvantage a 'toll' or a 'cut'). Before voicing, read the script as a first-time viewer and fix any line that leaves a gap.",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-0625_how-casinos-win-even-when-you-win",
+      "strength": 1,
+      "added": "2026-10-31T07:15:57.850Z",
+      "status": "active"
+    },
+    {
+      "id": "r53",
+      "area": "visual",
+      "rule": "No unnecessary camera moves: no zoom-ins/zoom-outs or pans just to add motion or pass the change gate. The camera stays still by default; liveliness comes from the illustration itself transforming on the spoken words. A camera move only when the story needs it (a rare reveal), at most a few per video.",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-10-31T08:39:13.426Z",
+      "status": "retired",
+      "retired": "2026-10-31T08:53:19.510Z",
+      "why": "owner 2026-10-31: replaced by a full ban on zooms"
+    },
+    {
+      "id": "r54",
+      "area": "visual",
+      "rule": "Warm cream light scenes are OK (owner 2026-10-31): mix light scenes (explaining, the answer) with the navy/teal dark scenes (risk, warnings) by mood; the Critic must not mark cream down.",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-10-31T08:43:34.020Z",
+      "status": "retired",
+      "retired": "2026-10-31T08:56:03.527Z",
+      "why": "owner 2026-10-31: cream is now preferred, not just allowed"
+    },
+    {
+      "id": "r55",
+      "area": "visual",
+      "rule": "Do not keep adding things to a frame as the voice goes on (owner 2026-10-31: it makes the frame messy). When the voice moves to a new idea, the previous objects and labels leave or transform into the new one; only what is being talked about now stays on screen (one main group, 3-4 objects max); every label disappears once its line is over.",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-10-31T08:46:09.061Z",
+      "status": "active"
+    },
+    {
+      "id": "r56",
+      "area": "visual",
+      "rule": "No zoom-ins or zoom-outs at all (owner 2026-10-31). The camera never zooms; liveliness comes only from the illustration transforming on the spoken words. Never use camera moves to pass a gate.",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-10-31T08:53:26.544Z",
+      "status": "active"
+    },
+    {
+      "id": "r57",
+      "area": "visual",
+      "rule": "Cream is the main background (owner 2026-10-31: 'I like cream background color more'): use the warm cream world a bit more often than the navy/teal worlds (roughly 60/40); navy/teal for risk, warnings and contrast. The Critic must not mark cream down.",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-10-31T08:56:10.468Z",
+      "status": "active"
+    },
+    {
+      "id": "r58",
+      "area": "visual",
+      "rule": "Do not hold one same frame/layout too long (owner 2026-10-31): when the story moves to a new idea (roughly every 10-15 s), the picture transforms into a new layout (objects move, morph or slide into the next arrangement — never a zoom). Exception: a side-by-side comparison (e.g. sell vs borrow over ten years) may keep one layout for its whole run (owner liked the ten-years sample).",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-10-31T09:52:02.892Z",
+      "status": "active"
+    },
+    {
+      "id": "r59",
+      "area": "visual",
+      "rule": "Do not hold one same frame/layout too long (owner 2026-10-31): when the story moves to a new idea (roughly every 10-15 s), the picture transforms into a new layout (objects move, morph or slide into the next arrangement - never a zoom). Exception: a side-by-side comparison (e.g. sell vs borrow over ten years) may keep one layout for its whole run.",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-10-31T09:53:11.613Z",
+      "status": "retired",
+      "retired": "2026-10-31T09:56:29.823Z",
+      "why": "duplicate of r58"
+    },
+    {
+      "id": "r60",
+      "area": "visual",
+      "rule": "Owner's core bar (2026-10-31, in their words): continuous transforming illustrations describing whatever the voiceover is saying, perfectly synced with the voiceover; nothing overlaps or covers anything; never show the same frame for too long; frames AND scenes transform — one scene morphs/flows into the next instead of hard cuts. This video (The Rich Don't Sell) is the minimum bar; aim for the Kurzgesagt reference's liveliness while staying clean.",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-10-31T12:34:10.675Z",
+      "status": "retired",
+      "retired": "2026-10-31T13:29:38.626Z",
+      "why": "owner 2026-10-31: cutting between scenes is fine; replaced without the hard-cut line"
+    },
+    {
+      "id": "r61",
+      "area": "visual",
+      "rule": "Owner's core bar (2026-10-31, in their words): continuous transforming illustrations describing whatever the voiceover is saying, perfectly synced with the voiceover; nothing overlaps or covers anything; don't show the same frame for too long. Cutting between scenes is fine.",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-10-31T13:29:54.632Z",
+      "status": "active"
+    },
+    {
+      "id": "r62",
+      "area": "visual",
+      "rule": "Keep every frame clean: one main picture group at a time, the previous group cleared before the next arrives, headline top; at most 3-4 objects at once, big, with space between them and no overlaps.",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-10-31T13:30:03.307Z",
+      "status": "active"
+    },
+    {
+      "id": "r63",
+      "area": "visual",
+      "rule": "A document, bill, list or table drawn as rows of words is not an illustration, even with small icons. Show each idea as a drawn thing acting (the money flow, the object, the place) so it reads with the text removed; never a text list on a paper.",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "strength": 1,
+      "added": "2026-10-31T14:13:59.029Z",
+      "status": "active"
+    },
+    {
+      "id": "r64",
+      "area": "visual",
+      "rule": "Never show the CapitalCode logo/brand card while the voiceover is speaking; it may appear only where there is no narration (e.g. a silent beat or the end).",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "strength": 1,
+      "added": "2026-10-31T14:33:09.664Z",
+      "status": "active"
+    },
+    {
+      "id": "r65",
+      "area": "pacing",
+      "rule": "Any text, number or date on screen appears exactly when the voice says it, never on an earlier word (e.g. '2025 → 2029' only as the years are spoken, not on 'four years').",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "strength": 1,
+      "added": "2026-10-31T14:33:17.319Z",
+      "status": "active"
+    },
+    {
+      "id": "r66",
+      "area": "visual",
+      "rule": "When the voice says 'not <something>', first act out that something in the drawing, then either put a clear cross on it or have a character (the hero where it fits) make a 'no' gesture. Never cross out words.",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "strength": 1,
+      "added": "2026-10-31T14:55:12.849Z",
+      "status": "retired",
+      "retired": "2026-10-31T14:57:42.564Z",
+      "why": "owner refined: the cross is sized to the thing it marks, not big"
+    },
+    {
+      "id": "r67",
+      "area": "visual",
+      "rule": "When the voice says 'not <something>', first act out that something in the drawing, then either put a cross sized to fit that object (not oversized) on it, or have a character (the hero where it fits) make a 'no' gesture. Never cross out words.",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "strength": 1,
+      "added": "2026-10-31T14:57:50.266Z",
+      "status": "retired",
+      "retired": "2026-10-31T14:59:45.270Z",
+      "why": "owner: the cross size is not tied to the object; it just has to look good and natural"
+    },
+    {
+      "id": "r68",
+      "area": "visual",
+      "rule": "When the voice says 'not <something>', first act out that something in the drawing, then either put a cross on it or have a character (the hero where it fits) make a 'no' gesture. The cross just has to look good and natural in the frame: a comfortable, clearly visible size, never tiny or oversized. Never cross out words.",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "strength": 1,
+      "added": "2026-10-31T14:59:52.874Z",
+      "status": "active"
+    },
+    {
+      "id": "r69",
+      "area": "script",
+      "rule": "When a number is an average per unit (members per gym, cost per store), say the total and how it is split first (20.8 million members across 2,896 gyms = about 7,200 per gym), so viewers never wonder whether it counts all branches or one",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-1828_gyms-make-money-from-people-who-never-go",
+      "strength": 1,
+      "added": "2026-10-31T15:41:38.470Z",
+      "status": "active"
+    },
+    {
+      "id": "r70",
+      "area": "visual",
+      "rule": "Keep the chapter title cards between chapters (owner 2026-11-01). The Critic must not mark them down or ask to remove them.",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "strength": 1,
+      "added": "2026-10-31T18:40:09.463Z",
+      "status": "active"
+    },
+    {
+      "id": "r71",
+      "area": "visual",
+      "rule": "Characters act out beats more, but only where the action is relevant to the line and only when the acting drawing can be executed perfectly; a clean still pose beats a clumsy action.",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "strength": 1,
+      "added": "2026-10-31T18:40:17.747Z",
+      "status": "active"
+    },
+    {
+      "id": "r72",
+      "area": "visual",
+      "rule": "The Critic must check the actual frames at the spoken word before claiming a number or picture is missing (owner 2026-11-01: the Critic wrongly said the $29 billion and other numbers were not shown).",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "strength": 1,
+      "added": "2026-10-31T18:40:25.986Z",
+      "status": "active"
+    },
+    {
+      "id": "r73",
+      "area": "thumbnail",
+      "rule": "Thumbnail words must tell the video's point on their own, without the title or the video (e.g. GYMS WANT YOU TO SKIP), never a bare number or fragment from inside the video (24 PER SPOT?) that only makes sense after watching",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261031-1828_gyms-make-money-from-people-who-never-go",
+      "strength": 1,
+      "added": "2026-10-31T18:56:49.457Z",
+      "status": "active"
+    },
+    {
+      "id": "r74",
+      "area": "script",
+      "rule": "Explain the core idea the way you would to a friend who just said 'I don't understand': a few numbered steps said out loud (step one, step two...), each with one tiny concrete example in round numbers, building to the result; a small year-by-year or before/after comparison when numbers change over time. If the owner needs a second explanation in chat, the script must use that second explanation.",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261101-0149_the-1-fee-that-costs-more-than-you-save",
+      "strength": 1,
+      "added": "2026-10-31T19:06:34.614Z",
+      "status": "active"
+    },
+    {
+      "id": "r75",
+      "area": "visual",
+      "rule": "Before showing the owner, watch the finished video frame by frame yourself (every 2-4 s): no object may cover another object or label at any moment, extra markers never sit on top of content, and every scene must be a rich, alive drawing (characters acting, objects transforming), never a few icons on an empty stage.",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261102-0237_why-warren-buffett-buys-when-everyone-is-scared",
+      "strength": 1,
+      "added": "2026-11-02T10:38:09.923Z",
+      "status": "active"
+    },
+    {
+      "id": "r76",
+      "area": "script",
+      "rule": "Never end with 'This is how the money works, not investment advice' (or any spoken/on-screen disclaimer) unless the topic is investing (stocks, crypto, funds, buying/selling assets). Non-investing videos end on the payoff line. Owner had to trim it from Tesla, Amazon and Spotify (2026-11-08).",
+      "source": "feedback",
+      "evidence": "temp/jobs/20261103-0602_where-your-spotify-money-actually-goes",
+      "strength": 1,
+      "added": "2026-11-08T19:55:28.890Z",
+      "status": "retired",
+      "retired": "2026-11-11T18:38:27.243Z",
+      "why": "superseded by r90: owner wants no disclaimer line on any topic, investing included"
+    },
+    {
+      "id": "r77",
+      "area": "topic",
+      "rule": "Owner 2026-11-09: make more educational finance EXPLAINER videos that teach a finance concept (how something works), explained simply so anyone can follow, still with a click-worthy angle.",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-11-08T19:55:40.499Z",
+      "status": "active"
+    },
+    {
+      "id": "r78",
+      "area": "script",
+      "rule": "Every mechanism is explained step by step in voice and on screen with worked numbers: who does it, in whose name, who pays, who carries the risk, and why the other side agrees; show a side-by-side worked example (with vs without, good vs bad case). Never just state the result.",
+      "source": "feedback",
+      "evidence": "20261109-1433_how-private-equity-actually-works",
+      "strength": 1,
+      "added": "2026-11-09T21:22:05.617Z",
+      "status": "active"
+    },
+    {
+      "id": "r79",
+      "area": "visual",
+      "rule": "Scenes move with the voiceover: when the narration moves to a new idea, the previous line's objects leave (exit animation) BEFORE the new objects arrive, and the scene itself changes; nothing piles up from earlier lines. One idea on screen at a time.",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-11-09T21:24:02.221Z",
+      "status": "active"
+    },
+    {
+      "id": "r80",
+      "area": "topic",
+      "rule": "Pick topics people already search for and click on: proven high-demand themes like billionaires (how the rich get/stay rich), debt, and 'how X really works' explainers. Check search/outlier demand before choosing; avoid niche topics nobody searches.",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-11-09T21:41:59.301Z",
+      "status": "active"
+    },
+    {
+      "id": "r81",
+      "area": "hook",
+      "rule": "Every hook (long + Shorts) must feel PERSONAL, Alux-style, ~25-30 s, brand sting only AFTER the hook. Use all 7: (1) first word is about the viewer (\"You...\"), not the topic; (2) friend tone (\"You know...\", \"okay?\"); (3) tie the fact to the viewer's own life; (4) answer their doubt before they have it (\"you don't need to be a billionaire to...\"); (5) put them inside the story (\"Imagine you're...\"); (6) small everyday details and numbers; (7) say their next thought out loud (\"Now you're thinking...\"). Then promise the full range (small to huge) and the steps/levels the video walks through. Facts stay sourced and exact; copy structure only, never Alux art or lines. EXAMPLE (trusts video) - BAD (topic-first): a casino billionaire, $7.9 billion, a $2.8 billion tax bill. GOOD (personal): \"When you die, the government can take up to 40% of what you leave your kids. You'd probably expect billionaires to pay the most. But one casino owner handed his family $7.9 billion and dodged a $2.8 billion tax bill, legally. And you don't need to be a billionaire to understand how. Today, we'll break down the three steps they use, one by one.\"",
+      "source": "reference",
+      "evidence": "owner 2026-11-10: likes Alux real-estate intro, 'feels personal'",
+      "strength": 1,
+      "added": "2026-11-10T14:54:57.671Z",
+      "status": "active"
+    },
+    {
+      "id": "r82",
+      "area": "visual",
+      "rule": "Varieties of polished art: every video gets its own art direction (world, palette, props), drawn with depth layers, shading, gradients, light and texture; settings change chapter by chapter; illustrated places and objects over plain bars, labels and glow highlights. Never reuse the flat cream stage + bars look video after video.",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-11-10T15:17:02.644Z",
+      "status": "active"
+    },
+    {
+      "id": "r83",
+      "area": "visual",
+      "rule": "Draw every video's scenes and art fresh, custom-made for that video. Never reuse another video's scene files, kits or props as its look; only engine helpers (timing, Person rig, Stage, Headline) are shared.",
+      "source": "feedback",
+      "strength": 1,
+      "added": "2026-11-10T15:19:37.415Z",
+      "status": "active"
+    },
+    {
+      "id": "r84",
+      "area": "visual",
+      "rule": "Every video gets freshly drawn scenes and objects made for its own story (new settings, props and metaphors in its own art folder); never reuse another video's scene or object drawings. Only the shared engine (stage, approved cast rig, headline, labels, easing) is reused.",
+      "source": "feedback",
+      "evidence": "20261110-2217_how-to-turn-saving-into-investing-step-by-step",
+      "strength": 1,
+      "added": "2026-11-10T15:27:56.432Z",
+      "status": "retired",
+      "retired": "2026-11-10T15:33:14.141Z",
+      "why": "duplicate of r83 (same owner rule logged by a parallel session)"
+    },
+    {
+      "id": "r85",
+      "area": "visual",
+      "rule": "Every video gets its own freshly drawn scenes and art, custom-made for that video's story (its own diorama piece set in art/diorama/<video>/). Never reuse another video's scenes, pieces or layouts, and never re-skin an old scene as a template; shared basics (cast, fonts, palette, the kit primitives) are fine, but every setting, object and composition is drawn new for what this video's lines say.",
+      "source": "feedback",
+      "evidence": "owner 2026-11-10 (financial freedom job)",
+      "strength": 1,
+      "added": "2026-11-10T15:28:25.205Z",
+      "status": "retired",
+      "retired": "2026-11-10T15:33:22.551Z",
+      "why": "duplicate of r83 (same owner rule saved by another session)"
+    },
+    {
+      "id": "r86",
+      "area": "hook",
+      "rule": "The hook frames the WHOLE video, not its first lesson or first section. In a multi-lesson/multi-part video the opening must speak to the viewer's life across everything the video covers, never open on one lesson's detail (bad: the literacy video opened on 'nobody explained your own paycheck' when the paycheck was only lesson 1). Still you-first and personal (r81); the first lesson starts after the hook.",
+      "source": "feedback",
+      "evidence": "20261110-2259_financial-literacy-everything-you-need-to-know",
+      "strength": 1,
+      "added": "2026-11-11T04:54:20.978Z",
+      "status": "active"
+    },
+    {
+      "id": "r87",
+      "area": "script",
+      "rule": "The video must deliver exactly what the title promises. A broad title (e.g. 'X: Everything You Need to Know') covers the topic's full standard scope, not a pile of tips; check the outline against the title before writing. Simple AND deep: plain words, one idea at a time, and every part answers what it is, why it matters to you, how it works step by step with one worked example, and what to do. Concepts first, numbers only to illustrate; never stack calculations.",
+      "source": "feedback",
+      "evidence": "20261110-2259_financial-literacy-everything-you-need-to-know",
+      "strength": 1,
+      "added": "2026-11-11T06:33:46.097Z",
+      "status": "active"
+    },
+    {
+      "id": "r88",
+      "area": "script",
+      "rule": "Every part must be cohesive and coherent: one through-line from hook to ending (one main character and one running set of numbers carried part to part, e.g. the same take-home pay reused in every lesson), parts ordered so each one follows from the last, each part ends by giving the reason the next part is needed, and the ending pays off exactly what the hook set up. No standalone tips. It must FLOW NATURALLY. Pick the structure that fits the topic: a story-driven flow (topics grow out of what just happened) OR a clear list of lessons/steps when the topic suits it (rules, mistakes, steps). Either way, transitions connect — each part follows from the last, never a pile of unrelated pieces.",
+      "source": "feedback",
+      "evidence": "20261110-2259_financial-literacy-everything-you-need-to-know",
+      "strength": 1,
+      "added": "2026-11-11T08:30:51.604Z",
+      "status": "active"
+    },
+    {
+      "id": "r89",
+      "area": "script",
+      "rule": "Every video gets its OWN worked examples: before writing, check the examples used in past CapitalCode scripts (temp/jobs/*/script.src.txt) and do not repeat them — no $60,000 salary again, no car breakdown as the emergency again; pick a different salary, a different surprise expense, different amounts and situations. Character names (e.g. Maya) may be reused.",
+      "source": "feedback",
+      "evidence": "20261110-2259_financial-literacy-everything-you-need-to-know",
+      "strength": 1,
+      "added": "2026-11-11T08:37:08.951Z",
+      "status": "active"
+    },
+    {
+      "id": "r90",
+      "area": "script",
+      "rule": "Never end a video with a spoken or on-screen 'this is how the money works, not investment/financial advice' line, not even on investing topics; end on the payoff line. The 'not financial advice' note stays only in the upload description.",
+      "source": "feedback",
+      "ban": "not investment advice",
+      "evidence": "temp/jobs/20261111-0123_the-stock-market-fully-explained-for-beginners",
+      "strength": 1,
+      "added": "2026-11-11T18:37:10.912Z",
       "status": "active"
     }
   ],
@@ -211,14 +925,334 @@
     {
       "note": "I like this style of editing — Kurzgesagt 'Banking Explained' (Downloads/Banking Explained – Money and Credit_1080p.mp4)",
       "at": "2026-10-24T12:26:58.647Z"
+    },
+    {
+      "job": "20261025-1859_where-your-100-dollars-in-an-index-fund-really-goes",
+      "note": "Shorts 1-3 are acceptable — the minimum bar. Always improve: better illustration designs, illustrations in sync with the voiceover, and the best-looking illustration we can make for what the voiceover says.",
+      "at": "2026-10-27T17:54:03.790Z"
+    },
+    {
+      "job": "20261025-1943_in-2000-the-safest-stocks-were-the-giants-too",
+      "note": "Shorts 1-3 are acceptable — the minimum bar. Always improve: better illustration designs, illustrations in sync with the voiceover, and the best-looking illustration we can make for what the voiceover says.",
+      "at": "2026-10-27T17:54:11.708Z"
+    },
+    {
+      "job": "20261025-2040_4-percent-of-stocks-made-all-the-gains",
+      "note": "Shorts 1-3 are acceptable — the minimum bar. Always improve: better illustration designs, illustrations in sync with the voiceover, and the best-looking illustration we can make for what the voiceover says.",
+      "at": "2026-10-27T17:54:19.628Z"
+    },
+    {
+      "job": "20261025-1859_where-your-100-dollars-in-an-index-fund-really-goes",
+      "note": "For the script, make sure it makes all sense.",
+      "at": "2026-10-27T17:58:27.835Z"
+    },
+    {
+      "job": "20261025-1859_where-your-100-dollars-in-an-index-fund-really-goes",
+      "note": "I don't want the script to be saying wrong concepts and wrong information.",
+      "at": "2026-10-27T18:00:23.624Z"
+    },
+    {
+      "job": "20261025-1943_in-2000-the-safest-stocks-were-the-giants-too",
+      "note": "A bit messy layout with overlapping text. When calling out company names, captions and illustrations show the name before the voiceover says it — not synced.",
+      "at": "2026-10-27T20:32:51.057Z"
+    },
+    {
+      "job": "20261028-0426_the-minimum-payment-trap",
+      "note": "For every video, make sure our info, concept and explanation is correct and makes all sense.",
+      "at": "2026-10-27T23:32:36.071Z"
+    },
+    {
+      "job": "20261028-1609_what-your-car-really-costs",
+      "note": "keep this one as it is and build the poses for future use. we need to make the video noticeably more alive so that viewers keep on watching",
+      "at": "2026-10-28T18:35:47.095Z"
+    },
+    {
+      "job": "20261029-0149_the-business-behind-buy-now-pay-later",
+      "note": "for that kind of line, should be like describe the exact small fees the store pays as a card fees and say the total amounts that added up to annually. make everything right the first time",
+      "at": "2026-10-29T12:00:12.346Z"
+    },
+    {
+      "note": "when we choose topic make sure its something that will make viewer click the video",
+      "at": "2026-10-29T16:03:28.531Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "note": "keep this topic but make sure the info we give is all correct and clearly explained so everybody understands",
+      "at": "2026-10-30T20:12:33.484Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "note": "then make the video more alive (after critic said the investor mostly stands while objects pop in)",
+      "at": "2026-10-30T21:12:43.995Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "note": "make sure everything is perfectly synced with voiceover",
+      "at": "2026-10-30T21:20:27.410Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "note": "it looks messy isnt it (Way one sell frame ~2:20: two people, pill, bar, stack, tax office, crown, three loose labels)",
+      "at": "2026-10-30T22:26:19.190Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "note": "now its like sticker popping up for each word in the same frame so it gets messy. can you illustrate things properly instead of making stickers or objects pop up. and when they pop up they are covering over objects. and the people. does the hero always have to present at all time??",
+      "at": "2026-10-30T22:31:20.419Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "note": "we can show the hero but not always at all time. where relevant where it fits naturally",
+      "at": "2026-10-30T22:39:52.766Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "note": "what i want is continuous transforming polished illustrations perfectly synced with whatever the voiceover is saying in real time. dont show too many things in one frame. dont make it look messy. premium brand with perfect illustrations perfectly synced with voiceover with clean and polished layout",
+      "at": "2026-10-30T22:47:57.541Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "note": "when i say clean and clear layout, dont make the frames feel empty. there should be well enough continuous transforming illustrations in every frame",
+      "at": "2026-10-30T22:51:11.689Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "note": "each illustration must show what voiceover is saying exactly when it says that",
+      "at": "2026-10-30T23:03:15.544Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "note": "objects can pop in but with limits. only when relevant, only where it fits naturally. dont cover any other things in the frame",
+      "at": "2026-10-30T23:07:38.406Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0625_how-casinos-win-even-when-you-win",
+      "note": "dont just do sample. draw the rest since u know all the rules",
+      "at": "2026-10-30T23:56:06.872Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0625_how-casinos-win-even-when-you-win",
+      "note": "make it all make sense. you have to say betting 10 dollars on red each time. without it, 'Every red wins you 10 dollars' doesnt make sense. everything should be clearly traced and well explained. I want the script for next videos to be well explained with all the clear cues and dots which will make viewers understandable not confused",
+      "at": "2026-10-31T06:40:27.677Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0625_how-casinos-win-even-when-you-win",
+      "note": "dont assume viewers to know anything. we are doing explainer kind of videos so its our job to provide every lil detail",
+      "at": "2026-10-31T06:50:19.058Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "note": "Owner approved 'The Rich Don't Sell. They Borrow.' (2026-10-31) as the MINIMUM bar, not the goal: 'thats the minimum. we could still improve a lot'. Next videos must be more alive like the Kurzgesagt reference (things transform into the next thing every line, characters always moving, big confident motion) while staying clean: no zooms, no pile-up, no stickers covering things. Cream main background.",
+      "at": "2026-10-31T12:27:49.990Z"
+    },
+    {
+      "job": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "note": "Owner compared the 'transforming' sell sample (street slides away, bundle becomes 10 abstract bars, coral tops peel into a tax block) with the approved original sell scene (street world: house, shelf, stall, tax office; the M bundle splits and its tax chunk slides into the office): 'i like our original video better.'",
+      "at": "2026-10-31T13:20:53.860Z"
+    },
+    {
+      "job": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "note": "its not illustrations (about the electricity bill drawn as a list of text lines: POWER YOU USE / POLES & WIRES / EXTRA CHARGES with strike-throughs and a flap)",
+      "at": "2026-10-31T14:13:51.234Z"
+    },
+    {
+      "job": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "note": "i dont like the illustrations from 0:30 to the end of the video. we could make it more alive and more illustrative. dont show the years before voiceover says it. dont show logo while voiceover is speaking about the topic.. remember these",
+      "at": "2026-10-31T14:33:02.116Z"
+    },
+    {
+      "job": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "note": "ok better than before (sample v3: acted-out scenes, people acting, coins/curtain/power pulses, years on time, no mid-narration logo)",
+      "at": "2026-10-31T14:49:20.528Z"
+    },
+    {
+      "job": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "note": "the cross doesnt necessarily have to be big. just right size",
+      "at": "2026-10-31T14:57:27.710Z"
+    },
+    {
+      "job": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "note": "the size doesnt have to the thing it marks. just make it look good and natural to look at.",
+      "at": "2026-10-31T14:59:37.543Z"
+    },
+    {
+      "job": "temp/jobs/20261031-1828_gyms-make-money-from-people-who-never-go",
+      "note": "gyms have a lot of members but the gyms can hold at most 300 at the same time. but gyms have multiple branches",
+      "at": "2026-10-31T15:37:54.460Z"
+    },
+    {
+      "job": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "note": "package it (after being told the video gate measured a visual change every 2.53 s vs max 1.5 s)",
+      "at": "2026-10-31T17:59:44.163Z"
+    },
+    {
+      "job": "temp/jobs/20261031-2033_how-ai-data-centers-ended-up-on-your-power-bill",
+      "note": "it does show $29 billion extra. and numbers are all shown. and keep chapter title cards. only thing is, characters could have more acting where relevant or only when we can execute the acting drawing perfectly",
+      "at": "2026-10-31T18:40:01.176Z"
+    },
+    {
+      "job": "temp/jobs/20261031-1828_gyms-make-money-from-people-who-never-go",
+      "note": "visuals not bad. but the title on the thumbnail??? it doesnt show whats the video is about and cant tell what we wanna say (thumb 1: 24 PER SPOT?)",
+      "at": "2026-10-31T18:56:41.541Z"
+    },
+    {
+      "job": "temp/jobs/20261101-0149_the-1-fee-that-costs-more-than-you-save",
+      "note": "owner did not understand the fee idea until it was explained as 4 simple numbered steps with a small table (fee on 10,000; fee at years 1/20/40; money taken can't grow; twins add-up). 'we have to make sure u explain like this well enough in the script so viewers understand'",
+      "at": "2026-10-31T19:06:26.209Z"
+    },
+    {
+      "job": "20261031-0625_how-casinos-win-even-when-you-win",
+      "note": "thumbnails are not in the right direction; check how big illustrated channels make theirs",
+      "at": "2026-10-31T19:10:30.058Z"
+    },
+    {
+      "job": "temp/jobs/20261101-1524_your-crypto-dollar-earns-interest-just-not-for-you",
+      "note": "yeah do the rest (approved the 32 s hook sample: coin company vs burger shop profit stacks, crossed burger/bag, coin = $1 bill, Maya hands a dollar into a vault, interest coins drift to the company, four-step route)",
+      "at": "2026-11-01T10:36:15.536Z"
+    },
+    {
+      "job": "temp/jobs/20261101-1524_your-crypto-dollar-earns-interest-just-not-for-you",
+      "note": "package (approved after the accuracy check; motion gate 2.33s accepted)",
+      "at": "2026-11-01T19:32:16.481Z"
+    },
+    {
+      "job": "temp/jobs/20261102-1636_you-re-already-paying-for-ai-even-if-you-never-use-it",
+      "note": "ok go (approved the 32 s hook sample: Microsoft 365 box with app tiles, $69.99 tag flips to $99.99 +43%, Copilot spark lands in the box, Australia map + regulator + crowd, renewal email PAY MORE/CANCEL with hidden CLASSIC door, wallet pays in, answer bubble drops a coin, Workspace box joins)",
+      "at": "2026-11-02T10:30:37.950Z"
+    },
+    {
+      "job": "temp/jobs/20261102-0237_why-warren-buffett-buys-when-everyone-is-scared",
+      "note": "review the buffet video yourself. there are things overlapping, things covering up other objects, the illustrations dont look good enough. could improve a lot into the scene drawings to make it more alive and engaging to keep watching.",
+      "at": "2026-11-02T10:36:54.713Z"
+    },
+    {
+      "note": "Only end a video with the spoken/on-screen 'how the money works, not financial advice' line when the topic is about investing (where it could look like advice). Otherwise end on the payoff line; the description disclaimer stays on every video.",
+      "at": "2026-11-02T18:47:25.824Z"
+    },
+    {
+      "note": "temp/jobs/20261102-0942_how-google-makes-money-from-your-searches for google video, I noticed that for each scene, the objects piled up as new things keep coming as the line moves forward when the old things doesnt disappear when the line is finished",
+      "at": "2026-11-08T14:03:19.210Z"
+    },
+    {
+      "note": "temp/jobs/20261102-0942_how-google-makes-money-from-your-searches keep drawn rooms and halls, but objects and people are too large (casino video is the reference); objects must leave when their line ends as new ones come in; scenes must be rich but never piled up or messy, and never empty; presenter only when relevant",
+      "at": "2026-11-08T16:23:59.652Z"
+    },
+    {
+      "job": "temp/jobs/20261109-1403_if-i-had-1-million-dollars-to-invest-today",
+      "note": "rich and beautiful scenes with well drawn illustrations and characters acting out perfectly synced to the voiceover. no pile ups. no messy overlapping objects. objects leave and scenes change as the line moves on. all info correct, fact checked, explained simply. render on GitHub, no Critic (owner reviews in the morning)",
+      "at": "2026-11-09T08:41:09.018Z"
+    },
+    {
+      "job": "temp/jobs/20261109-1403_if-i-had-1-million-dollars-to-invest-today",
+      "note": "lets make the voiceover a bit louder -10 LUFS (without re-rendering) — remixed final.mp4 from -12.1 to -10.0 LUFS, peak -1.5 dB",
+      "at": "2026-11-09T10:38:53.262Z"
+    },
+    {
+      "job": "20261109-1408_how-billionaires-use-trusts-to-skip-the-estate-tax",
+      "note": "make the voiceover a bit louder at -10LUFS without re-rendering",
+      "at": "2026-11-09T10:40:34.003Z"
+    },
+    {
+      "job": "20261109-1433_how-private-equity-actually-works",
+      "note": "next time, for future videos, that steps must be explained in the videos (asked how debt makes wins bigger and why the bought company, not the firm, pays the debt)",
+      "at": "2026-11-09T21:21:53.322Z"
+    },
+    {
+      "note": "make sure, objects leave and scenes change as line moves on when new objects and new scenes come in as line moves forward",
+      "at": "2026-11-09T21:23:33.221Z"
+    },
+    {
+      "note": "for next videos, Pick topics people already search for and click on, like the billionaire, debt and 'how X really works' videos.",
+      "at": "2026-11-09T21:41:47.201Z"
+    },
+    {
+      "job": "20261110-2217_how-to-turn-saving-into-investing-step-by-step",
+      "note": "for every video, draw scences and art fresh customized for every video",
+      "at": "2026-11-10T15:27:29.202Z"
+    },
+    {
+      "job": "temp/jobs/20261110-2205_how-to-reach-financial-freedom-step-by-step",
+      "note": "for every video, draw scences and art fresh customized for every video",
+      "at": "2026-11-10T15:27:56.378Z"
+    },
+    {
+      "job": "20261110-2217_how-to-turn-saving-into-investing-step-by-step",
+      "note": "generate a long video about How to Turn Saving Into Investing (Step by Step Path) thumbnail reference; re-run learn brief, follow r81 personal hook",
+      "at": "2026-11-10T17:50:42.024Z"
+    },
+    {
+      "job": "20261110-2259_financial-literacy-everything-you-need-to-know",
+      "note": "In the beginning you said nobody taught you about your paycheck. The intro shouldn't start like that. Paycheck is only lesson 1 of the video. The intro should be about the whole picture of the video, spoken in a way that feels personal or related to the viewer, so they keep watching.",
+      "at": "2026-11-11T04:54:08.580Z"
+    },
+    {
+      "job": "20261110-2259_financial-literacy-everything-you-need-to-know",
+      "note": "I feel like the video is not about financial literacy. What I want is a simple and deep dive video that matches the title.",
+      "at": "2026-11-11T06:33:34.368Z"
+    },
+    {
+      "job": "20261110-2259_financial-literacy-everything-you-need-to-know",
+      "note": "Every part of the video must be cohesive and coherent.",
+      "at": "2026-11-11T08:30:39.052Z"
+    },
+    {
+      "job": "20261110-2259_financial-literacy-everything-you-need-to-know",
+      "note": "Don't use the same example again and again in videos. Each video gets different examples. Videos used $60,000 as a salary example and a car breaking down as the emergency, again and again. Names are OK to reuse.",
+      "at": "2026-11-11T08:36:56.180Z"
+    },
+    {
+      "job": "20261110-2259_financial-literacy-everything-you-need-to-know",
+      "note": "Remake: make sure all the info we give is correct and fact checked and explained in a simple way so everybody can easily understand. Visuals: rich and beautiful scenes with well drawn illustrations and characters acting out perfectly synced to the voiceover. No pile ups. No messy overlapping objects. After render, owner reviews in the morning. Don't send to critic (visual pace 1.5s check).",
+      "at": "2026-11-11T08:47:57.209Z"
+    },
+    {
+      "note": "Financial freedom video (2026-11-11): owner means freedom = passive income (dividends, interest, rent, investment gains) replacing the 9-5 paycheck, taught step by step from salary-only to crossover. Keep 'find your number = 25x spending' as step one and build from there. Never tell viewers to spend less or live frugally: the number is the price of the life they want; speed comes from investing a set share of every paycheck and raising it as income grows. Must not repeat the Financial Literacy video (no re-teaching tax, cushion, credit cards, 401k match; new main character, not Maya). Everything simple and easy to catch up: one idea at a time, few round numbers.",
+      "at": "2026-11-11T09:04:04.786Z"
+    },
+    {
+      "note": "temp/jobs/20261110-2137_why-the-stock-market-just-fell-nvidia-s-440-billion-dollar-d I dont want 'this is how the money works not investment advice' on nvidia video; cut it out without re-rendering (news/market-explainer videos: no spoken disclaimer)",
+      "at": "2026-11-11T09:18:34.327Z"
+    },
+    {
+      "job": "temp/jobs/20261111-0123_the-stock-market-fully-explained-for-beginners",
+      "note": "i dont want this is how the money works, not investment advice. can u cut it out without re-rendering",
+      "at": "2026-11-11T18:36:57.247Z"
     }
   ],
-  "approvals": [],
+  "approvals": [
+    {
+      "job": "temp/jobs/20261031-0302_the-rich-don-t-sell-they-borrow",
+      "verdict": "approved",
+      "format": "explainer",
+      "area": "investing",
+      "at": "2026-10-31T12:27:41.701Z"
+    }
+  ],
   "references": [
     {
       "ref": "Downloads/Banking Explained – Money and Credit_1080p.mp4 (Kurzgesagt)",
       "take": "Owner likes this editing (2026-10-24): every line shown as a visual metaphor (house of cards, money mountain in a vault furnace, bank on balloons/springs), almost no on-screen text, many small characters on round pedestals holding coin stacks, split-screen grids of 4–6 panels and circles holding scenes, continuous zoom/morph transitions instead of cuts, bright flat pastel look (≈65% brightness)",
       "at": "2026-10-24T12:26:47.016Z"
+    },
+    {
+      "ref": "https://www.youtube.com/@kurzgesagt/shorts",
+      "take": "Top illustrated Shorts (Kurzgesagt 2.9M/1.5M) use DRAWN covers, not video frames: sticker title in the top third (key words huge, joining words small, thick coloured ring), one subject in the middle (often a character close-up with a strong expression), plain saturated background. Frame-only covers (Economics Explained) sit at 28k-180k.",
+      "at": "2026-10-29T21:22:24.728Z"
+    },
+    {
+      "ref": "Kurzgesagt / The Infographics Show / Business Casual / Two Cents / Economics Explained thumbnails (12 studied 2026-11-01)",
+      "take": "Big illustrated channels use one full-frame, detailed, saturated illustration with depth and glow, showing an action in progress (stamp slamming REJECTED, chip crumbling in a hand); a close-up face with an extreme readable expression; 2-3 heavy words in a top strip that add tension; no generic icons, no empty or blurred backgrounds, no text filling half the frame",
+      "at": "2026-10-31T19:10:36.341Z"
+    },
+    {
+      "ref": "https://www.youtube.com/@kurzgesagt/videos ; @TEDEd ; @sprouts ; @BusinessCasual ; @EconomicsExplained",
+      "take": "Long thumbnails of big illustrated channels (48 studied 2026-11-01): the words state the topic or point in plain language and read on their own (THE BEST WAY TO USE A CREDIT CARD, PRINTING MONEY, FROM $1.20 TO $350B); the picture is the topic itself drawn in the video's own style; words and picture tell one story; 2-6 big words, one accent word. Styles: TED-Ed flat colour panel + picture, Kurzgesagt full picture + huge white words on top, Business Casual/EE dark tape strips + subject. CapitalCode now uses ThumbLong (panel/banner/stack) with crops of the video's own frames.",
+      "at": "2026-10-31T21:11:26.258Z"
+    },
+    {
+      "ref": "C:\\Users\\User\\Downloads\\videoplayback (4).mp4",
+      "take": "Alux real-estate video intro: owner loves the personal script hook - 'you'-first line that flips something everyday (somebody owns every building you've stepped into), one big claim, removes doubt, small-to-huge range promise, logo after the 28 s hook, then 'levels' structure and 'imagine you're...' stories. Calm long shots, one big picture per sentence.",
+      "at": "2026-11-10T14:55:15.425Z"
     }
   ],
   "results": []

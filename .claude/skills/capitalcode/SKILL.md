@@ -74,6 +74,14 @@ chunk shows), so nothing paid or slow repeats.
   in the sentence: ≤ 1 per 3–4 sentences, never two sentences in a row.
 - No advice ("you should buy"), no predictions as fact, no hype, no accusations
   without a court/regulator source.
+- **Accuracy audit (owner rule 2026-10-28, gate-enforced): every video's info, concepts and explanation
+  must be correct and make complete sense.** Before voicing, write `audit.json` for the current script
+  (`scriptHash` = the hash gate-script prints): for EVERY sentence a `verdict: "ok"` and a real `why`
+  (the source/maths behind it, and how it follows from the line before); for every fact whose source is
+  "CapitalCode calculation", re-do it a second, independent way (a fresh script in another language) in
+  `calcs`; and a `realityCheck` comparing the headline result with an outside source. Check concepts
+  against how things really work (e.g. do these miles expire? is it revenue or profit? is it every bank
+  or one?) — cut or reword anything not certainly true. Any script edit → re-audit (the hash changes).
 - `cc run <job>` (or `cc gate-script <job>`) → fix every listed problem in one pass, re-run until ok.
 
 ## 4. Voice (Narrator)
@@ -83,9 +91,35 @@ changed) → `voice.wav` + `words.json` (every word with start/end and sentence 
 
 ## 5. Visual plan (Visual Director)
 
+**Casino style only (owner rule 2026-11-02, enforced by gate-plan):** the casino video is the
+reference. Each scene = one big detailed subject in a setting that stays put, continuous
+in-scene motion, the cast acting (Buffett/Person/Mini), gestures on spoken words via `gestB`.
+NEVER the old cluttered style: no `Stages` slide-in cards, no `Extras` filler markers, no
+objects covering faces/text/each other, nothing cut off at the edge. Hit the change rate
+with real motion and acting on words, never by adding clutter. gate-plan refuses any piece
+that uses Stages/Extras.
+
+**Before drawing anything (mandatory, owner 2026-10-31 after the sticker failure happened twice):**
+1. Re-read the Visuals section of `taste/capitalcode.md` (THE STYLE + BANNED) and
+   `docs/superpowers/specs/2026-10-25-capitalcode-diorama-style-design.md`. Never copy the
+   previous video's scene files as a template.
+2. Draw ONE scene first, render a ~30 s clip of it (`renderMedia` frame range or stills
+   every 0.5 s), check it against BANNED yourself, then show the owner and wait for OK
+   before drawing the rest. Skip only if the owner already approved this look for this video.
+3. When a gate fails on density, fix it by transforming the drawing, never by adding pop-ups.
+
 Read `words.json` and write `plan.json`: `{ "shots": [...], "sfx": [...] }`.
 A **cue** is a spoken word: `{ "sentence": "s12", "word": "million", "nth": 1 }`
 (word omitted = first word of the sentence). Everything lands on its word.
+
+- **Pictures, not text (owner 2026-10-30, learn rules r36/r37):** an illustration is a DRAWING —
+  objects, characters acting, picture-charts — never headline text. Every spoken line needs a
+  picture that still explains it with the text removed; captions are small labels only and never
+  fill an illustration gap. A diorama piece's `beats` list only cues that drive a drawing (never
+  Headline-only cues; `node temp/visual-beats.cjs <piece files>` sets them), so the plan gate
+  fails on text-only stretches. Keep frames clean: one main picture group at a time (clear the
+  last one first), presenter left, picture middle-right, headline top, at most 3–4 big objects,
+  no overlaps. Still review asks both: "picture, not text?" and "clean, not messy?".
 
 - **Living film (owner 2026-10-24, spec docs/superpowers/specs/2026-10-24-capitalcode-living-film-design.md):**
   every line is SHOWN as it is said, by characters who act, objects that do things, and a
@@ -182,6 +216,10 @@ screens), chunked resumable render, SFX mix, `final.mp4`. ~18 min for 8.6 min of
 
 ## 8. Package (Publisher)
 
+**Thumbnails = custom drawn covers (owner 2026-11-08, supersedes the ThumbLong/ThumbShort notes below):** read
+`.claude/skills/capitalcode/covers.md`, draw 3 covers in `art/covers/`, run `cc cover <job>`, look at the sheet and phone
+copies, then set `"thumbnails": [{ "cover": "<id>" }, …]`. Long = 16:9 (`wide`), Shorts = 9:16 (`tall`).
+
 `metadata.json`:
 ```json
 { "titles": ["…", "…", "…"], "description": "≥ 200 chars, our own words",
@@ -191,11 +229,29 @@ screens), chunked resumable render, SFX mix, `final.mp4`. ~18 min for 8.6 min of
     { "layout": "object-center", … }, { "layout": "split", … } ] }
 ```
 - 3 titles ≤ 70 chars, curiosity without hype; 3 **genuinely different** thumbnail
-  concepts (2–5 words that add tension, never the title repeated). Favour layouts and
-  title styles the brief says the owner picks.
+  concepts. Favour layouts and title styles the brief says the owner picks.
+- **Long thumbnails are drawn from the video's own art** (`art/thumbnails/ThumbLong.tsx`, owner 2026-11-01,
+  rule r73, from a study of 48 illustrated-channel thumbnails): the words state the point in plain language and
+  read on their own (2–6 words, ≤ 34 chars, one accent word — never a fragment like "24 PER SPOT?"); the picture
+  is a tight crop of one strong moment of the video (one big subject, below the headline zone, y ≥ 175).
+  Styles: `panel` (TED-Ed: flat colour panel + picture), `banner` (Kurzgesagt: full picture + huge white words
+  on top), `stack` (Business Casual: dark tape strips left + picture right, optional character):
+  `{ "style": "panel", "words": "WHY GYMS WANT YOU TO SKIP", "accent": [4], "panel": "yellow",
+     "crop": { "at": "s10:never", "offset": 24, "x": 1060, "y": 200, "w": 660, "h": 820 } }`
+  Preview them before packaging: `npx tsx temp/thumbtest.mts <job>` → `temp/thumbprev/`.
 - `cc package <job>` → `output/long/<Title>_YYYY-MM-DD_HH-MM/` (video, thumb_1..3,
   titles, description with chapters + sources + "not financial advice", captions.srt,
   review_note.md). Open the thumbnails and check them at phone size.
+- **Shorts get 3 drawn covers too** (1080×1920, `art/thumbnails/ThumbShort.tsx`, rule r35 — from the
+  2026-10-30 study: top illustrated Shorts use drawn covers, never raw frames):
+  ```json
+  { "title": [{ "t": "IS $4.99", "size": "m" }, { "t": "REALLY $4?", "size": "l", "accent": true }], "bg": "navy",
+    "crop": { "at": "s30:five", "offset": 14, "x": 40, "y": 470, "w": 1000, "h": 360 },
+    "character": { "look": "hero", "pose": "scratchHead", "expression": "thinking" } }
+  ```
+  Sticker title in the top third (2–6 words, one `l` key word), the stake object = a region of the Short's
+  own frame at a cue word (captions off), a cast close-up with a clear expression, bg navy/black/gold/cream.
+  Owner uploads one in YouTube Studio on desktop (Shorts have no A/B test).
 
 ## 8b. Shorts (made from scratch, never cut from a long video)
 

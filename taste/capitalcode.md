@@ -12,7 +12,14 @@ two disagree, the newer owner rule wins.
   teal); a deep-teal second world for ~30% of shots. Champagne accent from the logo; red/green
   only for losses/gains. Inter / Bebas Neue / JetBrains Mono, subtle grain, soft vignette.
 - Our own: colours and characters. Kurzgesagt is the bar for editing, never a look to copy
-  (no pastel cream worlds, no bird, no copied layouts).
+  (no bird, no copied layouts).
+- **Cream is the main world** (owner 2026-10-31: "I like cream background color more"): the warm
+  cream world is used a bit more often than navy/teal (≈60/40). Navy/teal for risk, warnings and
+  contrast. This overrides the night-flat brightness range above for cream scenes.
+- **No zoom-ins or zoom-outs at all** (owner 2026-10-31). Motion comes only from the drawing
+  transforming on the spoken words; never fix a gate failure with camera moves.
+- **No pile-up** (owner 2026-10-31): on each new idea the old objects/labels leave or transform;
+  only what is being said now stays on screen (3–4 objects); labels vanish when their line ends.
 
 ## Story
 - Every video argues **one thesis** a smart friend would find surprising, and proves
@@ -30,10 +37,29 @@ two disagree, the newer owner rule wins.
   shocking number). No music. SFX quiet under the voice. Final mix −14 LUFS.
 
 ## Visuals
+- **THE STYLE (owner, binding, repeated 2026-10-25 and 2026-10-31):** Kurzgesagt *Banking
+  Explained*-style **continuous transforming illustration**. Each beat is ONE drawing that
+  fills the frame and changes on the words: it splits, pours, grows, stacks, burns, collapses,
+  multiplies, morphs into the next idea. Spec: `docs/superpowers/specs/2026-10-25-capitalcode-diorama-style-design.md`.
+- **BANNED (the failure pattern the owner has rejected twice):**
+  - **Stickers:** a separate small object or label popping in for each spoken word, piling up
+    in the same frame. A pop-in is fine with limits (owner 2026-10-31): only when relevant, only
+    where it fits naturally in the drawing, never covering anything. Density comes mainly from the
+    SAME drawing changing.
+  - **The always-on presenter:** a host standing on the left of every scene by default. Show him
+    where he is relevant and fits naturally (owner 2026-10-31); the rest of the time the
+    illustration and the story's characters own the frame.
+  - **Covering:** anything that lands on top of another object, a label or a person. New
+    things enter from somewhere in the scene (slide in, grow out of, fall into) into free space.
+  - **Loose labels:** a label floats on its own. Every label is attached to the part it names.
+- **Fixing a gate failure** (density, change-every): make the drawing transform more (split it,
+  move it, push the camera into the part being named). Never pass a gate by adding pop-ups.
+- **New look = sample first:** a video whose drawings are new code gets ONE scene built and a
+  ~30 s clip shown to the owner before the other scenes are drawn.
 - **A living animated film:** every line shown as it is said — characters act (walk, take,
   hand over, feel), objects do things, the camera goes to what is named and flies into the
-  next shot (zoom-into). Something new on screen about every second (gate: ≤ 1.5 s; the
-  reference measured 0.8 s). Text (slides, slams, kinetic words) ≤ 25% of runtime.
+  next shot (zoom-into). The picture changes about every 1–1.5 s (gate: ≤ 1.5 s) through
+  transformation of the same drawing. Text (slides, slams, kinetic words) ≤ 25% of runtime.
 - Shots held long (median 6–14 s) but never still: the engine adds blinks, breathing,
   talk gestures and camera drift; the plan adds the meaningful events.
 - **Everything lands on the word**: a number appears as it is said, a prop as it is
