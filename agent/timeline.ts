@@ -41,7 +41,8 @@ export type Timeline = { fps: number; durationInFrames: number; shots: TimedShot
 // # captions: word-by-word captions for a Short (seconds)
 export const buildTimeline = (plan: PlanDoc, words: TimedWord[], duration: number, fps = FPS, captions?: CaptionChunk[]): Timeline => {
   const frame = (c: Cue) => Math.round(resolveCue(words, c) * fps)
-  const total = Math.ceil(duration * fps)
+  // # an optional tail keeps the picture going after the voice (end card); the mix pads the audio to match
+  const total = Math.ceil((duration + Math.max(0, Math.min(3, plan.tail ?? 0))) * fps)
   const starts = plan.shots.map((s, i) => (i === 0 ? 0 : frame(s.start)))
   const shots = plan.shots.map((s, i) => {
     const r = mapCues(s, frame)

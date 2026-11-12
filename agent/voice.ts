@@ -7,6 +7,7 @@
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, renameSync } from 'node:fs'
 import { join } from 'node:path'
+import { type Aligner, realign, snapToOnsets, speechOnsets } from './align'
 import { concatWavs, duration, normalize } from './audio'
 import { readJson, writeJson } from './jobs'
 import type { ScriptDoc, TimedWord } from './schema'
@@ -30,7 +31,8 @@ export const stressFilter = (windows: { s: number; e: number }[], db = 3): strin
 
 export type VoiceResult = { words: TimedWord[]; chapters: { file: string; duration: number }[]; duration: number }
 
-export const voiceJob = async (dir: string, opts: { synth: Synth; gap?: number; voice?: string }): Promise<VoiceResult> => {
+// # align (optional): listens to the finished voice.wav and moves every word to when it is really heard
+export const voiceJob = async (dir: string, opts: { synth: Synth; gap?: number; voice?: string; align?: Aligner }): Promise<VoiceResult> => {
   const gap = opts.gap ?? 0.6
   const script = readJson<ScriptDoc>(join(dir, 'script.json'))
   const vdir = join(dir, 'voice')
@@ -82,6 +84,14 @@ export const voiceJob = async (dir: string, opts: { synth: Synth; gap?: number; 
     return hit ? [{ s: hit.s, e: hit.e }] : []
   })
   normalize(raw, join(dir, 'voice.wav'), -14, stressFilter(windows))
-  writeJson(join(dir, 'words.json'), all)
-  return { words: all, chapters, duration: duration(join(dir, 'voice.wav')) }
+  // # Azure's word times drift (up to ~1 s early in lists of names) → re-time from the real audio;
+  // # keep Azure's times only if the listener heard too little of the script to trust it
+  let timed = all
+  if (opts.align) {
+    const r = realign(all, opts.align(join(dir, 'voice.wav')))
+    if (r.matched >= all.length * 0.6) timed = snapToOnsets(r.words, speechOnsets(join(dir, 'voice.wav')))
+    else console.log(`  align: only ${r.matched}/${all.length} words heard — keeping the synth's times`)
+  }
+  writeJson(join(dir, 'words.json'), timed)
+  return { words: timed, chapters, duration: duration(join(dir, 'voice.wav')) }
 }

@@ -67,6 +67,9 @@ Write critic.json: { "verdict": "pass" | "fix", "score": n, "checks": {...}, "fi
 Pass only if score ≥ ${CRITIC_MIN} and no check below 6.
 `
 
+// # the owner's written approval (--owner-approved="…"), which lets an owner-approved video past a failed gate or Critic
+const ownerNote = (a: string[]) => a.find((x) => x.startsWith('--owner-approved='))?.slice(17) || undefined
+
 register('gate-video', 'gate-video <job>  — duration, loudness, flicker scan, critic pack (qa/)', (a) => {
   const dir = a[0] ?? refuse('give the job folder')
   if (!isDone(dir, 'render')) refuse('run render first')
@@ -74,32 +77,42 @@ register('gate-video', 'gate-video <job>  — duration, loudness, flicker scan, 
   const file = join(dir, 'final.mp4')
   // # brightness: moods mix cream days and navy nights now, so only a near-black or blown-out video fails
   const short = loadJob(dir).kind === 'short'
-  const r = gateVideo(file, { expectSeconds: tl.durationInFrames / tl.fps, cuts: plannedMotion(tl), brightness: [12, 88], maxChangeEvery: 1.5, lufs: [-13, -10.5], ...(short ? { maxSeconds: 179 } : {}) })
+  const r = gateVideo(file, { expectSeconds: tl.durationInFrames / tl.fps, cuts: plannedMotion(tl), brightness: [12, 88], maxChangeEvery: 6, lufs: short ? [-11, -9] : [-13, -10.5], ...(short ? { maxSeconds: 179 } : {}) })  // # maxChangeEvery 6: owner 2026-11-03, no 1.5 s pace rule — only a frozen screen fails
   const qa = join(dir, 'qa')
   const sheets = frameSheets(file, qa, loadJob(dir).kind === 'short' ? 3 : 10)
   const flags = flagSheets(file, r.flags, tl.fps, qa)
   const shots = shotFrames(file, tl, join(qa, 'shots'))
   writeJson(join(qa, 'report.json'), r)
   writeFileSync(join(qa, 'critic_pack.md'), PACK(dir, sheets, flags, r.stats, shots))
+  // # --owner-approved="why": the owner watched it and approved it; the problems are kept on the step, not dropped
+  const owner = ownerNote(a)
   if (!r.ok) {
     for (const p of r.problems) console.log(`  - ${p}`)
-    refuse(`video gate failed with ${r.problems.length} problem(s)`)
+    if (!owner) refuse(`video gate failed with ${r.problems.length} problem(s)`)
   }
   unmarkFrom(dir, 'gate_video')
-  markStep(dir, 'gate_video', { ...r.stats, flags: r.flags.length })
+  markStep(dir, 'gate_video', { ...r.stats, flags: r.flags.length, ...(r.ok ? {} : { ownerApproved: owner, problems: r.problems }) })
   result({ ok: true, ...r.stats, flags: r.flags, pack: join(qa, 'critic_pack.md'), next: 'critic (dispatch the Critic subagent with qa/critic_pack.md)' })
 })
 
 register('critic', 'critic <job>  — accept critic.json (pass ≥ 8) or list the fixes', (a) => {
   const dir = a[0] ?? refuse('give the job folder')
   if (!isDone(dir, 'gate_video')) refuse('run gate-video first')
-  if (!existsSync(join(dir, 'critic.json'))) refuse('critic.json missing — dispatch the Critic subagent with qa/critic_pack.md')
+  // # owner rule (2026-11-03): once the owner has watched and approved the video, no Critic is needed.
+  // # --owner-approved="…" with no critic.json skips the Critic; the step records that it was skipped (no score is invented).
+  const ownerSkip = ownerNote(a)
+  if (ownerSkip && !existsSync(join(dir, 'critic.json'))) {
+    markStep(dir, 'critic', { skipped: true, ownerApproved: ownerSkip })
+    return result({ ok: true, skipped: true, ownerApproved: ownerSkip, next: 'package' })
+  }
+  if (!existsSync(join(dir, 'critic.json'))) refuse('critic.json missing — dispatch the Critic subagent with qa/critic_pack.md (or pass --owner-approved="…" if the owner approved the video)')
   const c = readJson<CriticDoc>(join(dir, 'critic.json'))
   const bad = checkCritic(c)
   if (bad.length) { for (const p of bad) console.log(`  - ${p}`); refuse('critic.json is incomplete') }
   const round = criticRound(dir)
   const final = a.find((x) => x.startsWith('--final='))?.slice(8) ?? (a.includes('--final') ? a[a.indexOf('--final') + 1] : undefined)
-  const d = criticDecision(c, round, final)
+  const owner = ownerNote(a)
+  const d: CriticDecision = owner && c.verdict !== 'pass' ? { accept: true, flagged: c.fixes, note: `owner approved: ${owner}` } : criticDecision(c, round, final)
   if (!d.accept) { for (const f of c.fixes) console.log(`  - FIX: ${f}`); return refuse(d.reason) }
   markStep(dir, 'critic', { score: c.score, round, flagged: d.flagged, note: d.note })
   result({ ok: true, score: c.score, round, flagged: d.flagged.length, next: 'package' })

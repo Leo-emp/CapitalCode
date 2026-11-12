@@ -9,7 +9,8 @@ import { JOBS_DIR } from './paths'
 
 export const STEPS = ['topic', 'research', 'facts', 'script', 'gate_script', 'voice', 'plan', 'gate_plan', 'render', 'gate_video', 'critic', 'package'] as const
 export type Step = (typeof STEPS)[number]
-export type Job = { topic: string; kind: 'long' | 'short'; created: string; steps: Partial<Record<Step, Record<string, unknown> & { at: string }>> }
+// # minutes (optional): a long video the owner asked to run shorter or longer than the usual 8–10 min
+export type Job = { topic: string; kind: 'long' | 'short'; minutes?: number; created: string; steps: Partial<Record<Step, Record<string, unknown> & { at: string }>> }
 
 const pad = (n: number) => String(n).padStart(2, '0')
 export const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60)
@@ -23,12 +24,12 @@ export const writeJson = (file: string, data: unknown) => {
 }
 export const readJson = <T>(file: string): T => JSON.parse(readFileSync(file, 'utf8')) as T
 
-export const newJob = (topic: string, opts: { root?: string; now?: Date; kind?: 'long' | 'short' } = {}): string => {
+export const newJob = (topic: string, opts: { root?: string; now?: Date; kind?: 'long' | 'short'; minutes?: number } = {}): string => {
   const now = opts.now ?? new Date()
   const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`
   const dir = join(opts.root ?? JOBS_DIR, `${stamp}_${slugify(topic)}`)
   mkdirSync(dir, { recursive: true })
-  writeJson(join(dir, 'job.json'), { topic, kind: opts.kind ?? 'long', created: now.toISOString(), steps: { topic: { at: now.toISOString() }, research: { at: now.toISOString() } } } satisfies Job) // # topic + research happen before a job exists
+  writeJson(join(dir, 'job.json'), { topic, kind: opts.kind ?? 'long', ...(opts.minutes ? { minutes: opts.minutes } : {}), created: now.toISOString(), steps: { topic: { at: now.toISOString() }, research: { at: now.toISOString() } } } satisfies Job) // # topic + research happen before a job exists
   return dir
 }
 

@@ -23,9 +23,12 @@ import type { Cue, PlanDoc, TimedWord } from '../schema'
 import { DECOR_FIGURES, layoutProblems, SLIDE_KINDS, SLIDE_SPECS } from '../slides'
 import { resolveCue } from '../timeline'
 
+// # shot kinds the median-shot rule skips (pieces are long, cards are short — both by design)
+const CARD_OR_PIECE = ['piece', 'chapter', 'brand']
 export type History = { job: string; scenes: string[]; slides: string[]; area?: string; format?: string; kind?: string; title?: string; date?: string }[]
 export type PlanGateOpts = {
   duration: number; history: History; sfxNames?: string[]
+  maxPresenterPieces?: number // # scenes the presenter may stand in (default: 2 or half of the scenes)
   slideShare?: [number, number]; median?: [number, number]; maxShot?: number; minShot?: number
   // # owner review 2026-10-24: something on screen fast, few slams, brand early
   firstVisual?: number; maxSlams?: number; brandBy?: number
@@ -70,6 +73,10 @@ export const SLAM_TEXT_S = 2, KINETIC_TEXT_S = 1.5
 const TALK_POSES = ['idle', 'talk', 'present']
 
 // # Icons that decorate but do not SHOW anything the voice says — never count as illustration
+// # does a diorama piece draw the presenter (the 'hero' actor)? Read from the compiled component, so no piece can hide it
+export const presenterIn = (C: unknown) => typeof C === 'function' && /who\s*[:=]\s*["']hero["']/.test(Function.prototype.toString.call(C))
+// # true when a piece's component draws with the banned filler helpers (Stages slide-in cards, Extras markers)
+export const oldStyle = (C: unknown) => typeof C === 'function' && /\b(Stages|Extras)\b/.test(Function.prototype.toString.call(C))
 export const GENERIC_ICONS = ['question', 'exclamation', 'tick', 'cross', 'warning', 'magnifier', 'clock', 'calendar']
 
 export const sfxAvailable = (): string[] => {
@@ -183,6 +190,9 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
       if (!p) problems.push(`${s.id}: unknown piece "${s.piece}"`)
       else if ((p.canvas ?? 'wide') !== (o.canvas ?? plan.canvas ?? 'wide')) problems.push(`${s.id}: piece ${p.id} is drawn for a ${p.canvas ?? 'wide'} canvas, this video is ${o.canvas ?? plan.canvas ?? 'wide'}`)
       else for (const k of [...new Set([...p.beats, ...p.sfx.map((x) => x[0])])]) if (spoken[k] === undefined) problems.push(`${s.id}: piece ${p.id}: cue "${k}" is not spoken`)
+      // # owner rule (2026-11-02): never the old cluttered style — sliding Stages cards or Extras filler markers to hit
+      // # the change rate. Build casino-style instead: one big detailed subject, the cast acting, gestB gestures on words.
+      if (p && oldStyle(p.Component)) problems.push(`${s.id}: piece ${p.id} uses the old cluttered style (Stages/Extras filler) — rebuild it casino-style: one big detailed subject, the cast acting, gestB gestures on words`)
     } else if (s.kind === 'vignette') {
       if (s.heading && s.heading.length > 36) problems.push(`${s.id}: vignette heading is longer than one line (max 36 characters)`)
       const v = VIGNETTES.find((x) => x.id === s.vignette)
@@ -196,6 +206,15 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
     } else if (s.kind === 'chapter') {
       if (!s.title) problems.push(`${s.id}: chapter needs a title`)
     } else if (s.kind !== 'brand') problems.push(`${(s as { id: string }).id}: unknown shot kind "${(s as { kind: string }).kind}"`)
+  }
+  // # owner 2026-10-31: no always-on presenter — show him where he is relevant and fits naturally, so he may stand
+  // # in at most half the scenes by default. Pieces are scanned for the presenter actor.
+  {
+    const ids = [...new Set(plan.shots.flatMap((s) => (s.kind === 'piece' ? [s.piece] : [])))]
+    const withHost = ids.filter((id) => presenterIn(findPiece(id)?.Component))
+    const max = o.maxPresenterPieces ?? Math.max(2, Math.floor(ids.length / 2))
+    if (ids.length >= 4 && withHost.length > max)
+      problems.push(`the presenter stands in ${withHost.length} of ${ids.length} scenes (${withHost.join(', ')}; max ${max}) — show him only where he is relevant and fits naturally; let the illustration and the story's characters fill the frame`)
   }
   for (const [i, x] of (plan.sfx ?? []).entries()) {
     if (!sfxNames.includes(x.name)) problems.push(`sfx ${i}: unknown sound "${x.name}" (have: ${sfxNames.join(', ')})`)
@@ -218,7 +237,8 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
     // # a vignette is half data (labels, numbers), half illustration → counts 0.5 toward slide share
     slideShare: valid ? plan.shots.reduce((a, s, i) => a + (s.kind === 'slide' ? lens[i] : s.kind === 'vignette' ? 0.5 * lens[i] : 0), 0) / o.duration : NaN,
     // # pieces are continuous sequences (their beats keep the picture moving), so shot-length rules skip them
-    medianShot: valid && lens.some((_, i) => plan.shots[i].kind !== 'piece') ? median(lens.filter((_, i) => plan.shots[i].kind !== 'piece')) : NaN,
+    // # the median is about scenes and slides: pieces run long by design, and chapter/brand cards are short by design
+    medianShot: valid && lens.some((_, i) => !CARD_OR_PIECE.includes(plan.shots[i].kind)) ? median(lens.filter((_, i) => !CARD_OR_PIECE.includes(plan.shots[i].kind))) : NaN,
     scenes: [...new Set(plan.shots.flatMap((s) => (s.kind === 'scene' ? [s.scene] : [])))],
     slides: [...new Set(plan.shots.flatMap((s) => (s.kind === 'slide' ? [s.slide] : [])))],
     // # text on screen: slides + scene slams + kinetic texts, as a share of the runtime
@@ -279,7 +299,14 @@ export const gatePlan = (plan: PlanDoc, words: TimedWord[], o: PlanGateOpts) => 
     const times = events.flatMap((c) => { try { return [resolveCue(words, c)] } catch { return [] } }).concat(marks, [first, o.duration]).sort((a, b) => a - b)
     // # every gap over the limit, longest first (up to 8), so the director can fix them in one pass
     const gaps: [number, number][] = []
-    for (let k = 1; k < times.length; k++) if (times[k] - times[k - 1] > (o.maxGap ?? 6)) gaps.push([times[k] - times[k - 1], times[k - 1]])
+    // # an event stays on screen at least while its cue word is being said (a long spoken number like
+    // # "four thousand four hundred thirty" is 1.5 s), so a gap is measured from the end of that word
+    const said = (x: number) => words.find((w) => Math.abs(w.s - x) < 1e-6)?.e ?? x
+    let busy = times[0] ?? 0
+    for (let k = 1; k < times.length; k++) {
+      busy = Math.max(busy, said(times[k - 1]))
+      if (times[k] - busy > (o.maxGap ?? 6)) gaps.push([times[k] - busy, busy])
+    }
     for (const [len, at] of gaps.sort((a, b) => b[0] - a[0]).slice(0, 8))
       problems.push(`no illustration for ${len.toFixed(1)} s from ${at.toFixed(1)} s (max ${o.maxGap ?? 6} s) — show what is being said there`)
   }

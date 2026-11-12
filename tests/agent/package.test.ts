@@ -1,6 +1,6 @@
 // # Packaging: captions, chapters, folder name, metadata checks, sources
 import { expect, test } from 'vitest'
-import { captionsSrt, checkMeta, chapterLines, folderName, sourcesTxt } from '../../agent/package'
+import { captionsSrt, checkLongThumb, checkMeta, checkShortCover, chapterLines, folderName, sourcesTxt } from '../../agent/package'
 import type { FactsDoc, MetaDoc, ScriptDoc, TimedWord } from '../../agent/schema'
 
 const words: TimedWord[] = 'Why would anyone pay a million dollars for a corner shop? Because buyers price the future.'.split(' ')
@@ -57,8 +57,31 @@ test('sources list is deduplicated by url', () => {
   expect(sourcesTxt(facts)).toBe('Sources\n- BizBuySell (2025): https://a\n- Fed (2024): https://b — rates\n')
 })
 
-test('a Short needs no thumbnails (the cover frame is picked in the app); a long video still needs 3', () => {
-  const m = { ...meta(), thumbnails: [] }
-  expect(checkMeta(m, { short: true })).toEqual([])
-  expect(checkMeta(m)).toContain('need 3 thumbnails (got 0)')
+// # a Short cover: sticker title + a stake object cut from a cue frame + a cast close-up
+const cover = (o: Record<string, unknown> = {}) => ({ title: [{ t: 'IS $4.99', size: 'm' }, { t: '$4?', size: 'l', accent: true }], bg: 'navy',
+  crop: { at: 's30:five', x: 60, y: 500, w: 960, h: 400 }, character: { pose: 'scratchHead', expression: 'thinking' }, ...o })
+
+test('a Short needs 3 covers too, each with a valid title, crop cue and character', () => {
+  expect(checkMeta({ ...meta(), thumbnails: [] }, { short: true })).toContain('need 3 thumbnails (got 0)')
+  expect(checkMeta({ ...meta(), thumbnails: [cover(), cover(), cover()] }, { short: true, cues: { 's30:five': 3600 } })).toEqual([])
+})
+
+test('a bad Short cover is caught', () => {
+  const bad = checkShortCover(cover({ title: [{ t: 'ONE', size: 's' }], crop: { at: 's9:nope', x: 900, y: 0, w: 400, h: 50 }, character: { pose: 'fly', expression: 'sad' } }), 'c', { 's30:five': 1 }).join('\n')
+  for (const want of ['2–6 words', 'must be large', 'not a cue word', 'inside 1080×1920', 'unknown pose', 'unknown expression']) expect(bad).toContain(want)
+  expect(checkShortCover(cover({ title: [{ t: 'WAY TOO MANY LETTERS', size: 'l' }] }), 'c').join()).toContain('too wide')
+})
+
+// # a long thumbnail: words that state the point + a picture cut from the video's own art (owner rule r73)
+const thumb = (o: Record<string, unknown> = {}) => ({ style: 'panel', words: 'WHY GYMS WANT YOU TO SKIP', accent: [4], panel: 'cream',
+  crop: { at: 's5:pay', offset: 30, x: 100, y: 360, w: 1700, h: 680 }, ...o })
+
+test('a long video can use the new thumbnails drawn from its own art', () => {
+  expect(checkMeta({ ...meta(), thumbnails: [thumb(), thumb({ style: 'banner' }), thumb({ style: 'stack', character: { pose: 'shrug', expression: 'worried' } })] }, { cues: { 's5:pay': 1000 } })).toEqual([])
+})
+
+test('a bad long thumbnail is caught', () => {
+  const bad = checkLongThumb(thumb({ style: 'poster', words: 'SKIP', panel: 'pink', crop: { at: 's9:nope', x: 1800, y: 0, w: 400, h: 100 }, character: { pose: 'fly', expression: 'sad' } }), 't', { 's5:pay': 1 }).join(' | ')
+  for (const want of ['style must be', 'state the point', 'panel must be', 'not a cue word', 'inside 1920×1080', 'unknown pose', 'unknown expression']) expect(bad).toContain(want)
+  expect(checkLongThumb(thumb({ crop: undefined }), 't').join()).toContain('needs a picture')
 })

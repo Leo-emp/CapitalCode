@@ -1,4 +1,4 @@
-// # CLI: package — metadata check, 3 thumbnails, captions, chapters, sources, review note → output/<kind>/<Title>_date_time/
+// # CLI: package — metadata check, 3 thumbnails (Shorts: 3 covers), captions, chapters, sources, review note → output/<kind>/<Title>_date_time/
 import { copyFileSync, existsSync, mkdirSync, statSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { ff } from '../audio'
@@ -11,6 +11,7 @@ import { refuse, result } from '../result'
 import type { FactsDoc, MetaDoc, PlanDoc, ScriptDoc, TimedWord } from '../schema'
 import { readHistory } from './plan'
 import type { CriticDoc } from './qa'
+import type { Timeline } from '../timeline'
 
 // # PNG → JPEG under YouTube's 2 MB thumbnail limit
 const toJpeg = (png: string, jpg: string) => {
@@ -19,6 +20,14 @@ const toJpeg = (png: string, jpg: string) => {
     if (statSync(jpg).size < 1_900_000) return
   }
   throw new Error(`${jpg} is over 2 MB even at low quality`)
+}
+
+// # a custom drawn cover (art/covers, owner 2026-11-08): `{ "cover": "<id>" }` in metadata.thumbnails
+const drawnCover = async (dir: string, out: string, id: string, i: number) => {
+  const [png] = await renderStills('Cover', { id }, [0], join(dir, 'thumbs'), `cover_${i + 1}`)
+  const jpg = join(out, `thumb_${i + 1}.jpg`)
+  toJpeg(png, jpg)
+  return jpg
 }
 
 export const packageJob = async (dir: string, now = new Date()) => {
@@ -36,11 +45,29 @@ export const packageJob = async (dir: string, now = new Date()) => {
   mkdirSync(out, { recursive: true })
   copyFileSync(join(dir, 'final.mp4'), join(out, `${name}_${short ? 'short' : 'long'}.mp4`))
 
-  // # thumbnails (long videos; Shorts use a frame chosen in the app)
+  // # thumbnails: 3 per video — long: 1280×720 drawn from the video's own art (ThumbLong.tsx; old specs with `layout` still use Thumbnail.tsx);
+  // # Short: 1080×1920 covers drawn from the Short's own art (ThumbShort.tsx)
   const thumbs: string[] = []
-  if (!short)
-    for (const [i, spec] of meta.thumbnails.entries()) {
-      const [png] = await renderStills('Thumb', spec as Record<string, unknown>, [0], join(dir, 'thumbs'), `thumb_${i + 1}`)
+  if (short) {
+    const timeline = readJson<Timeline>(join(dir, 'timeline.json'))
+    for (const [i, raw] of meta.thumbnails.entries()) {
+      const spec = raw as Record<string, any>
+      if (spec.cover) { thumbs.push(await drawnCover(dir, out, spec.cover, i)); continue }
+      const crop = spec.crop ? { frame: timeline.cues![spec.crop.at] + (spec.crop.offset ?? 0), x: spec.crop.x, y: spec.crop.y, w: spec.crop.w, h: spec.crop.h } : undefined
+      const [png] = await renderStills('ThumbShort', { timeline, title: spec.title, bg: spec.bg, crop, character: spec.character }, [0], join(dir, 'thumbs'), `cover_${i + 1}`)
+      const jpg = join(out, `thumb_${i + 1}.jpg`)
+      toJpeg(png, jpg)
+      thumbs.push(jpg)
+    }
+  } else
+    for (const [i, raw] of meta.thumbnails.entries()) {
+      const spec = raw as Record<string, any>
+      if (spec.cover) { thumbs.push(await drawnCover(dir, out, spec.cover, i)); continue }
+      const timeline = spec.style ? readJson<Timeline>(join(dir, 'timeline.json')) : null
+      const crop = timeline && spec.crop ? { frame: timeline.cues![spec.crop.at] + (spec.crop.offset ?? 0), x: spec.crop.x, y: spec.crop.y, w: spec.crop.w, h: spec.crop.h } : undefined
+      const [png] = spec.style
+        ? await renderStills('ThumbLong', { timeline, style: spec.style, words: spec.words, accent: spec.accent, panel: spec.panel, crop, character: spec.character }, [0], join(dir, 'thumbs'), `thumb_${i + 1}`)
+        : await renderStills('Thumb', spec, [0], join(dir, 'thumbs'), `thumb_${i + 1}`)
       const jpg = join(out, `thumb_${i + 1}.jpg`)
       toJpeg(png, jpg)
       thumbs.push(jpg)
@@ -59,14 +86,15 @@ export const packageJob = async (dir: string, now = new Date()) => {
   writeFileSync(join(out, 'review_note.md'), [
     `# ${meta.titles[0]}`, '',
     `Thesis: ${script.thesis}`, `Area: ${script.area} · Format: ${script.format}`, '',
-    '## Critic', critic ? `Score ${critic.score}/10 — ${critic.notes ?? ''}` : 'not run', '',
+    // # a Critic skipped because the owner approved the video says so plainly (never "not run" or a fake score)
+    '## Critic', critic ? `Score ${critic.score}/10 — ${critic.notes ?? ''}` : ((job.steps.critic as { ownerApproved?: string } | undefined)?.ownerApproved ? `skipped — owner approved: ${(job.steps.critic as { ownerApproved?: string }).ownerApproved}` : 'not run'), '',
     ...(() => {
       const st = job.steps.critic as { round?: number; flagged?: string[]; note?: string } | undefined
       return st?.flagged?.length ? [`Accepted after round ${st.round} without a further Critic pass. Director's note: ${st.note}`, 'Fixes from that round (check them while watching):', ...st.flagged.map((f) => `- [ ] ${f}`), ''] : []
     })(),
     '## QA', qa ? `${JSON.stringify(qa.stats)} · flicker flags: ${qa.flags.length}` : 'not run', '',
     '## Upload checklist',
-    `- [ ] Pick a title (titles.txt) and ${short ? 'post as a Short (vertical, under 3:00)' : 'a thumbnail (thumb_1..3.jpg) — A/B test with "Test & compare"'}`,
+    `- [ ] Pick a title (titles.txt) and ${short ? 'a cover (thumb_1..3.jpg, 1080×1920) — upload it in YouTube Studio on desktop (no A/B test for Shorts); post as a Short (vertical, under 3:00)' : 'a thumbnail (thumb_1..3.jpg) — A/B test with "Test & compare"'}`,
     '- [ ] Paste description.txt (chapters + sources included) and tags.txt',
     `- [ ] ${short ? 'Burned-in captions are in the video' : 'Upload captions.srt as English subtitles'}`,
     '- [ ] Altered/synthetic content: "No" (illustrated animation, no realistic people) — the voice is AI; mention it in the description if you prefer',
@@ -86,7 +114,19 @@ register('package', 'package <job>  — metadata.json → thumbnails, captions, 
   const dir = a[0] ?? refuse('give the job folder')
   if (!isDone(dir, 'critic')) refuse('run critic first (the Critic must pass the video)')
   if (!existsSync(join(dir, 'metadata.json'))) refuse('metadata.json missing')
-  const bad = checkMeta(readJson<MetaDoc>(join(dir, 'metadata.json')), { short: loadJob(dir).kind === 'short' })
+  const short = loadJob(dir).kind === 'short'
+  const cues = existsSync(join(dir, 'timeline.json')) ? readJson<Timeline>(join(dir, 'timeline.json')).cues : undefined
+  // # drawn covers must exist and pass the cover gate
+  const { COVERS } = await import('../../art/covers/index')
+  const { checkCover } = await import('../gates/cover')
+  for (const t of readJson<MetaDoc>(join(dir, 'metadata.json')).thumbnails as Record<string, any>[]) {
+    if (!t.cover) continue
+    const cv = COVERS.find((x) => x.id === t.cover) ?? refuse(`unknown cover "${t.cover}"`)
+    if ((cv.canvas === 'tall') !== short) refuse(`cover ${cv.id} is ${cv.canvas}, wrong shape for this video`)
+    const { problems } = checkCover(cv)
+    if (problems.length) { for (const p of problems) console.log(`  - ${cv.id}: ${p}`); refuse(`cover ${cv.id} fails the cover gate`) }
+  }
+  const bad = checkMeta(readJson<MetaDoc>(join(dir, 'metadata.json')), { short, cues })
   if (bad.length) { for (const p of bad) console.log(`  - ${p}`); refuse(`metadata has ${bad.length} problem(s)`) }
   const r = await packageJob(dir)
   markStep(dir, 'package', r)

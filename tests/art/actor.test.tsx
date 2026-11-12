@@ -11,7 +11,7 @@ const ART = join(import.meta.dirname, '..', '..', 'art')
 const files = (d: string): string[] => readdirSync(d).flatMap((n) => (statSync(join(d, n)).isDirectory() ? files(join(d, n)) : [join(d, n)]))
 
 test('the cast is exactly the five approved HD characters', () => {
-  expect([...CAST].sort()).toEqual(['buyer', 'hero', 'investor', 'owner', 'worker'])
+  expect([...CAST].sort()).toEqual(['buyer', 'hero', 'investor', 'investorF', 'owner', 'worker'])
 })
 
 test('Actor draws the HD character for a cast name and refuses unknown names', () => {

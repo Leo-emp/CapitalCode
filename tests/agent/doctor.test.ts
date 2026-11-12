@@ -25,3 +25,12 @@ test('missing key, missing ffmpeg, missing font file and low disk are each repor
   // # secrets are never echoed
   expect(JSON.stringify(r)).not.toContain('"k"')
 })
+
+// # owner 2026-11-03: a cloud render (--on=github|aws) keeps little on the laptop, so 4.7 GB free is enough there but not for a laptop render
+test('cloud renders need less free disk than laptop renders', () => {
+  const low = { ...ok, freeGB: () => 4.7 }
+  expect(doctor(low).checks.find((c) => c.name === 'disk space')!.ok).toBe(false)
+  expect(doctor(low, { cloud: true }).checks.find((c) => c.name === 'disk space')!.ok).toBe(true)
+  // # below the cloud minimum it still refuses
+  expect(doctor({ ...ok, freeGB: () => 1.5 }, { cloud: true }).ok).toBe(false)
+})

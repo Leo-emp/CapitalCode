@@ -13,12 +13,14 @@ import { PUBLIC_DIR, ROOT } from './paths'
 
 export const SFX_NAMES = ['cash', 'ding', 'glitch', 'impact', 'pop', 'riser', 'swish', 'thud', 'tick', 'whoosh']
 // # a long render keeps ~22 chunks + preflight stills + mixes on disk (~3 GB); keep headroom
-export const MIN_FREE_GB = 10
+export const MIN_FREE_GB = 5
+// # a cloud render (--on=github|aws) keeps only voice, stills and the final file on the laptop (~1 GB), so it needs less free disk
+export const MIN_FREE_GB_CLOUD = 2
 
 export type Deps = { env: Record<string, string | undefined>; has: (file: string) => boolean; tool: (name: string) => boolean; freeGB: () => number; nodeMajor: number }
 export type Check = { name: string; ok: boolean; fix?: string }
 
-export const doctor = (d: Deps) => {
+export const doctor = (d: Deps, opts: { cloud?: boolean } = {}) => {
   const checks: Check[] = []
   const add = (name: string, ok: boolean, fix: string) => checks.push(ok ? { name, ok } : { name, ok, fix })
 
@@ -30,7 +32,9 @@ export const doctor = (d: Deps) => {
   const sfx = SFX_NAMES.filter((n) => !d.has(join(PUBLIC_DIR, 'sfx', 'cc', `${n}.wav`)))
   add('sound effects', sfx.length === 0, `missing public/sfx/cc/: ${sfx.join(', ')}`)
   const gb = d.freeGB()
-  add('disk space', gb >= MIN_FREE_GB, `only ${gb.toFixed(1)} GB free; free ${MIN_FREE_GB} GB (old temp/jobs/*/render folders can go)`)
+  // # laptop renders need room for every chunk; cloud renders only for what comes back
+  const minGB = opts.cloud ? MIN_FREE_GB_CLOUD : MIN_FREE_GB
+  add('disk space', gb >= minGB, `only ${gb.toFixed(1)} GB free; free ${minGB} GB (old temp/jobs/*/render folders can go${opts.cloud ? '' : ', or render with --on=github'})`)
   add('node', d.nodeMajor >= 20, `Node ${d.nodeMajor} is too old; install Node 20+`)
 
   return { ok: checks.every((c) => c.ok), checks }

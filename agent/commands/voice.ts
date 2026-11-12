@@ -5,6 +5,7 @@ import { azureSynth } from '../azure'
 import { register } from '../cli'
 import { isDone, loadJob, markStep, unmarkFrom } from '../jobs'
 import { refuse, result } from '../result'
+import { whisperAligner } from '../align'
 import { voiceJob } from '../voice'
 import { fileHash } from './script'
 
@@ -19,7 +20,7 @@ export const checkVoiceReady = (dir: string) => {
 register('voice', 'voice <job>  — Azure Andrew HD voice-over (cached), voice.wav + words.json', async (a) => {
   const dir = a[0] ?? refuse('give the job folder')
   checkVoiceReady(dir)
-  const r = await voiceJob(dir, { synth: azureSynth() })
+  const r = await voiceJob(dir, { synth: azureSynth(), align: whisperAligner })
   unmarkFrom(dir, 'voice')
   markStep(dir, 'voice', { duration: +r.duration.toFixed(2), words: r.words.length, hash: fileHash(join(dir, 'script.json')) })
   result({ ok: true, duration: +r.duration.toFixed(2), words: r.words.length, next: 'plan' })

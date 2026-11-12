@@ -64,7 +64,7 @@ export const gateVideo = (file: string, o: { expectSeconds: number; cuts: number
   if (o.brightness && (b < o.brightness[0] || b > o.brightness[1])) problems.push(`brightness ${b}% (want ${o.brightness[0]}–${o.brightness[1]}%)`)
   // # living film (spec §7): something new on screen at least every maxChangeEvery seconds (reference: 0.8 s)
   const ce = changeEvery(file)
-  if (o.maxChangeEvery !== undefined && ce > o.maxChangeEvery) problems.push(`a new visual every ${ce} s (max ${o.maxChangeEvery} s) — add more cued events: camera moves to named things, actions, vignette steps`)
+  if (o.maxChangeEvery !== undefined && ce > o.maxChangeEvery) problems.push(`a new visual every ${ce} s (max ${o.maxChangeEvery} s) — make the drawing transform on more spoken words (objects split, grow, move, leave) — never zooms or camera moves (owner rule)`)
   return { ok: problems.length === 0, problems, flags, stats: { seconds: +seconds.toFixed(2), lufs: l.lufs, peak: l.peak, brightness: b, changeEvery: ce } }
 }
 

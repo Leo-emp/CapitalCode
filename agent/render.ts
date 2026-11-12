@@ -18,14 +18,14 @@ import { PUBLIC_DIR, ROOT } from './paths'
 import type { Timeline } from './timeline'
 
 export const TIMEOUT = 120_000
-export const PORT = 3177 // # first port tried (3000 is often taken by a Next dev server)
+export const PORT = Number(process.env.CC_PORT) || 3177 // # first port tried (3000 is often taken by a Next dev server); CC_PORT lets a second job (stills while a render runs) start elsewhere
 
 // # First free local port from `start` up — a second render or a thumbnail job never clashes
 export const freePort = async (start = PORT): Promise<number> => {
   for (let p = start; p < start + 200; p++) {
     const ok = await new Promise<boolean>((res) => {
       const srv = createServer().once("error", () => res(false)).once("listening", () => srv.close(() => res(true)))
-      srv.listen(p, "127.0.0.1")
+      srv.listen(p) // # all interfaces: a port held on :: by another job's server must count as taken (127.0.0.1-only checks missed it, 2026-11-09)
     })
     if (ok) return p
   }
@@ -38,12 +38,14 @@ export const TRANSITION = 8 // # must match art/episode/Episode.tsx
 
 let served: Promise<string> | null = null
 // # The webpack bundle is cached on disk per art version: later commands (render, stills,
-// # thumbnails) reuse it instead of re-bundling; older bundles are removed.
+// # thumbnails) reuse it instead of re-bundling. Only bundles older than 3 h are removed: another session's
+// # render may still be serving a recent one (deleting every other bundle killed a running render, 2026-10-30).
 export const BUNDLES = join(ROOT, 'temp', 'bundles')
+export const BUNDLE_KEEP_MS = 3 * 3600_000
 const cachedBundle = async () => {
   const dir = join(BUNDLES, artHash())
   if (existsSync(join(dir, 'index.html'))) return dir
-  if (existsSync(BUNDLES)) for (const old of readdirSync(BUNDLES)) rmSync(join(BUNDLES, old), { recursive: true, force: true })
+  if (existsSync(BUNDLES)) for (const old of readdirSync(BUNDLES)) if (Date.now() - statSync(join(BUNDLES, old)).mtimeMs > BUNDLE_KEEP_MS) rmSync(join(BUNDLES, old), { recursive: true, force: true })
   return bundle({ entryPoint: join(ROOT, 'art', 'index.tsx'), publicDir: PUBLIC_DIR, outDir: dir })
 }
 export const serveUrl = () => (served ??= cachedBundle())
@@ -136,7 +138,12 @@ export const artFingerprint = (entry = join(ROOT, 'art', 'episode', 'Episode.tsx
     const h = hashFiles(reach(f))
     for (const [, id] of readFileSync(f, 'utf8').matchAll(/make(?:Scene|Prop|Vignette|Piece)\('([\w-]+)'/g)) idFile[id] = h
   }
-  const base = hashFiles([...all].filter((f) => !lib.includes(f)), [join(PUBLIC_DIR, 'fonts'), join(PUBLIC_DIR, 'textures')])
+  // # base = what the Episode reaches WITHOUT going through a library file: a helper file only a video's own scenes
+  // # import (e.g. art/diorama/aimoney/common.tsx) belongs to those scenes' hashes, not to every video's base
+  const libSet = new Set(lib), baseFiles = new Set<string>()
+  const walk = (file: string) => { if (baseFiles.has(file) || libSet.has(file)) return; baseFiles.add(file); for (const x of importsOf(file)) walk(x) }
+  walk(resolve(entry))
+  const base = hashFiles(baseFiles, [join(PUBLIC_DIR, 'fonts'), join(PUBLIC_DIR, 'textures')])
   return { base, idFile }
 }
 
@@ -253,8 +260,10 @@ export const autoSfx = (tl: Pick<Timeline, 'fps' | 'shots' | 'sfx'>): Sfx[] => {
 // # voice + every SFX at its time → exactly `seconds` long → −14 LUFS.
 // # The filter graph goes in a script file (Windows command lines cap at 32k chars).
 // # The voiceover loudness the owner approved for every video: louder master, voice about 2 dB further above the SFX
-export const MIX = { long: { lufs: -11, sfxGain: 0.8 }, short: { lufs: -11, sfxGain: 0.8 } } // # owner approved 2026-10-26 (≈ −12 LUFS measured)
-export const mixAudio = (voice: string, sfx: Sfx[], seconds: number, out: string, sfxDir = join(PUBLIC_DIR, 'sfx', 'cc'), o: { lufs: number; sfxGain: number } = MIX.long) => {
+// # Shorts: owner picked a louder master on 2026-10-31 (≈ −10 LUFS measured, peak ≈ −1 dB) with a gentle voice compressor
+export const SHORT_COMP = 'acompressor=threshold=-20dB:ratio=2.5:attack=8:release=120'
+export const MIX = { long: { lufs: -11, sfxGain: 0.8 }, short: { lufs: -9, sfxGain: 0.8, comp: SHORT_COMP } } // # long: owner approved 2026-10-26 (≈ −12 LUFS measured)
+export const mixAudio = (voice: string, sfx: Sfx[], seconds: number, out: string, sfxDir = join(PUBLIC_DIR, 'sfx', 'cc'), o: { lufs: number; sfxGain: number; comp?: string } = MIX.long) => {
   const names = [...new Set(sfx.map((x) => x.name))]
   const inputs = ['-i', voice, ...names.flatMap((n) => ['-i', join(sfxDir, `${n}.wav`)])]
   const lines: string[] = [`[0:a]aformat=sample_rates=48000:channel_layouts=mono,apad,atrim=0:${seconds.toFixed(3)}[v]`]
@@ -272,7 +281,7 @@ export const mixAudio = (voice: string, sfx: Sfx[], seconds: number, out: string
   writeFileSync(script, lines.join(';\n'))
   const pre = out.replace(/\.wav$/, '.pre.wav')
   ff([...inputs, '-/filter_complex', script, '-map', '[out]', '-ar', '48000', '-ac', '1', pre], 'mix audio')
-  normalize(pre, out, o.lufs)
+  normalize(pre, out, o.lufs, o.comp)
   rmSync(script, { force: true })
   rmSync(pre, { force: true })
 }

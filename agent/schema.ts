@@ -53,7 +53,7 @@ export type PieceShot = { id: string; start: Cue; kind: 'piece'; piece: string; 
 export type Enter = { enter?: { zoomInto: string | { x: number; y: number } } }
 export type Shot = (SceneShot | SlideShot | VignetteShot | ChapterShot | BrandShot | PieceShot) & Enter
 // # canvas: 'tall' for a Short (1080×1920, pieces drawn for a phone); default 'wide' (1920×1080)
-export type PlanDoc = { shots: Shot[]; sfx?: { at: Cue; name: string; volume?: number }[]; canvas?: 'wide' | 'tall' }
+export type PlanDoc = { shots: Shot[]; sfx?: { at: Cue; name: string; volume?: number }[]; canvas?: 'wide' | 'tall'; tail?: number } // # tail: seconds of picture after the voice ends (an end card)
 
 // ------------------------------------------------------------ metadata.json (Publisher)
 export type ThumbSpec = Record<string, unknown>

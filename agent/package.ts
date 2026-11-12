@@ -77,8 +77,62 @@ const HYPE = ['guaranteed', 'get rich quick', 'overnight', 'secret they', 'you w
 export const LAYOUTS = ['hero-left', 'object-center', 'split']
 export const TONES = ['champagne', 'green', 'red', 'white']
 
-// # Shorts have no thumbnails (the cover frame is picked in the YouTube app)
-export const checkMeta = (m: MetaDoc, o: { short?: boolean } = {}): string[] => {
+// # A Short's 3 covers (art/thumbnails/ThumbShort.tsx): a sticker title, a stake object cut from one frame, a cast close-up.
+// # `crop.at` is a cue word ("s30:five"), so a re-timed voice still lands on the same moment.
+export const SHORT_BGS = ['navy', 'black', 'gold', 'cream']
+export const checkShortCover = (t: Record<string, any>, n: string, cues: Record<string, number> = {}): string[] => {
+  const p: string[] = []
+  const lines = Array.isArray(t.title) ? t.title as { t: string; size: string; accent?: boolean }[] : []
+  const words = lines.flatMap((l) => String(l.t ?? '').split(/\s+/).filter(Boolean))
+  if (lines.length < 1 || lines.length > 4) p.push(`${n}: title needs 1–4 lines`)
+  if (words.length < 2 || words.length > 6) p.push(`${n}: title needs 2–6 words (got ${words.length})`)
+  for (const l of lines) {
+    if (!['s', 'm', 'l'].includes(l.size)) p.push(`${n}: line "${l.t}" size must be s/m/l`)
+    // # widest line ≈ 0.42 em per character must fit 1020 px
+    if (String(l.t).length * 0.42 * ({ s: 92, m: 150, l: 230 } as Record<string, number>)[l.size] > 1020) p.push(`${n}: line "${l.t}" is too wide for its size`)
+  }
+  if (!lines.some((l) => l.size === 'l')) p.push(`${n}: one line must be large (the key word)`)
+  if (t.bg && !SHORT_BGS.includes(t.bg)) p.push(`${n}: bg must be ${SHORT_BGS.join('/')}`)
+  if (!t.crop && !t.character) p.push(`${n}: needs a stake object (crop) or a character`)
+  if (t.crop) {
+    const c = t.crop
+    if (typeof c.at !== 'string' || (Object.keys(cues).length && cues[c.at] === undefined)) p.push(`${n}: crop.at "${c.at}" is not a cue word`)
+    if (![c.x, c.y, c.w, c.h].every((v) => typeof v === 'number') || c.w < 100 || c.h < 100 || c.x < 0 || c.y < 0 || c.x + c.w > 1080 || c.y + c.h > 1920) p.push(`${n}: crop must be a region inside 1080×1920`)
+  }
+  if (t.character) {
+    if (!(POSE_IDS as string[]).includes(t.character.pose)) p.push(`${n}: unknown pose "${t.character.pose}"`)
+    if (!(EXPRESSIONS as string[]).includes(t.character.expression)) p.push(`${n}: unknown expression "${t.character.expression}"`)
+    if (t.character.look && !CAST.includes(t.character.look)) p.push(`${n}: unknown look "${t.character.look}"`)
+  }
+  return p
+}
+
+// # A long video's 3 thumbnails (art/thumbnails/ThumbLong.tsx): words that state the point + a picture cut from the
+// # video's own art (crop.at = a cue word, region of the 1920×1080 frame); style panel / banner / stack; owner rule r73.
+export const LONG_STYLES = ['panel', 'banner', 'stack']
+export const LONG_PANELS = ['cream', 'yellow', 'sky', 'coral']
+export const checkLongThumb = (t: Record<string, any>, n: string, cues: Record<string, number> = {}): string[] => {
+  const p: string[] = []
+  if (!LONG_STYLES.includes(t.style)) p.push(`${n}: style must be ${LONG_STYLES.join('/')}`)
+  const ws = String(t.words ?? '').trim().split(/\s+/).filter(Boolean)
+  if (ws.length < 2 || ws.length > 6 || String(t.words).length > 34) p.push(`${n}: "${t.words}" — needs 2–6 words that state the point (≤ 34 chars)`)
+  if ((t.accent ?? []).some((k: number) => k >= ws.length)) p.push(`${n}: accent index past the last word`)
+  if (t.panel && !LONG_PANELS.includes(t.panel)) p.push(`${n}: panel must be ${LONG_PANELS.join('/')}`)
+  const c = t.crop
+  if (!c) p.push(`${n}: needs a picture (crop) cut from the video's own art`)
+  else {
+    if (typeof c.at !== 'string' || (Object.keys(cues).length && cues[c.at] === undefined)) p.push(`${n}: crop.at "${c.at}" is not a cue word`)
+    if (![c.x, c.y, c.w, c.h].every((v) => typeof v === 'number') || c.w < 200 || c.h < 200 || c.x < 0 || c.y < 0 || c.x + c.w > 1920 || c.y + c.h > 1080) p.push(`${n}: crop must be a region inside 1920×1080`)
+  }
+  if (t.character) {
+    if (!(POSE_IDS as string[]).includes(t.character.pose)) p.push(`${n}: unknown pose "${t.character.pose}"`)
+    if (!(EXPRESSIONS as string[]).includes(t.character.expression)) p.push(`${n}: unknown expression "${t.character.expression}"`)
+    if (t.character.look && !CAST.includes(t.character.look)) p.push(`${n}: unknown look "${t.character.look}"`)
+  }
+  return p
+}
+
+export const checkMeta = (m: MetaDoc, o: { short?: boolean; cues?: Record<string, number> } = {}): string[] => {
   const p: string[] = []
   if (m.titles?.length !== 3) p.push(`need 3 titles (got ${m.titles?.length ?? 0})`)
   ;(m.titles ?? []).forEach((t, i) => {
@@ -90,10 +144,18 @@ export const checkMeta = (m: MetaDoc, o: { short?: boolean } = {}): string[] => 
   for (const h of HYPE) if ((m.description ?? '').toLowerCase().includes(h)) p.push(`description: hype word "${h}"`)
   if (!m.tags || m.tags.length < 3) p.push('need ≥ 3 tags')
   if ((m.tags ?? []).join(',').length > 480) p.push('tags over 480 chars')
-  if (!o.short && m.thumbnails?.length !== 3) p.push(`need 3 thumbnails (got ${m.thumbnails?.length ?? 0})`)
+  // # drawn covers (owner 2026-11-09): 1–3 are fine; template thumbnails still need 3
+  const drawn = (m.thumbnails ?? []).length > 0 && (m.thumbnails ?? []).every((t) => (t as Record<string, any>).cover)
+  if (drawn ? m.thumbnails.length > 3 : m.thumbnails?.length !== 3) p.push(`need 3 thumbnails (got ${m.thumbnails?.length ?? 0})`)
+  if (o.short) {
+    ;(m.thumbnails ?? []).forEach((raw, i) => (raw as Record<string, any>).cover ? null : p.push(...checkShortCover(raw as Record<string, any>, `thumbnail ${i + 1}`, o.cues)))
+    return p
+  }
   ;(m.thumbnails ?? []).forEach((raw, i) => {
     const t = raw as Record<string, any>
     const n = `thumbnail ${i + 1}`
+    if (t.cover) return
+    if (t.style) { p.push(...checkLongThumb(t, n, o.cues)); return }
     if (!LAYOUTS.includes(t.layout)) p.push(`${n}: layout must be ${LAYOUTS.join('/')}`)
     const ws = String(t.words ?? '').trim().split(/\s+/).filter(Boolean)
     if (!ws.length || ws.length > 5 || String(t.words).length > 28) p.push(`${n}: "${t.words}" — too many words (2–5 words, ≤ 28 chars)`)

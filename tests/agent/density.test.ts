@@ -41,10 +41,18 @@ describe('living film density', () => {
     expect(gatePlan(p, words, opts).problems.join('\n')).toMatch(/no illustration for 4\.\d s/)
   })
 
-  test('a 2.4-second gap is refused', () => {
+  test('a gap over 2 s (from the end of the last cue word) is refused', () => {
     const p = dense()
     ;(p.shots[0] as any).camera = (p.shots[0] as any).camera.filter((c: any) => c.at.word !== 's1w8')
-    expect(gatePlan(p, words, opts).problems.join('\n')).toMatch(/no illustration for 2\.4 s from 1\.6 s \(max 2 s\)/)
+    expect(gatePlan(p, words, opts).problems.join('\n')).toMatch(/no illustration for 2\.0 s from 1\.9 s \(max 2 s\)/)
+  })
+
+  test('a long spoken cue word (a big number) keeps its event on screen while it is said', () => {
+    const p = dense()
+    ;(p.shots[0] as any).camera = (p.shots[0] as any).camera.filter((c: any) => c.at.word !== 's1w8')
+    // # 'money' now takes 1.5 s to say (1.6 → 3.1), so the next event at 4.0 is only 0.9 s later
+    const long = words.map((w) => (w.sid === 's1' && w.w === 'money' ? { ...w, e: 3.1 } : w))
+    expect(gatePlan(p, long, opts).problems.filter((x) => /no illustration/.test(x))).toEqual([])
   })
 
   test('every sentence needs its own shown event', () => {

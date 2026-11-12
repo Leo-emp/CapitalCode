@@ -366,3 +366,15 @@ describe('camera framing', () => {
     expect(gatePlan(p, words, opts()).problems.filter((x) => /cuts/.test(x))).toEqual([])
   })
 })
+
+// # owner 2026-10-31 (r43/r44): the always-on presenter is refused
+import { presenterIn } from '../../agent/gates/plan'
+describe('presenterIn', () => {
+  test('finds the hero actor in a compiled piece and ignores pieces without him', () => {
+    const withHost = () => ({ type: 'Person', props: { who: 'hero', x: 320 } })
+    const without = () => ({ type: 'Person', props: { who: 'investor' } })
+    expect(presenterIn(withHost)).toBe(true)
+    expect(presenterIn(without)).toBe(false)
+    expect(presenterIn(undefined)).toBe(false)
+  })
+})
