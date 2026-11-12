@@ -187,7 +187,9 @@ export const Dome: React.FC<{ id: string; cx: number; cy: number; rx: number; ry
 // # disappears); 'reveal' fills ahead of it (the new picture appears behind it). Swap scenes between the two.
 export const ZigZagWipe: React.FC<{ p: number; color: string; mode: 'cover' | 'reveal'; w?: number; h?: number }> = ({ p, color, mode, w = 1920, h = 1080 }) => {
   if (p <= 0 || p >= 1) return null
-  const x = lerp(w + 180, -300, easeInOut(p)), n = Math.ceil(h / 50) + 2, teeth = Array.from({ length: n }, (_, i) => `L${x + (i % 2 ? 40 : 0)} ${i * 50}`).join(' ')
+  // # the cover stops just past the left edge and the reveal starts just inside the right edge, so the screen is all
+  // # paper for only ~2 frames (it was ~8 — read as a blank flash, Critic 2026-10-30)
+  const x = mode === 'cover' ? lerp(w + 180, -60, easeInOut(p)) : lerp(w - 20, -300, easeInOut(p)), n = Math.ceil(h / 50) + 2, teeth = Array.from({ length: n }, (_, i) => `L${x + (i % 2 ? 40 : 0)} ${i * 50}`).join(' ')
   const far = mode === 'cover' ? w + 480 : -400, bottom = (n - 1) * 50
   return <path d={`M${x} 0 ${teeth} L${x} ${bottom} L${far} ${bottom} L${far} 0 Z`} fill={color} />
 }

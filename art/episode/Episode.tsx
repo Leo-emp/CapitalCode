@@ -315,6 +315,8 @@ export const EpisodeFrame: React.FC<{ timeline: EpisodeTimeline; f: number }> = 
       }
       return <ShotView key={x.shot.id} s={x.shot} f={f} from={x.from} to={x.to} speech={timeline.speech} enterAt={pointOf(i)} exitAt={pointOf(i + 1)} />
     })}
+    {/* # captions sit under the paper wipe, so each caption leaves and arrives with its own scene (owner rule r26) */}
+    {timeline.captions && <Captions caps={timeline.captions} t={f / timeline.fps} />}
     {wipes.map((at) => (
       <svg key={`w${at}`} width={w} height={h} style={{ position: 'absolute', inset: 0 }}>
         <ZigZagWipe p={(f - (at - WIPE)) / WIPE} color={COLORS.champagne} mode="cover" w={w} h={h} />
@@ -336,7 +338,6 @@ export const Episode: React.FC<EpisodeProps> = ({ timeline, voice }) => {
       {current && cornerLogo(current.shot.kind) && (
         <svg width={56} height={56} style={{ position: 'absolute', left: 48, top: 40, opacity: 0.85 }}><Emblem size={56} /></svg>
       )}
-      {timeline.captions && <Captions caps={timeline.captions} t={f / timeline.fps} />}
       <GrainOverlay frame={f} />
     </AbsoluteFill>
   )

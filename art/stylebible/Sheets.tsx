@@ -48,6 +48,10 @@ export const PoseStrip: React.FC = () => (
   <CharacterGrid cells={POSE_IDS.map((id) => [id, POSES[id], 'hero'] as [string, Pose, string])} cols={8} scale={0.7} cellH={540} />
 )
 
+// # The full pose library, 16 a page (acting library review, 2026-10-29)
+export const PoseSheet: React.FC<{ page?: number }> = ({ page = 0 }) => (
+  <CharacterGrid cells={POSE_IDS.slice(page * 16, page * 16 + 16).map((id) => [id, POSES[id], 'hero'] as [string, Pose, string])} cols={8} scale={0.7} cellH={540} />
+)
 // # Head-and-shoulders close-ups, one per expression
 export const ExpressionStrip: React.FC = () => (
   <AbsoluteFill style={{ background: COLORS.bg }}>

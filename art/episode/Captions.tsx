@@ -26,7 +26,8 @@ export const Captions: React.FC<{ caps: CaptionChunk[]; t: number }> = ({ caps, 
       display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: '0 26px', textAlign: 'center',
       fontFamily: 'Bebas Neue', fontSize: 112, lineHeight: 1, letterSpacing: 1, transform: `scale(${0.92 + 0.08 * k})`, opacity: 0.4 + 0.6 * k }}>
       {cap.card.words.map((w, i) => (
-        <span key={i} style={{ color: i === cap.word ? '#F2C14E' : '#FFFFFF', WebkitTextStroke: '10px #0E1B33', paintOrder: 'stroke fill',
+        // # a word shows only once it is spoken (owner rule r27): upcoming words keep their space but stay invisible, so the card never jumps
+        <span key={i} style={{ opacity: t >= w.s ? 1 : 0, color: i === cap.word ? '#F2C14E' : '#FFFFFF', WebkitTextStroke: '10px #0E1B33', paintOrder: 'stroke fill',
           textShadow: '0 8px 22px rgba(14,27,51,0.45)', display: 'inline-block', transform: `scale(${i === cap.word ? 1.08 : 1})` }}>{w.text}</span>
       ))}
     </div>

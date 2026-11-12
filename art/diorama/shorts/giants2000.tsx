@@ -143,14 +143,14 @@ const Price: React.FC<PieceProps> = ({ f, c }) => {
   )
 }
 
-// ---------------------------------------------------------------- s14–s18: the premium flipped; buyers at the top fell furthest
+// ---------------------------------------------------------------- s14–s18: the premium flipped; several giants bought at the top fell hard
 const Flip: React.FC<PieceProps> = ({ f, c }) => {
   const nobody = c('s14:nobody'), later = c('s15:later'), cheaper = c('s15:cheaper'), p115 = c('s15:115'), shrink = c('s16:shrink'), flipped = c('s16:flipped')
-  const bought = c('s17:bought'), top = c('s17:top'), picked = c('s17:picked'), fell = c('s18:fell'), furthest = c('s18:furthest'), news = c('s18:news'), baked = c('s18:baked'), price = c('s18:price')
+  const bought = c('s17:bought'), top = c('s17:top'), picked = c('s17:picked'), fell = c('s18:fell'), hard = c('s18:hard'), news = c('s18:news'), baked = c('s18:baked'), price = c('s18:price')
   const A = 1 - on(f, bought - 8), B = on(f, bought - 8)
   // # the see-saw: giants' side heavy (expensive) → flips the other way on "flipped"
   const tilt = lerp(14, -12, easeInOut(span(f, later, flipped + 10)))
-  const slide = easeInOut(span(f, fell, furthest + 20))
+  const slide = easeInOut(span(f, fell, hard + 20))
   return (
     <g>
       <TallStage id="gf" f={f} />
@@ -167,14 +167,14 @@ const Flip: React.FC<PieceProps> = ({ f, c }) => {
         <Label x={W / 2} y={460} text="5 YEARS LATER · THE GIANTS ARE CHEAPER" size={46} font="Bebas Neue" color={P.ink} o={between(f, cheaper, shrink)} />
         <g opacity={on(f, later)} transform="translate(880 520)"><Calendar x={0} y={0} text={f < cheaper ? '2000' : '2005'} flip={span(f, later, later + 14)} /></g>
       </g>
-      {/* # buyers at the top: a crowd on a peak that slides down when the shares fall */}
+      {/* # buyers at the top: a crowd on a peak; several slide down when the shares fall, the rest hold on */}
       <g opacity={B}>
         <path d="M100 1200 L540 520 L980 1200 Z" fill={P.navy3} /><path d="M540 520 L980 1200 L700 1200 Z" fill={P.navy2} />
         {Array.from({ length: 8 }, (_, k) => {
-          const side = k % 2 ? 1 : -1, d = slide * (0.6 + rnd(k) * 0.4), x = 540 + side * (24 + k * 14) + side * d * 330, y = 540 + (k % 3) * 10 + d * 560
-          return <g key={k} opacity={on(f, picked + k * 2)}><Mini look={['hero', 'owner', 'investor'][k % 3]} x={x} y={y} scale={0.95} frame={f} seed={30 + k} mood={slide > 0.3 ? 'sad' : 'happy'} /></g>
+          const falls = k % 4 !== 3, side = k % 2 ? 1 : -1, d = falls ? slide * (0.6 + rnd(k) * 0.4) : slide * 0.08, x = 540 + side * (24 + k * 14) + side * d * 330, y = 540 + (k % 3) * 10 + d * 560
+          return <g key={k} opacity={on(f, picked + k * 2)}><Mini look={['hero', 'owner', 'investor'][k % 3]} x={x} y={y} scale={0.95} frame={f} seed={30 + k} mood={falls && slide > 0.3 ? 'sad' : slide > 0.3 ? 'neutral' : 'happy'} /></g>
         })}
-        <Big text={f < fell ? 'BOUGHT AT THE TOP' : 'FELL FURTHEST'} size={110} o={on(f, top)} color={f < fell ? P.ink : P.coralInk} />
+        <Big text={f < fell ? 'BOUGHT AT THE TOP' : 'SEVERAL FELL HARD'} size={110} o={on(f, top)} color={f < fell ? P.ink : P.coralInk} />
         {/* # good news, already baked into the price */}
         <g opacity={on(f, news)} transform={`translate(${lerp(220, 760, on(f, baked, 18))} ${lerp(500, 620, on(f, baked, 18))}) scale(${lerp(1, 0.4, on(f, baked, 18))})`}><Prop id="newspaper" x={0} y={0} size={150} f={f} /></g>
         <g opacity={on(f, baked - 6)} transform={`translate(800 640) scale(${pop(f, baked - 6)})`}><PriceTag x={0} y={0} text="PRICE" s={1.1} /></g>
@@ -310,9 +310,9 @@ export const GIANTS2000 = [
     beats: [...beat('s10', ['but', 'safe', 'cheap', 'same', 'thing']), ...beat('s11', ['investors', 'paying', '236', 'every', 'dollar', 'giants', 'expected', 'earn', 'next', 'year']), ...beat('s12', ['', 'rest', 'market', 'paid', '16']),
       ...beat('s13', ['', 'other', 'words', 'famous', 'names', 'big', 'premium', 'everyone', 'loved'])],
     sfx: [['s10:safe', 'pop', 0.4], ['s10:cheap', 'glitch', 0.4], ['s11:dollar', 'coin', 0.6], ['s11:236', 'cash', 0.5], ['s12:16', 'cash', 0.4], ['s13:premium', 'ding', 0.4], ['s13:loved', 'chime', 0.4]] }),
-  makePiece('g2k-flip', 'Short: the premium flipped; buyers at the top fell furthest', { canvas: 'tall', mood: 'dark', Component: Flip,
+  makePiece('g2k-flip', 'Short: the premium flipped; several giants bought at the top fell hard', { canvas: 'tall', mood: 'dark', Component: Flip,
     beats: [...beat('s14', ['then', 'premium', 'something', 'nobody', 'expected']), ...beat('s15', ['five', 'years', 'later', 'giants', 'cheaper', '115', 'times', 'rest', '16']), ...beat('s16', ['', 'premium', 'not', 'shrink', 'flipped']),
-      ...beat('s17', ['people', 'bought', 'top', 'picked', 'biggest', 'bestknown', 'companies', 'world']), ...beat('s18', ['', 'shares', 'fell', 'furthest', 'because', 'good', 'news', 'baked', 'price'])],
+      ...beat('s17', ['people', 'bought', 'top', 'picked', 'biggest', 'bestknown', 'companies', 'world']), ...beat('s18', ['', 'several', 'fell', 'hard', 'because', 'good', 'news', 'baked', 'price'])],
     sfx: [['s15:later', 'swish', 0.5], ['s15:115', 'tick', 0.5], ['s16:flipped', 'impact', 0.6], ['s17:picked', 'pop', 0.4], ['s18:fell', 'whoosh', 0.6], ['s18:baked', 'softpop', 0.4]] }),
   makePiece('g2k-list', 'Short: of the 2000 top 10 only Microsoft remains', { canvas: 'tall', mood: 'light', Component: List,
     beats: [...beat('s19', ['now', 'look', 'list', 'again', 'today']), ...beat('s20', ['', '10', 'leaders', 'only', 'one', 'still', 'top', '10#2']), ...beat('s21', ['microsoft']),

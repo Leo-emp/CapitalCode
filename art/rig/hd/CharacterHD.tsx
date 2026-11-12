@@ -45,6 +45,9 @@ export const LOOKS_HD: Record<string, LookHD> = {
     skin: ['#1F2B4A', '#161F37'], hair: 'side', hairColor: ['#1A2134', '#5A6680'], glasses: false, brow: '#E8B48A', rim: '#D8E2EE' },
   investor: { top: 'blazer', jacket: ['#3A4E9A', '#22306E', '#151F4E'], tee: '#F2F4F7', pants: ['#1B2450', '#121939'], shoes: 'dress',
     skin: ['#1F2B4A', '#161F37'], hair: 'slick', hairColor: ['#1A1636', '#4B3E8A'], glasses: false, brow: '#E8B48A', rim: '#7F8FEF' },
+  // # the investor as a woman (owner 2026-10-31: the script says 'she'): the investor's navy blazer with the cast's bun hair
+  investorF: { top: 'blazer', jacket: ['#3A4E9A', '#22306E', '#151F4E'], tee: '#F2F4F7', pants: ['#1B2450', '#121939'], shoes: 'dress',
+    skin: ['#1F2B4A', '#161F37'], hair: 'bun', hairColor: ['#1A1636', '#6A4E9A'], glasses: false, brow: '#E8B48A', rim: '#7F8FEF' },
   owner: { top: 'shirt', jacket: ['#48B87A', '#2A8C57', '#1D6640'], tee: '#EEF3FA', pants: ['#232634', '#191B25'], shoes: 'dress',
     skin: ['#1F2B4A', '#161F37'], hair: 'bun', hairColor: ['#101A2C', '#2E6E5A'], glasses: false, brow: '#E8B48A', rim: '#9FE8C2', apron: true },
   worker: { top: 'hivis', jacket: ['#FFB04D', '#F38A1E', '#C76A0E'], tee: '#EEF3FA', pants: ['#26355C', '#1A2645'], shoes: 'boot',
@@ -191,7 +194,8 @@ const Hand: React.FC<{ shape: HandShape; skin: string; rim: string }> = ({ shape
   if (shape === 'pocket') return null
   const f = (x: number, len: number, rot: number, k: number) => <path key={k} d={capsule(len, 11, 9)} transform={`translate(${x} 10) rotate(${rot})`} fill={skin} />
   const fingers =
-    shape === 'fist' ? [<rect key="f" x={-16} y={2} width={32} height={22} rx={10} fill={skin} />]
+    shape === 'thumb' ? [<rect key="f" x={-16} y={2} width={32} height={22} rx={10} fill={skin} />, <path key="t" d={capsule(30, 12, 10)} transform="translate(-14 6) rotate(160)" fill={skin} />]
+    : shape === 'fist' ? [<rect key="f" x={-16} y={2} width={32} height={22} rx={10} fill={skin} />]
     : shape === 'point' ? [f(-4, 34, 0, 0), <rect key="r" x={0} y={4} width={20} height={18} rx={8} fill={skin} />]
     : shape === 'open' ? [-12, -4, 4, 12].map((x, k) => f(x * 1.2, 26, x * 2.2, k))
     : shape === 'chin' ? [-10, -2, 6].map((x, k) => f(x, 26, -16 + k * 6, k))
@@ -200,7 +204,7 @@ const Hand: React.FC<{ shape: HandShape; skin: string; rim: string }> = ({ shape
     <g>
       <ellipse cx={0} cy={4} rx={16} ry={16} fill={skin} />
       {fingers}
-      {shape !== 'fist' && <path d={capsule(20, 11, 9)} transform={`translate(${shape === 'chin' ? 12 : -14} 2) rotate(${shape === 'open' ? 70 : shape === 'chin' ? -60 : 40})`} fill={skin} />}
+      {shape !== 'fist' && shape !== 'thumb' && <path d={capsule(20, 11, 9)} transform={`translate(${shape === 'chin' ? 12 : -14} 2) rotate(${shape === 'open' ? 70 : shape === 'chin' ? -60 : 40})`} fill={skin} />}
       <path d="M14 -6 Q19 6 14 16" stroke={rim} strokeWidth={2} fill="none" opacity={0.5} />
     </g>
   )

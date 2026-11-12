@@ -379,23 +379,24 @@ const Bet: React.FC<PieceProps> = ({ f, c }) => {
         <g transform={`translate(${lerp(1000, 640, on(f, check, 18))} ${lerp(500, 1000, on(f, check, 18))})`}><Prop id="magnifier" x={0} y={0} size={200} f={f} /></g>
         <Label x={W / 2} y={330} text="MOST PEOPLE NEVER CHECK" size={76} font="Bebas Neue" color={P.coralInk} o={on(f, never)} />
       </g>
-      {/* # D: spread thin over 500? — 10 carry most of the weight (a balance) */}
+      {/* # D: spread thin over 500? — 10 carry over a third of the weight (a balance that nearly evens out) */}
       <g opacity={D}>
-        <Label x={W / 2} y={330} text={f < carry ? 'SPREAD THIN?' : '10 CARRY THE WEIGHT'} size={90} font="Bebas Neue" color={P.ink} o={on(f, own)} />
+        <Label x={W / 2} y={330} text={f < carry ? 'SPREAD THIN?' : '10 CARRY OVER A THIRD'} size={90} font="Bebas Neue" color={P.ink} o={on(f, own)} />
         {Array.from({ length: 120 }, (_, j) => {
           const sp = on(f, spreading, 24), x = lerp(540, 120 + (j % 12) * 76, sp), y = lerp(760, 520 + Math.floor(j / 12) * 50, sp)
           return <rect key={j} x={x - 14} y={y - 10} width={28} height={20} rx={4} fill={j < 10 ? P.gold : P.sky} opacity={on(f, own) * (1 - on(f, carry - 4))} />
         })}
         <Label x={W / 2} y={1100} text="500 companies" size={44} color={P.ink2} o={on(f, thin) * (1 - on(f, carry - 4))} />
-        {/* # the balance: ten heavy gold blocks vs 490 light blue ones */}
+        {/* # the balance: starts sunk on the 490 side, then on "weight" the 10 gold blocks (38%) lift it almost level — it still dips, just, to the 490 side (62%) */}
         <g opacity={on(f, carry - 4)}>
-          <g transform={`rotate(${-14 * on(f, weight, 26)} 540 820)`}>
+          <g transform={`rotate(${lerp(18, 5, on(f, weight, 26))} 540 820)`}>
             <rect x={120} y={810} width={840} height={20} rx={10} fill={P.navy3} />
             {Array.from({ length: 10 }, (_, k) => <rect key={k} x={140 + (k % 5) * 56} y={730 - Math.floor(k / 5) * 74} width={50} height={70} rx={8} fill={P.gold} />)}
             {Array.from({ length: 49 }, (_, k) => <rect key={k} x={640 + (k % 10) * 30} y={790 - Math.floor(k / 10) * 18} width={24} height={14} rx={3} fill={P.sky} />)}
           </g>
           <path d="M490 960 L540 830 L590 960 Z" fill={P.navy3} />
           <Label x={300} y={1080} text="10" size={90} font="Bebas Neue" color={P.goldInk} /><Label x={790} y={1080} text="490" size={90} font="Bebas Neue" color={P.skyInk} />
+          <Label x={300} y={1140} text="38%" size={50} font="Bebas Neue" color={P.goldInk} o={on(f, weight)} /><Label x={790} y={1140} text="62%" size={50} font="Bebas Neue" color={P.skyInk} o={on(f, weight)} />
           <Label x={W / 2} y={1200} text="something different" size={44} color={P.ink} o={on(f, diff)} />
         </g>
       </g>
@@ -470,7 +471,7 @@ export const WHERE100 = [
     beats: [...beat('s22', ['', 'means', 'fund', 'broken']), ...beat('s23', ['', 'real', 'businesses', 'earn', 'enormous', 'profits', 'exactly', 'big']),
       ...beat('s24', ['', 'mean', 'buy', 'whole', 'market', 'big', 'part', 'really', 'buying', 'bet', 'handful', 'names']), ...beat('s25', ['', 'ten', 'well', 'you', 'well#2']),
       ...beat('s26', ['', 'stumble', '38', 'every', 'dollar', 'stumbles', 'them']), ...beat('s27', ['', 'part', 'people', 'never', 'check']),
-      ...beat('s28', ['', '500', 'companies', 'sounds', 'spreading', 'risk', 'thin']), ...beat('s29', ['', '500', 'companies', 'where', '10', 'carry', 'most', 'weight', 'something', 'different']),
+      ...beat('s28', ['', '500', 'companies', 'sounds', 'spreading', 'risk', 'thin']), ...beat('s29', ['', '500', 'companies', 'where', '10', 'carry', 'over', 'third', 'weight', 'something', 'different']),
       ...beat('s30', ['', 'not', 'wrong', 'lot', 'people', 'still', 'sensible', 'choice']), ...beat('s31', ['', 'just', 'know', 'which', 'bet', 'actually', 'making'])],
     sfx: [['s22:broken', 'ding', 0.5], ['s23:profits', 'coin', 0.5], ['s24:handful', 'flutter', 0.5], ['s25:well', 'chime', 0.4], ['s26:stumble', 'thud', 0.5], ['s26:stumbles', 'crack', 0.5],
       ['s27:never', 'glitch', 0.4], ['s28:spreading', 'swish', 0.4], ['s29:weight', 'thud', 0.6], ['s30:wrong', 'ding', 0.5], ['s31:making', 'softpop', 0.5]] }),
